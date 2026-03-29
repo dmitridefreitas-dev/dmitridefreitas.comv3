@@ -1,18 +1,17 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Linkedin, Github, FileText, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Send } from 'lucide-react';
 import TextReveal from '@/components/effects/TextReveal';
 import MagneticButton from '@/components/effects/MagneticButton';
 import { useToast } from '@/hooks/use-toast';
 import { contactInfo, opportunityGroups, socialLinks } from '@/data/constants';
 
-// Floating math symbols for contact hero
 const CONTACT_SHAPES = [
-  { label: '∀', style: { fontSize: 'clamp(1.75rem, 3.5vw, 3rem)', top: '16%', left: '5%', color: 'rgba(220,38,38,0.06)' } },
-  { label: '∃', style: { fontSize: 'clamp(1.25rem, 2.5vw, 2.25rem)', top: '22%', right: '7%', color: 'rgba(153,27,27,0.05)' } },
-  { label: '⊃', style: { fontSize: 'clamp(1.5rem, 3vw, 2.75rem)', bottom: '24%', left: '6%', color: 'rgba(220,38,38,0.05)' } },
-  { label: '∴', style: { fontSize: 'clamp(1rem, 2vw, 1.75rem)', bottom: '28%', right: '5%', color: 'rgba(239,68,68,0.05)' } },
+  { label: '$', style: { fontSize: 'clamp(1.75rem, 3.5vw, 3rem)', top: '16%', left: '5%', color: 'rgba(139,92,246,0.08)' }, floatY: [-6, 6, -6], dur: 9 },
+  { label: '%', style: { fontSize: 'clamp(1.25rem, 2.5vw, 2.25rem)', top: '22%', right: '7%', color: 'rgba(76,29,149,0.07)' }, floatY: [4, -4, 4], dur: 11 },
+  { label: 'Δ', style: { fontSize: 'clamp(1.5rem, 3vw, 2.75rem)', bottom: '24%', left: '6%', color: 'rgba(139,92,246,0.07)' }, floatY: [-5, 5, -5], dur: 13 },
+  { label: 'σ', style: { fontSize: 'clamp(1rem, 2vw, 1.75rem)', bottom: '28%', right: '5%', color: 'rgba(34,211,238,0.07)' }, floatY: [5, -5, 5], dur: 10 },
 ];
 
 export default function ContactPage() {
@@ -65,20 +64,21 @@ export default function ContactPage() {
 
   return (
     <>
-      {/* ── Hero ── */}
       <section
         className="section-full flex-col text-center px-6 overflow-hidden pt-28"
         aria-label="Contact hero"
       >
-        {/* Floating math symbols */}
         {CONTACT_SHAPES.map((shape, i) => (
           <motion.span
             key={i}
-            className="float-geo font-serif absolute select-none pointer-events-none"
-            style={{ ...shape.style, animationDelay: `${i * 0.8}s` }}
+            className="font-mono absolute select-none pointer-events-none"
+            style={shape.style}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 + i * 0.2, duration: 1 }}
+            animate={{ opacity: 1, y: shape.floatY }}
+            transition={{
+              opacity: { delay: 1 + i * 0.2, duration: 1 },
+              y: { duration: shape.dur, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 },
+            }}
             aria-hidden="true"
           >
             {shape.label}
@@ -91,7 +91,20 @@ export default function ContactPage() {
           transition={{ delay: 0.3 }}
           className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-5 relative z-10"
         >
-          Let&apos;s Talk
+          <motion.span
+            animate={{
+              textShadow: [
+                '0 0 0px rgba(139,92,246,0)',
+                '0 0 16px rgba(139,92,246,0.65)',
+                '0 0 0px rgba(139,92,246,0)',
+              ],
+              opacity: [1, 0.7, 1],
+            }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
+            style={{ display: 'inline' }}
+          >
+            Let&apos;s Talk
+          </motion.span>
         </motion.p>
 
         <h1 className="font-serif font-bold text-display text-foreground text-balance will-change-transform relative z-10">
@@ -106,19 +119,29 @@ export default function ContactPage() {
           transition={{ delay: 0.9 }}
           className="font-mono text-xs uppercase tracking-[0.3em] text-muted mt-5 relative z-10 break-all"
         >
-          Available Fall 2027 &nbsp;·&nbsp; {contactInfo.email}
+          Available Summer 2026 &nbsp;&middot;&nbsp; {contactInfo.email}
         </motion.p>
       </section>
 
-      {/* ── Split Layout ── */}
       <section
-        className="px-6 lg:px-16 py-24"
+        className="px-6 lg:px-16 py-24 relative overflow-hidden"
         aria-label="Contact details and form"
         style={{ minHeight: '100vh' }}
       >
+        {/* Ambient glow that breathes */}
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{
+            top: '20%', right: '-10%',
+            width: '40vw', height: '40vw',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 70%)',
+          }}
+          animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.1, 1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+          aria-hidden="true"
+        />
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-start">
-
-          {/* Left — Info */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -126,7 +149,6 @@ export default function ContactPage() {
             transition={{ duration: 0.8 }}
             className="flex flex-col gap-14"
           >
-            {/* Contact details */}
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mb-10">
                 Contact
@@ -143,7 +165,12 @@ export default function ContactPage() {
                     whileHover={{ x: 4 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   >
+                    <motion.div
+                    animate={{ filter: ['drop-shadow(0 0 0px rgba(139,92,246,0))', 'drop-shadow(0 0 6px rgba(139,92,246,0.7))', 'drop-shadow(0 0 0px rgba(139,92,246,0))'] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: label === 'Email' ? 0 : label === 'Phone' ? 1.3 : 2.6 }}
+                  >
                     <Icon className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
+                  </motion.div>
                     <div>
                       <p className="font-mono text-xs uppercase tracking-widest text-muted mb-1">{label}</p>
                       {href ? (
@@ -162,7 +189,6 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Seeking */}
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mb-10">
                 Open To
@@ -176,13 +202,17 @@ export default function ContactPage() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: i * 0.07 }}
                   >
-                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
+                    <motion.p
+                      className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2"
+                      animate={{ opacity: [1, 0.6, 1] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 }}
+                    >
                       {group.category}
-                    </p>
+                    </motion.p>
                     <div className="flex flex-col gap-1.5">
                       {group.roles.map((role, j) => (
                         <span key={j} className="font-mono text-xs uppercase tracking-widest text-muted">
-                          · {role}
+                          &middot; {role}
                         </span>
                       ))}
                     </div>
@@ -191,7 +221,6 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Social */}
             <div className="flex flex-col gap-4">
               <motion.a
                 href={socialLinks.linkedin}
@@ -203,30 +232,9 @@ export default function ContactPage() {
               >
                 <Linkedin className="h-3.5 w-3.5" /> LinkedIn
               </motion.a>
-              <motion.a
-                href={socialLinks.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-muted hover:text-accent transition-colors w-fit"
-                whileHover={{ x: 4 }}
-                data-cursor="expand"
-              >
-                <Github className="h-3.5 w-3.5" /> GitHub
-              </motion.a>
-              <motion.a
-                href={socialLinks.arxiv}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-muted hover:text-accent transition-colors w-fit"
-                whileHover={{ x: 4 }}
-                data-cursor="expand"
-              >
-                <FileText className="h-3.5 w-3.5" /> Published Paper · arXiv
-              </motion.a>
             </div>
           </motion.div>
 
-          {/* Right — Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -265,7 +273,7 @@ export default function ContactPage() {
                 <textarea
                   id="message"
                   name="message"
-                  placeholder="Tell me about the research opportunity, PhD program, or collaboration you have in mind..."
+                  placeholder="Tell me about the opportunity, role, or collaboration you have in mind..."
                   value={formData.message}
                   onChange={handleChange}
                   required
@@ -283,7 +291,7 @@ export default function ContactPage() {
                       animate={{ opacity: 1, scale: 1.1 }}
                       exit={{ opacity: 0, scale: 1.3 }}
                       transition={{ duration: 0.5 }}
-                      style={{ boxShadow: '0 0 40px rgba(220,38,38,0.4), 0 0 80px rgba(153,27,27,0.2)' }}
+                      style={{ boxShadow: '0 0 40px rgba(139,92,246,0.4), 0 0 80px rgba(76,29,149,0.2)' }}
                       aria-hidden="true"
                     />
                   )}
@@ -304,7 +312,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ── Final statement ── */}
       <section
         className="section-full flex-col text-center px-6"
         aria-label="Closing"
@@ -317,8 +324,8 @@ export default function ContactPage() {
           transition={{ duration: 1 }}
           className="font-serif italic text-subhead text-muted max-w-2xl leading-relaxed"
         >
-          Whether you&apos;re a faculty member, a fellow researcher, or an industry professional — 
-          I&apos;m always happy to connect and discuss mathematics, machine learning, or research opportunities.
+          Whether you&apos;re in investment banking, asset management, or corporate finance &mdash; 
+          I&apos;m always happy to connect and discuss opportunities.
         </motion.p>
       </section>
     </>

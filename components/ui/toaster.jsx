@@ -18,7 +18,7 @@ export function Toaster() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-              className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg"
+              className="bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-lg"
             >
               <div className="flex items-start gap-3">
                 <div className="flex-1">

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { motion, animate } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useCountUp } from '@/hooks/useCountUp';
 
 export default function CounterDisplay({ value, label, delay = 0 }) {
@@ -9,7 +9,6 @@ export default function CounterDisplay({ value, label, delay = 0 }) {
   const [ringVisible, setRingVisible] = useState(false);
   const timerRef = useRef(null);
 
-  // Watch for count completion — when display matches value, trigger burst
   useEffect(() => {
     if (display === value && !done) {
       setDone(true);
@@ -22,7 +21,6 @@ export default function CounterDisplay({ value, label, delay = 0 }) {
   return (
     <div className="flex flex-col items-center gap-4 relative">
       <div className="relative border-l-2 border-r-2 border-accent px-6 py-2 rounded-none overflow-hidden">
-        {/* Pulse brackets that fire on completion */}
         {ringVisible && (
           <span
             className="absolute inset-0 border-l-2 border-r-2 border-accent pointer-events-none"
@@ -37,8 +35,8 @@ export default function CounterDisplay({ value, label, delay = 0 }) {
           ref={ref}
           className="font-serif font-bold text-display gpu relative block"
           style={{
-            color: '#1A1A2E',
-            textShadow: done ? '0 0 20px rgba(220,38,38,0.2)' : 'none',
+            color: '#F9FAFB',
+            textShadow: done ? '0 0 20px rgba(139,92,246,0.2)' : 'none',
           }}
           animate={done ? { scale: [1, 1.08, 1] } : {}}
           transition={{ duration: 0.4, ease: 'easeOut' }}

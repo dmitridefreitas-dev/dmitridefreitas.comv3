@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 function Particle({ x, y, size, duration, delay }) {
   return (
     <motion.div
-      className="absolute rounded-full bg-accent/20"
+      className="absolute rounded-full bg-violet-400/15"
       style={{
         width: size,
         height: size,
@@ -15,7 +15,7 @@ function Particle({ x, y, size, duration, delay }) {
       animate={{
         y: [0, -30, 0],
         x: [0, Math.random() > 0.5 ? 15 : -15, 0],
-        opacity: [0.1, 0.3, 0.1],
+        opacity: [0.08, 0.25, 0.08],
         scale: [1, 1.2, 1],
       }}
       transition={{
@@ -38,7 +38,7 @@ export default function ParticleField() {
     setIsMounted(true);
     if (typeof window === 'undefined' || window.innerWidth < 768) return;
 
-    const generated = Array.from({ length: 35 }, (_, i) => ({
+    const generated = Array.from({ length: 25 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,

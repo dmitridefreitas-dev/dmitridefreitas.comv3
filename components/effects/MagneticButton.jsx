@@ -23,10 +23,10 @@ export default function MagneticButton({
 
   const variants = {
     default:
-      'border border-accent text-accent bg-transparent hover:bg-red-50 hover:text-red-900 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)] hover:shadow-none hover:translate-y-[3px] hover:translate-x-[3px] transition-all rounded-none',
+      'border border-accent text-accent bg-transparent hover:bg-accent/10 hover:text-foreground shadow-[3px_3px_0px_0px_rgba(139,92,246,1)] hover:shadow-none hover:translate-y-[3px] hover:translate-x-[3px] transition-all rounded-none',
     outline:
-      'border border-accent/40 text-accent hover:bg-red-50 hover:border-accent/70 rounded-none',
-    ghost: 'text-muted hover:text-foreground hover:bg-gray-100/80 rounded-none',
+      'border border-accent/40 text-accent hover:bg-accent/10 hover:border-accent/70 rounded-none',
+    ghost: 'text-muted hover:text-foreground hover:bg-surface-hover rounded-none',
   };
 
   const sizes = {

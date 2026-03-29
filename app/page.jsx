@@ -1,4 +1,5 @@
-import HeroSection from '@/components/sections/HeroSection';
+import HeroToggler from '@/components/hero/HeroToggler';
+import InfoBanner from '@/components/sections/InfoBanner';
 import AcademicTicker from '@/components/sections/FinanceTicker';
 import KPIFullscreen from '@/components/sections/KPIFullscreen';
 import ProjectsShowcase from '@/components/sections/ProjectsShowcase';
@@ -9,17 +10,16 @@ import CTASection from '@/components/sections/CTASection';
 import SectionAtmosphere from '@/components/effects/SectionAtmosphere';
 
 export const metadata = {
-  title: 'Xinshi Feng — Computer Science & Mathematics',
+  title: 'Erich Huang — Financial Engineering & Accounting',
   description:
-    'Portfolio of Xinshi Feng — CS and Math double major at WashU, researcher in manifold theory and reinforcement learning. Available Fall 2027.',
+    'Portfolio of Erich Huang — Financial Engineering and Accounting at WashU. Incoming MUFG Financial Analyst. Credit risk research, FP&A, audit & assurance.',
 };
 
 export default function Home() {
   return (
     <>
-      <SectionAtmosphere atmosphere="hero">
-        <HeroSection />
-      </SectionAtmosphere>
+      <HeroToggler />
+      <InfoBanner />
       <AcademicTicker />
       <SectionAtmosphere atmosphere="work">
         <KPIFullscreen />

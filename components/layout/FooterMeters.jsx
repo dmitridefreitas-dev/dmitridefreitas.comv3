@@ -3,20 +3,22 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const METERS = [
-  { label: 'Research Hours', baseVal: 74, unit: '%', color: '#DC2626' },
-  { label: 'Coffee Consumed', baseVal: 88, unit: '%', color: '#991B1B' },
+  { label: 'Markets Analyzed', baseVal: 74, unit: '%', color: '#8B5CF6' },
+  { label: 'Models Built', baseVal: 88, unit: '%', color: '#4C1D95' },
 ];
 
-function SineWave() {
+function YieldCurve() {
   const width = 120;
   const height = 24;
-  const amplitude = 6;
-  const frequency = 0.08;
-  const points = Array.from({ length: 61 }, (_, i) => {
-    const x = (i / 60) * width;
-    const y = height / 2 - amplitude * Math.sin(frequency * Math.PI * i);
-    return `${x},${y}`;
-  }).join(' ');
+  const points = [
+    `0,${height - 2}`,
+    `${width * 0.15},${height * 0.55}`,
+    `${width * 0.35},${height * 0.3}`,
+    `${width * 0.55},${height * 0.22}`,
+    `${width * 0.75},${height * 0.25}`,
+    `${width * 0.9},${height * 0.35}`,
+    `${width},${height * 0.4}`,
+  ].join(' ');
 
   return (
     <svg
@@ -29,7 +31,7 @@ function SineWave() {
     >
       <motion.polyline
         points={points}
-        stroke="rgba(220,38,38,0.55)"
+        stroke="rgba(139,92,246,0.55)"
         strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -67,7 +69,7 @@ export default function FooterMeters() {
               {Math.round(values[i])} {meter.unit}
             </span>
           </div>
-          <div className="h-[2px] bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-[2px] bg-surface rounded-full overflow-hidden">
             <motion.div
               className="h-full rounded-full"
               style={{ background: meter.color, opacity: 0.5 }}
@@ -78,9 +80,9 @@ export default function FooterMeters() {
         </div>
       ))}
       <div className="flex items-center gap-3 ml-auto">
-        <SineWave />
+        <YieldCurve />
         <span className="font-mono text-xs tracking-[0.2em] text-muted" style={{ fontStyle: 'italic' }}>
-          f(x) = sin(x)
+          SOFR 30d
         </span>
       </div>
     </div>

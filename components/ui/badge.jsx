@@ -6,11 +6,11 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-red-50 text-accent border border-red-200/70',
-        secondary: 'bg-gray-50 text-muted border border-gray-200',
-        outline: 'border border-gray-200 text-muted',
-        destructive: 'bg-red-50 text-destructive border border-red-200',
-        award: 'bg-amber-50 text-amber-700 border border-amber-200',
+        default: 'bg-accent/10 text-accent border border-accent/20',
+        secondary: 'bg-surface text-muted border border-border',
+        outline: 'border border-border text-muted',
+        destructive: 'bg-red-950/30 text-red-400 border border-red-800/30',
+        award: 'bg-amber-950/30 text-amber-400 border border-amber-800/30',
       },
     },
     defaultVariants: {

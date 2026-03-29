@@ -4,103 +4,112 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { timeline } from '@/data/constants';
 
 const TYPE_COLORS = {
-  research: '#DC2626',
-  teaching: '#991B1B',
-  education: '#DC2626',
-  activity: '#7F1D1D',
+  finance:   '#8B5CF6',
+  research:  '#8B5CF6',
+  education: '#8B5CF6',
+  activity:  '#8B5CF6',
 };
+
+const left  = timeline.filter((e) => e.type !== 'finance');
+const right = timeline.filter((e) => e.type === 'finance');
+
+function Entry({ entry, align = 'left' }) {
+  const dot = TYPE_COLORS[entry.type] || '#8B5CF6';
+  const isRight = align === 'right';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: isRight ? 28 : -28 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: '-10%' }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className={`flex flex-col gap-1.5 ${isRight ? 'items-start text-left' : 'items-end text-right'}`}
+    >
+      <div className={`flex items-center gap-2 ${isRight ? '' : 'flex-row-reverse'}`}>
+        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: dot }} />
+        <span className="font-mono text-xs uppercase tracking-[0.25em]" style={{ color: dot }}>
+          {entry.type}
+        </span>
+      </div>
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted/60 leading-none">
+        {entry.year}
+      </p>
+      <h3 className="font-serif font-bold text-base md:text-lg text-foreground leading-snug max-w-[260px]">
+        {entry.title}
+      </h3>
+      <p className="text-xs text-muted/70 leading-relaxed max-w-[260px] line-clamp-2">
+        {entry.description}
+      </p>
+    </motion.div>
+  );
+}
 
 export default function TimelineScroll() {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.8', 'end 0.2'],
+    offset: ['start 0.8', 'end 0.3'],
   });
-
   const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
+  const rows = Math.max(left.length, right.length);
+
   return (
-    <section ref={sectionRef} className="py-16 px-6 lg:px-12" aria-label="Timeline">
+    <section ref={sectionRef} className="py-20 px-6 lg:px-12" aria-label="Timeline">
       <motion.p
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-12"
+        className="font-mono text-xs uppercase tracking-[0.4em] text-accent text-center mb-14"
       >
-        Journey
+        Career Path
       </motion.p>
 
       <div className="relative max-w-3xl mx-auto">
-        {/* Background track line */}
+        {/* Ghost center line */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-px"
-          style={{ background: 'rgba(220,38,38,0.1)', top: 0 }}
+          className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
+          style={{ background: 'rgba(139,92,246,0.08)' }}
         />
         {/* Animated fill line */}
         <motion.div
-          className="absolute left-0 top-0 bottom-0 w-px origin-top"
+          className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 origin-top"
           style={{
-            background: 'linear-gradient(to bottom, rgba(220,38,38,0.6), rgba(153,27,27,0.4), rgba(220,38,38,0.2))',
+            background: 'rgba(139,92,246,0.7)',
             scaleY: lineScaleY,
-            boxShadow: '0 0 6px rgba(220,38,38,0.25)',
+            boxShadow: '0 0 8px rgba(139,92,246,0.4)',
           }}
         />
 
-        <div className="flex flex-col gap-0">
-          {timeline.map((entry, i) => {
-            const dotColor = TYPE_COLORS[entry.type] || '#DC2626';
+        <div className="flex flex-col">
+          {Array.from({ length: rows }).map((_, rowIdx) => {
+            const leftEntry  = left[rowIdx];
+            const rightEntry = right[rowIdx];
+            const dotColor   = TYPE_COLORS[leftEntry?.type || rightEntry?.type] || '#8B5CF6';
+
             return (
-              <motion.article
-                key={i}
-                initial={{ opacity: 0, x: -24 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-15%' }}
-                transition={{
-                  duration: 0.7,
-                  delay: i * 0.06,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="academic-card shimmer-card pl-10 py-7 relative rounded-xl mb-2"
-              >
-                {/* Pulsing dot on timeline */}
+              <div key={rowIdx} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-8 py-9">
+                <div className="flex justify-end">
+                  {leftEntry && <Entry entry={leftEntry} align="right" />}
+                </div>
+
                 <motion.div
-                  className="absolute left-[-4.5px] top-9 w-2.5 h-2.5 rounded-full dot-pulse border-2 border-white"
-                  style={{ backgroundColor: dotColor }}
+                  className="w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 z-10"
+                  style={{
+                    backgroundColor: dotColor,
+                    borderColor: '#000000',
+                    boxShadow: `0 0 12px ${dotColor}70`,
+                  }}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.06 + 0.3 }}
+                  transition={{ duration: 0.4, delay: rowIdx * 0.1 }}
                 />
 
-                {/* Large watermark year */}
-                <p
-                  className="font-serif font-bold select-none pointer-events-none"
-                  style={{
-                    fontSize: 'clamp(1.5rem, 4vw, 2.75rem)',
-                    lineHeight: 0.9,
-                    color: 'rgba(220,38,38,0.14)',
-                    letterSpacing: '-0.04em',
-                  }}
-                  aria-hidden="true"
-                >
-                  {entry.year.split(' – ')[0]}
-                </p>
-
-                <div className="mt-2">
-                  <span
-                    className="font-mono text-xs uppercase tracking-[0.25em]"
-                    style={{ color: dotColor }}
-                  >
-                    {entry.year} — {entry.type}
-                  </span>
-                  <h3 className="font-serif font-bold text-base md:text-lg text-foreground mt-1 mb-1.5">
-                    {entry.title}
-                  </h3>
-                  <p className="text-body-fluid text-muted max-w-md">
-                    {entry.description}
-                  </p>
+                <div className="flex justify-start">
+                  {rightEntry && <Entry entry={rightEntry} align="left" />}
                 </div>
-              </motion.article>
+              </div>
             );
           })}
         </div>

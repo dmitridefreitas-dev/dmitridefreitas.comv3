@@ -1,13 +1,13 @@
 'use client';
 import Link from 'next/link';
-import { Github, Linkedin, FileText, Mail } from 'lucide-react';
+import { Linkedin, Mail } from 'lucide-react';
 import { socialLinks, contactInfo } from '@/data/constants';
 import FooterMeters from './FooterMeters';
 
 const NAV_LINKS = [
   { href: '/',        label: 'Home' },
   { href: '/about',   label: 'About' },
-  { href: '/projects', label: 'Research' },
+  { href: '/projects', label: 'Projects' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -15,21 +15,16 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-gray-200 bg-white/50 backdrop-blur-sm">
+    <footer className="relative border-t border-border bg-surface/50 backdrop-blur-sm">
       <div className="max-w-6xl mx-auto px-6 py-12">
-
-        {/* Top row */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-10">
-
-          {/* Branding */}
           <div>
-            <p className="font-serif text-lg font-bold text-foreground">Xinshi Feng</p>
+            <p className="font-serif text-lg font-bold text-foreground">Erich Huang</p>
             <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mt-1">
-              Computer Science &amp; Mathematics · WashU
+              Financial Engineering &amp; Accounting · WashU
             </p>
           </div>
 
-          {/* Nav — py-2 for adequate touch height */}
           <nav className="flex-1 flex justify-center flex-wrap gap-4" aria-label="Footer navigation">
             {NAV_LINKS.map((link) => (
               <Link
@@ -42,7 +37,6 @@ export default function Footer() {
             ))}
           </nav>
 
-          {/* Social icons — min 44×44 touch targets */}
           <div className="flex items-center gap-1">
             <a
               href={socialLinks.linkedin}
@@ -55,26 +49,6 @@ export default function Footer() {
               <Linkedin className="h-4 w-4" />
             </a>
             <a
-              href={socialLinks.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted hover:text-accent transition-colors"
-              data-cursor="expand"
-            >
-              <Github className="h-4 w-4" />
-            </a>
-            <a
-              href={socialLinks.arxiv}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Published paper on arXiv"
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted hover:text-accent transition-colors"
-              data-cursor="expand"
-            >
-              <FileText className="h-4 w-4" />
-            </a>
-            <a
               href={`mailto:${contactInfo.email}`}
               aria-label="Email"
               className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted hover:text-accent transition-colors"
@@ -85,16 +59,14 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Footer meters */}
         <FooterMeters />
 
-        {/* Bottom row */}
-        <div className="mt-10 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-            © {year} Xinshi Feng · St. Louis, MO
+            &copy; {year} Erich Huang &middot; St. Louis, MO
           </p>
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-            Available for Math PhD &amp; Internship · Fall 2027
+            Available for Finance &amp; IB &middot; Summer 2026
           </p>
         </div>
       </div>

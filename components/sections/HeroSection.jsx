@@ -5,42 +5,41 @@ import TextReveal from '@/components/effects/TextReveal';
 import MagneticButton from '@/components/effects/MagneticButton';
 import { ArrowDown } from 'lucide-react';
 
-// Math symbols — faint, academic, slow-drifting
-const MATH_SHAPES = [
+const FINANCE_SHAPES = [
   {
-    label: '∂',
-    className: 'float-geo-slow font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', top: '16%', left: '5%', color: 'rgba(26,26,46,0.055)', animationDuration: '11s' },
+    label: '$',
+    className: 'float-geo-slow font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', top: '16%', left: '5%', color: 'rgba(139,92,246,0.07)', animationDuration: '11s' },
   },
   {
-    label: '∑',
-    className: 'float-geo font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(1.25rem, 2.5vw, 2.25rem)', top: '20%', right: '6%', color: 'rgba(220,38,38,0.055)', animationDelay: '1.5s', animationDuration: '9s' },
+    label: '%',
+    className: 'float-geo font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(1.25rem, 2.5vw, 2.25rem)', top: '20%', right: '6%', color: 'rgba(139,92,246,0.06)', animationDelay: '1.5s', animationDuration: '9s' },
   },
   {
-    label: '∇',
-    className: 'float-geo-reverse font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(1.1rem, 2.2vw, 1.9rem)', bottom: '28%', left: '4%', color: 'rgba(153,27,27,0.05)', animationDelay: '0.8s', animationDuration: '12s' },
+    label: 'Δ',
+    className: 'float-geo-reverse font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(1.1rem, 2.2vw, 1.9rem)', bottom: '28%', left: '4%', color: 'rgba(76,29,149,0.06)', animationDelay: '0.8s', animationDuration: '12s' },
   },
   {
-    label: 'ℝ',
-    className: 'float-geo font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(1rem, 1.8vw, 1.6rem)', bottom: '22%', right: '5%', color: 'rgba(26,26,46,0.045)', animationDelay: '2s', animationDuration: '8s' },
+    label: 'σ',
+    className: 'float-geo font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(1rem, 1.8vw, 1.6rem)', bottom: '22%', right: '5%', color: 'rgba(139,92,246,0.05)', animationDelay: '2s', animationDuration: '8s' },
   },
   {
-    label: '∫',
-    className: 'float-geo-slow font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(1.2rem, 2.2vw, 2rem)', top: '52%', right: '9%', color: 'rgba(239,68,68,0.048)', animationDelay: '3s', animationDuration: '13s' },
+    label: 'α',
+    className: 'float-geo-slow font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(1.2rem, 2.2vw, 2rem)', top: '52%', right: '9%', color: 'rgba(34,211,238,0.05)', animationDelay: '3s', animationDuration: '13s' },
   },
   {
-    label: '∈',
-    className: 'float-geo-reverse font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(0.85rem, 1.4vw, 1.35rem)', top: '62%', left: '8%', color: 'rgba(220,38,38,0.04)', animationDelay: '1.2s', animationDuration: '10s' },
+    label: 'β',
+    className: 'float-geo-reverse font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(0.85rem, 1.4vw, 1.35rem)', top: '62%', left: '8%', color: 'rgba(139,92,246,0.045)', animationDelay: '1.2s', animationDuration: '10s' },
   },
   {
-    label: '⊂',
-    className: 'float-geo font-serif select-none pointer-events-none absolute',
-    style: { fontSize: 'clamp(0.75rem, 1.2vw, 1.2rem)', top: '35%', left: '3%', color: 'rgba(26,26,46,0.035)', animationDelay: '4s', animationDuration: '14s' },
+    label: 'Σ',
+    className: 'float-geo font-mono select-none pointer-events-none absolute',
+    style: { fontSize: 'clamp(0.75rem, 1.2vw, 1.2rem)', top: '35%', left: '3%', color: 'rgba(109,40,217,0.04)', animationDelay: '4s', animationDuration: '14s' },
   },
 ];
 
@@ -60,7 +59,6 @@ export default function HeroSection() {
       className="relative h-screen flex flex-col items-center justify-center overflow-hidden"
       aria-label="Hero"
     >
-      {/* Soft blue aurora at top — academic blue instead of purple */}
       <div
         className="absolute pointer-events-none animate-aurora-shift"
         style={{
@@ -69,19 +67,18 @@ export default function HeroSection() {
           width: '140%',
           height: '80%',
           background:
-            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(220,38,38,0.07) 0%, rgba(239,68,68,0.04) 40%, rgba(153,27,27,0.02) 65%, transparent 85%)',
+            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,92,246,0.08) 0%, rgba(76,29,149,0.04) 40%, rgba(109,40,217,0.02) 65%, transparent 85%)',
           transformOrigin: 'center top',
         }}
         aria-hidden="true"
       />
 
-      {/* Floating math symbols */}
       <motion.div
         style={{ opacity: geoOpacity, y: geoY }}
         className="absolute inset-0"
         aria-hidden="true"
       >
-        {MATH_SHAPES.map((shape, i) => (
+        {FINANCE_SHAPES.map((shape, i) => (
           <motion.span
             key={i}
             className={shape.className}
@@ -99,27 +96,24 @@ export default function HeroSection() {
         style={{ scale, opacity, y }}
         className="relative z-10 flex flex-col items-center text-center px-6 gpu"
       >
-        {/* Label — mono eyebrow */}
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="font-mono text-xs uppercase tracking-[0.45em] text-accent mb-5"
         >
-          Portfolio — Available Fall 2027
+          Portfolio — Available Summer 2026
         </motion.p>
 
-        {/* Name — Playfair serif with glow */}
         <h1
           className="font-serif font-bold text-display text-foreground text-balance will-change-transform"
           style={{ animation: 'glow-text-pulse 5s ease-in-out infinite' }}
         >
           <TextReveal splitBy="word" delay={0.4} staggerDelay={0.1}>
-            Xinshi Feng
+            Erich Huang
           </TextReveal>
         </h1>
 
-        {/* Elegant thin red line */}
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
@@ -127,18 +121,17 @@ export default function HeroSection() {
           className="w-32 my-6 origin-center"
           style={{
             height: '1px',
-            background: 'radial-gradient(ellipse at center, rgba(220,38,38,0.8) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(139,92,246,0.8) 0%, transparent 70%)',
           }}
         />
 
-        {/* Subtitle — blue gradient shift */}
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1.05 }}
           className="font-mono text-xs uppercase tracking-[0.3em] max-w-sm"
           style={{
-            background: 'linear-gradient(90deg, #DC2626, #EF4444, #991B1B, #DC2626)',
+            background: 'linear-gradient(90deg, #8B5CF6, #22D3EE, #4C1D95, #8B5CF6)',
             backgroundSize: '300% 100%',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -146,10 +139,9 @@ export default function HeroSection() {
             animation: 'gradient-shift-subtitle 6s ease infinite',
           }}
         >
-          Computer Science &amp; Mathematics
+          Financial Engineering &amp; Accounting
         </motion.p>
 
-        {/* Institution */}
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -159,7 +151,6 @@ export default function HeroSection() {
           Washington University in St. Louis
         </motion.p>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,7 +158,7 @@ export default function HeroSection() {
           className="mt-7 flex flex-col sm:flex-row items-center gap-4"
         >
           <MagneticButton href="/projects" data-cursor="expand">
-            View Research
+            View Experience
           </MagneticButton>
           <MagneticButton href="/contact" variant="ghost" data-cursor="expand">
             Get in Touch
@@ -175,7 +166,6 @@ export default function HeroSection() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator — min 44×44 touch target */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

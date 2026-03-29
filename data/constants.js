@@ -1,125 +1,132 @@
-import { BookOpen, Brain, GraduationCap } from 'lucide-react';
+import { TrendingUp, Shield, BarChart3 } from 'lucide-react';
 
 export const targetRoles = [
-  'Math PhD Programs',
-  'Research Internships',
-  'Applied Mathematics Research',
-  'Machine Learning Research',
+  'Financial Analyst',
+  'Investment Banking',
+  'Asset Management',
+  'Risk & Credit Analysis',
 ];
 
 export const competencies = [
   {
-    icon: BookOpen,
-    title: 'Mathematical Research',
-    description: 'Studying smooth manifolds, de Rham cohomology, and topological invariants under faculty supervision at WashU',
+    icon: TrendingUp,
+    title: 'Financial Analysis & FP&A',
+    description: 'Forecasting models, capital budgeting, Medical Loss Ratio optimization, and variance analysis using Excel, OneStream, and PowerBI',
   },
   {
-    icon: Brain,
-    title: 'Machine Learning & AI',
-    description: 'Reinforcement learning, Q-learning, CNNs, SVMs, and Random Forests applied to game-theoretical and classification problems',
+    icon: Shield,
+    title: 'Audit & Assurance',
+    description: 'Reconciliation of liquid assets across legal entities, forensic data analytics, GAAP/PCAOB compliance, and fraud risk identification',
   },
   {
-    icon: GraduationCap,
-    title: 'Computer Science Education',
-    description: 'Teaching assistant for 5 courses at WashU including ML, Data Structures, Video Game Programming, and Optimization',
+    icon: BarChart3,
+    title: 'Quantitative Research',
+    description: 'OLS regression modeling for credit spread analysis, SOFR volatility attribution, and non-linear credit elasticity research',
   },
 ];
 
 export const timeline = [
   {
+    year: '2026',
+    title: 'Incoming Summer Financial Analyst — MUFG',
+    description: 'Summer 2026 analyst position in Phoenix, AZ at Mitsubishi UFJ Financial Group',
+    type: 'finance',
+  },
+  {
     year: '2026 – Present',
-    title: 'de Rham Cohomology Research',
-    description: 'Studying smooth manifolds under Prof. Yanli Song; computing cohomology via Mayer–Vietoris sequences',
+    title: 'Credit Risk Research',
+    description: 'Developed OLS regression models isolating drivers of credit spread widening; demonstrated SOFR volatility accounts for 55% of spread variance in Health Insurance',
     type: 'research',
   },
   {
-    year: '2026 – Present',
-    title: 'Teaching Assistant — Video Game Programming (CSE4500)',
-    description: 'Assisting students with debugging and course concepts; evaluating homework submissions at WashU',
-    type: 'teaching',
+    year: 'Dec 2025 – Mar 2026',
+    title: 'Audit & Assurance Intern — Anders CPA',
+    description: 'Reconciled $10M in liquid assets across 5 legal entities; performed forensic analytics on 1,000+ transactions identifying 10+ risk-sensitive outliers',
+    type: 'finance',
   },
   {
-    year: '2023 – 2026',
+    year: 'May 2025 – Aug 2025',
+    title: 'FP&A Intern — Centene Corporation',
+    description: 'Built financial forecasting models for stop-loss provisions; facilitated $1B quarterly capital budgeting using PowerBI and OneStream',
+    type: 'finance',
+  },
+  {
+    year: '2024 – 2027',
     title: 'Washington University in St. Louis',
-    description: 'Double Major in Computer Science & Mathematics, McKelvey School of Engineering',
+    description: 'BS Financial Engineering, Minor in Accounting — Pi Mu Epsilon, Phi Beta Kappa',
     type: 'education',
   },
   {
-    year: '2023 – 2025',
-    title: 'Evolution of Cooperation Research',
-    description: 'Co-authored paper in Physical Review E on conditional cooperators modeled via Q-learning',
-    type: 'research',
-  },
-  {
-    year: '2021 – 2023',
-    title: 'Culver Academies',
-    description: 'Cum Laude, Blue Key, Honors in CS & Mathematics, Unit Commander (43 cadets)',
-    type: 'education',
-  },
-  {
-    year: '2021 – 2022',
-    title: 'Letter Recognition ML Research',
-    description: 'Built SVC, Random Forest, and CNN models to classify alphabetical characters from historical documents',
-    type: 'research',
+    year: 'Jan 2024 – May 2024',
+    title: 'Communications Intern — City of Lancaster',
+    description: 'Synthesized financial and operational data for 4 infrastructure projects; managed outreach campaigns reaching 20,000 residents',
+    type: 'activity',
   },
 ];
 
 export const opportunityGroups = [
   {
-    category: 'Graduate Research',
-    roles: ['Mathematics PhD', 'Applied Mathematics PhD', 'Computer Science PhD'],
+    category: 'Investment Banking',
+    roles: ['Financial Analyst', 'M&A Advisory', 'Capital Markets'],
   },
   {
-    category: 'Research Internships',
-    roles: ['ML Research Intern', 'Applied Math Research', 'Computational Science'],
+    category: 'Asset Management',
+    roles: ['Credit Analysis', 'Fixed Income', 'Portfolio Strategy'],
   },
   {
-    category: 'Industry',
-    roles: ['Software Engineering Intern', 'Data Science Intern'],
+    category: 'Corporate Finance',
+    roles: ['FP&A Analyst', 'Audit & Assurance', 'Risk Management'],
   },
 ];
 
 export const contactInfo = {
-  email: 'f.jerry@wustl.edu',
-  phone: '(949)-709-6611',
+  email: 'erichhuang2002@gmail.com',
+  phone: '717-333-5758',
   location: 'Washington University in St. Louis',
   locationNote: 'St. Louis, MO',
 };
 
 export const socialLinks = {
-  linkedin: 'https://www.linkedin.com/in/xinshifeng/',
-  github: 'https://github.com/XinshiFeng',
-  arxiv: 'https://arxiv.org/abs/2502.07537',
+  linkedin: 'https://www.linkedin.com/in/erichhuang/',
+  github: 'https://github.com/erichhuang',
 };
 
 export const tickerTerms = [
-  'de Rham Cohomology',
-  'Reinforcement Learning',
-  'Smooth Manifolds',
-  'Q-Learning',
-  'Mayer–Vietoris Sequences',
-  'Convolutional Neural Networks',
-  'Game Theory',
-  'Topological Invariants',
-  'Support Vector Machines',
-  'Evolutionary Dynamics',
-  'Data Structures & Algorithms',
-  'Phase Transitions',
-  'Random Forests',
-  'Linear Algebra',
-  'Computer Vision',
+  'Novelty Hill Capital',
+  'Wells Fargo',
+  'Guggenheim Securities',
+  'General Atlantic',
+  'CIFC Asset Management',
+  'CIBC',
+  'Edward Jones',
+  'AllianceBernstein',
+  'Susquehanna International Group',
+  'Lazard',
+  'PIMCO',
+  'Ares Management',
+  'Balyasny Asset Management',
+  'Focus Financial Partners',
+  'Anders',
+  'Reinsurance Group of America',
+  'Alera Group',
+  'Northborne Partners',
+  'Kennedy Capital Management',
+  'NISA Investment Advisors',
+  'MUFG',
+  'Federal Reserve Bank of St. Louis',
+  'World Wide Technology',
 ];
 
 export const kpiMetrics = [
-  { label: 'Research Projects', value: '4' },
-  { label: 'TA & Grader Roles', value: '5' },
-  { label: 'Published Paper', value: '1' },
-  { label: 'Programming Languages', value: '8+' },
+  { label: 'Internships', value: '4' },
+  { label: 'Honor Societies', value: '2' },
+  { label: 'Languages', value: '2' },
+  { label: 'Technical Tools', value: '10+' },
 ];
 
 export const aboutKpiMetrics = [
-  { label: 'Research Projects', value: '4' },
-  { label: 'TA Semesters', value: '6+' },
-  { label: 'Dean\'s List Terms', value: '4' },
-  { label: 'Available', value: 'Fall 2027', condensed: true },
+  { label: 'Internships', value: '4' },
+  { label: 'Honor Societies', value: '2' },
+  { label: 'Dean\'s List', value: '4+' },
+  { label: 'Available', value: 'Summer 2026', condensed: true },
 ];

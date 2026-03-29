@@ -14,7 +14,7 @@ import { ExternalLink, Code, FileText } from 'lucide-react';
 export default function ProjectDetailModal({ project, isOpen, onClose }) {
   if (!project) return null;
 
-  const description = project.technicalDescription || project.simpleDescription || project.shortDescription;
+  const description = project.longDescription || project.technicalDescription || project.simpleDescription || project.shortDescription;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -45,7 +45,7 @@ export default function ProjectDetailModal({ project, isOpen, onClose }) {
               Methods &amp; Tools
             </h4>
             <div className="flex flex-wrap gap-1.5">
-              {(project.techStack || []).map((tech, i) => (
+              {(project.tech || project.techStack || []).map((tech, i) => (
                 <Badge key={i} variant="secondary" className="text-xs">
                   {tech}
                 </Badge>
@@ -69,7 +69,9 @@ export default function ProjectDetailModal({ project, isOpen, onClose }) {
                     className="flex items-start gap-2"
                   >
                     <span className="w-1 h-1 rounded-full bg-accent mt-2 shrink-0" />
-                    <span className="text-sm text-muted">{metric}</span>
+                    <span className="text-sm text-muted">
+                      {typeof metric === 'string' ? metric : `${metric.label}: ${metric.value}`}
+                    </span>
                   </motion.li>
                 ))}
               </ul>
@@ -104,7 +106,7 @@ export default function ProjectDetailModal({ project, isOpen, onClose }) {
                 rel="noopener noreferrer"
               >
                 <FileText className="h-3.5 w-3.5" />
-                {project.isPaper ? 'arXiv Paper' : 'View Report'}
+                View Report
               </MagneticButton>
             )}
             {project.pdfLink && (

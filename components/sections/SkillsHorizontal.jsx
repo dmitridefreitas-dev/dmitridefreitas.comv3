@@ -7,7 +7,7 @@ import { skillsData } from '@/data/skills';
 function SkillCard({ skill, onClick, className = '' }) {
   return (
     <div
-      className={`flex-shrink-0 w-[75vw] md:w-[44vw] lg:w-[28vw] h-full flex flex-col justify-center items-center text-center px-8 md:px-10 border-r border-gray-200/70 cursor-pointer group bg-white/60 hover:bg-white transition-colors ${className}`}
+      className={`flex-shrink-0 w-[75vw] md:w-[44vw] lg:w-[28vw] h-full flex flex-col justify-center items-center text-center px-8 md:px-10 border-r border-border cursor-pointer group bg-surface/60 hover:bg-surface transition-colors ${className}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -46,7 +46,7 @@ function InfiniteRow({ skills, direction = 'left', duration = 80, onCardClick })
   const setWidthVw = skills.length * CARD_VW;
 
   return (
-    <div className="flex-1 overflow-hidden border-b border-gray-200/70 last:border-b-0 contain-paint">
+    <div className="flex-1 overflow-hidden border-b border-border last:border-b-0 contain-paint">
       <div
         className="flex h-full"
         style={{
@@ -77,7 +77,7 @@ export default function SkillsHorizontal() {
 
       {/* ── Desktop: 3 auto-scrolling infinite rows ──────────────────────── */}
       <div className="hidden lg:flex flex-col" style={{ height: '88vh' }}>
-        <div className="flex items-center px-12 border-b border-gray-200/70 flex-shrink-0" style={{ height: '3rem' }}>
+        <div className="flex items-center px-12 border-b border-border flex-shrink-0" style={{ height: '3rem' }}>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -127,7 +127,7 @@ export default function SkillsHorizontal() {
         </div>
 
         {/* Mobile marquee */}
-        <div className="mt-4 overflow-hidden whitespace-nowrap border-y border-gray-200/60 py-8 scroll-fade-edges contain-paint">
+        <div className="mt-4 overflow-hidden whitespace-nowrap border-y border-border py-8 scroll-fade-edges contain-paint">
           <div
             className="flex gap-12 items-center"
             style={{
@@ -140,7 +140,7 @@ export default function SkillsHorizontal() {
               <span
                 key={`${skill.name}-${i}`}
                 className="font-serif font-bold text-4xl md:text-6xl uppercase tracking-tighter cursor-pointer"
-                style={{ color: 'rgba(26,26,46,0.15)' }}
+                style={{ color: 'rgba(139,92,246,0.12)' }}
                 onClick={() => setSelectedSkill(skill)}
               >
                 {skill.name}
@@ -151,7 +151,7 @@ export default function SkillsHorizontal() {
       </div>
 
       {/* ── Desktop marquee strip ─────────────────────────────────────────── */}
-      <div className="hidden lg:block overflow-hidden border-y border-gray-200/60 py-5 scroll-fade-edges contain-paint">
+      <div className="hidden lg:block overflow-hidden border-y border-border py-5 scroll-fade-edges contain-paint">
         <div
           className="flex gap-16 items-center whitespace-nowrap"
           style={{

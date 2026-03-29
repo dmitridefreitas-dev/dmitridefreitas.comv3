@@ -8,27 +8,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#FAFAF8',
-        foreground: '#1A1A2E',
+        background: '#000000',
+        foreground: '#F9FAFB',
         muted: {
-          DEFAULT: '#6B7280',
-          foreground: '#6B7280',
+          DEFAULT: '#9CA3AF',
+          foreground: '#9CA3AF',
         },
         accent: {
-          DEFAULT: '#DC2626',
-          blue: '#DC2626',
-          indigo: '#991B1B',
-          violet: '#7F1D1D',
+          DEFAULT: '#8B5CF6',
+          blue: '#8B5CF6',
+          indigo: '#4C1D95',
+          violet: '#7C3AED',
+          cyan: '#22D3EE',
+          gold: '#F59E0B',
           foreground: '#FFFFFF',
-          glow: 'rgba(220,38,38,0.15)',
+          glow: 'rgba(139,92,246,0.15)',
         },
         surface: {
-          DEFAULT: '#FFFFFF',
-          hover: '#F3F4F6',
+          DEFAULT: '#080810',
+          hover: '#0f0f1c',
         },
         border: {
-          DEFAULT: '#E5E7EB',
-          strong: '#D1D5DB',
+          DEFAULT: '#160e24',
+          strong: '#231940',
         },
         destructive: {
           DEFAULT: '#DC2626',
@@ -52,8 +54,8 @@ module.exports = {
           '100%': { transform: 'translateX(-33.333%)' },
         },
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(220,38,38,0.2), 0 0 40px rgba(220,38,38,0.08)' },
-          '50%':      { boxShadow: '0 0 35px rgba(220,38,38,0.35), 0 0 70px rgba(220,38,38,0.15)' },
+          '0%, 100%': { boxShadow: '0 0 20px rgba(139,92,246,0.2), 0 0 40px rgba(139,92,246,0.08)' },
+          '50%':      { boxShadow: '0 0 35px rgba(139,92,246,0.35), 0 0 70px rgba(139,92,246,0.15)' },
         },
         'grid-breathe': {
           '0%, 100%': { opacity: '1' },
