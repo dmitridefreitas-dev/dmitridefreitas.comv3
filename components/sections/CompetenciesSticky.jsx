@@ -374,19 +374,19 @@ export default function CompetenciesSticky() {
                     left: `${leftPct}%`,
                     top: `${topPct}%`,
                     transform: 'translateX(-100%) translateY(-50%)',
-                    paddingRight: '12px',
+                    paddingRight: '14px',
                     textAlign: 'right',
                     pointerEvents: 'none',
                     zIndex: 4,
-                    maxWidth: '160px',
+                    maxWidth: '210px',
                   }}
                 >
                   <p
                     className="font-mono"
                     style={{
-                      fontSize: '11px',
+                      fontSize: '13px',
                       color: 'rgba(139,92,246,0.7)',
-                      marginBottom: '3px',
+                      marginBottom: '4px',
                       lineHeight: 1.2,
                     }}
                   >
@@ -397,9 +397,9 @@ export default function CompetenciesSticky() {
                     style={{
                       fontWeight: 700,
                       color: 'var(--foreground, #e5e5e5)',
-                      fontSize: '13px',
-                      lineHeight: 1.3,
-                      maxWidth: '160px',
+                      fontSize: '16px',
+                      lineHeight: 1.35,
+                      maxWidth: '200px',
                       marginLeft: 'auto',
                     }}
                   >
@@ -409,8 +409,8 @@ export default function CompetenciesSticky() {
                     className="font-mono"
                     style={{
                       display: 'inline-block',
-                      marginTop: '4px',
-                      fontSize: '9px',
+                      marginTop: '5px',
+                      fontSize: '11px',
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
                       padding: '2px 8px',
@@ -446,19 +446,19 @@ export default function CompetenciesSticky() {
                     left: `${leftPct}%`,
                     top: `${topPct}%`,
                     transform: 'translateY(-50%)',
-                    paddingLeft: '12px',
+                    paddingLeft: '14px',
                     textAlign: 'left',
                     pointerEvents: 'none',
                     zIndex: 4,
-                    maxWidth: '180px',
+                    maxWidth: '210px',
                   }}
                 >
                   <p
                     className="font-mono"
                     style={{
-                      fontSize: '11px',
+                      fontSize: '13px',
                       color: 'rgba(139,92,246,0.7)',
-                      marginBottom: '3px',
+                      marginBottom: '4px',
                       lineHeight: 1.2,
                     }}
                   >
@@ -469,9 +469,9 @@ export default function CompetenciesSticky() {
                     style={{
                       fontWeight: 700,
                       color: 'var(--foreground, #e5e5e5)',
-                      fontSize: '13px',
-                      lineHeight: 1.3,
-                      maxWidth: '160px',
+                      fontSize: '16px',
+                      lineHeight: 1.35,
+                      maxWidth: '200px',
                     }}
                   >
                     {item.title}
@@ -493,8 +493,8 @@ export default function CompetenciesSticky() {
                     className="font-mono"
                     style={{
                       display: 'inline-block',
-                      marginTop: '4px',
-                      fontSize: '9px',
+                      marginTop: '5px',
+                      fontSize: '11px',
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
                       padding: '2px 8px',
