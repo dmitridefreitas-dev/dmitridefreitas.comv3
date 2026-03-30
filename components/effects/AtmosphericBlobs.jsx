@@ -2,11 +2,11 @@
 import { useEffect, useRef } from 'react';
 
 const BLOBS = [
-  ['18%', '12%',  '50vw', '50vw', 'rgba(139,92,246,0.07)',  28, 0.6, 0],
-  ['68%', '8%',   '42vw', '42vw', 'rgba(76,29,149,0.06)',   36, 0.5, 1],
-  ['5%',  '52%',  '38vw', '38vw', 'rgba(6,182,212,0.05)',   22, 0.5, 2],
-  ['72%', '55%',  '46vw', '46vw', 'rgba(139,92,246,0.05)',  42, 0.4, 3],
-  ['40%', '80%',  '32vw', '32vw', 'rgba(34,211,238,0.04)',  18, 0.4, 4],
+  ['18%', '12%',  '55vw', '55vw', 'radial-gradient(circle, rgba(0,212,255,0.10) 0%, rgba(0,212,255,0.03) 40%, transparent 70%)',  28, 0.7, 0],
+  ['68%', '8%',   '42vw', '42vw', 'radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 70%)',   36, 0.5, 1],
+  ['5%',  '52%',  '44vw', '44vw', 'radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%)',   22, 0.55, 2],
+  ['72%', '55%',  '36vw', '36vw', 'radial-gradient(circle, rgba(0,229,160,0.05) 0%, transparent 70%)',  42, 0.45, 3],
+  ['40%', '80%',  '40vw', '40vw', 'radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 70%)',  18, 0.4, 4],
 ];
 
 const MOUSE_LERP = 0.03;

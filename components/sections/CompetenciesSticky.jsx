@@ -71,10 +71,10 @@ const CAREER_SHAPES = [
 /* ── Type colors ──────────────────────────────────────────────────── */
 
 const TYPE_COLORS = {
-  education: { fill: 'rgba(99,102,241,0.18)', stroke: 'rgba(99,102,241,0.6)', glow: 'rgba(99,102,241,0.5)', badge_bg: 'rgba(99,102,241,0.15)', badge_text: 'rgb(129,140,248)', badge_border: 'rgba(99,102,241,0.3)' },
-  finance:   { fill: 'rgba(139,92,246,0.18)', stroke: 'rgba(139,92,246,0.6)', glow: 'rgba(139,92,246,0.5)', badge_bg: 'rgba(139,92,246,0.15)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(139,92,246,0.3)' },
-  research:  { fill: 'rgba(124,58,237,0.18)', stroke: 'rgba(124,58,237,0.6)', glow: 'rgba(124,58,237,0.5)', badge_bg: 'rgba(124,58,237,0.15)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(124,58,237,0.3)' },
-  activity:  { fill: 'rgba(109,40,217,0.18)', stroke: 'rgba(109,40,217,0.5)', glow: 'rgba(109,40,217,0.4)', badge_bg: 'rgba(109,40,217,0.15)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(109,40,217,0.3)' },
+  education: { fill: 'rgba(0,212,255,0.12)', stroke: 'rgba(0,212,255,0.5)', glow: 'rgba(0,212,255,0.4)', badge_bg: 'rgba(0,212,255,0.1)', badge_text: 'rgb(103,232,249)', badge_border: 'rgba(0,212,255,0.25)' },
+  finance:   { fill: 'rgba(139,92,246,0.15)', stroke: 'rgba(139,92,246,0.55)', glow: 'rgba(139,92,246,0.45)', badge_bg: 'rgba(139,92,246,0.12)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(139,92,246,0.28)' },
+  research:  { fill: 'rgba(0,229,160,0.1)', stroke: 'rgba(0,229,160,0.45)', glow: 'rgba(0,229,160,0.35)', badge_bg: 'rgba(0,229,160,0.08)', badge_text: 'rgb(52,211,153)', badge_border: 'rgba(0,229,160,0.22)' },
+  activity:  { fill: 'rgba(139,92,246,0.12)', stroke: 'rgba(139,92,246,0.4)', glow: 'rgba(139,92,246,0.3)', badge_bg: 'rgba(139,92,246,0.1)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(139,92,246,0.22)' },
 };
 
 /* ── Stone thresholds ─────────────────────────────────────────────── */
@@ -176,7 +176,7 @@ export default function CompetenciesSticky() {
     <section
       ref={sectionRef}
       className="relative py-20 px-4 overflow-hidden"
-      style={{ background: '#000000' }}
+      style={{ background: '#02030A' }}
       aria-label="Career Path"
     >
       {/* Section heading */}

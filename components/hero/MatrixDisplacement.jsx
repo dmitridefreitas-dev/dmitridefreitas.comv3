@@ -77,7 +77,7 @@ function FrameUpdater({ meshRef, base, mouse3D, colors, dummy }) {
 
 export default function MatrixDisplacement() {
   return (
-    <Canvas camera={{ position: [0, 0, 7], fov: 55 }} style={{ background: '#000000' }} gl={{ antialias: false, powerPreference: 'high-performance' }}>
+    <Canvas camera={{ position: [0, 0, 7], fov: 55 }} style={{ background: '#02030A' }} gl={{ antialias: false, powerPreference: 'high-performance' }}>
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={0.8} />
       <pointLight position={[0, 0, 4]} color="#ffffff" intensity={3} distance={10} />

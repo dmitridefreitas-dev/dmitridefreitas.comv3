@@ -39,13 +39,13 @@ function ProjectRow({ project, index, onOpen }) {
       {/* 3D bottom edge — visible on hover */}
       <div
         className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, rgba(139,92,246,0.6), rgba(196,181,253,0.3), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, rgba(0,212,255,0.6), rgba(139,92,246,0.3), transparent)' }}
       />
       <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
         <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 md:w-24 flex-shrink-0">
           <span
             className="font-serif font-bold text-3xl leading-none group-hover:text-accent transition-colors"
-            style={{ color: 'rgba(139,92,246,0.15)' }}
+            style={{ color: 'rgba(0,212,255,0.15)' }}
           >
             {String(index + 1).padStart(2, '0')}
           </span>
@@ -179,7 +179,7 @@ export default function ProjectsContent() {
                 style={{
                   background: activeCategory === cat ? '#8B5CF6' : 'transparent',
                   color: activeCategory === cat ? '#FFFFFF' : '#9CA3AF',
-                  borderColor: activeCategory === cat ? '#8B5CF6' : '#160e24',
+                  borderColor: activeCategory === cat ? '#8B5CF6' : 'rgba(0,212,255,0.08)',
                 }}
                 data-cursor="expand"
               >

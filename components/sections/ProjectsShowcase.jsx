@@ -15,7 +15,7 @@ function ProjectCard({ project, index, isActive }) {
       }`}
       style={{
         borderRadius: '8px',
-        border: isActive ? undefined : '1px solid rgba(139,92,246,0.1)',
+        border: isActive ? undefined : '1px solid rgba(0,212,255,0.1)',
         willChange: 'transform',
       }}
     >
@@ -23,7 +23,7 @@ function ProjectCard({ project, index, isActive }) {
       <div
         className="absolute inset-0 rounded-lg"
         style={{
-          background: 'linear-gradient(160deg, rgba(14,8,28,0.97) 0%, rgba(6,3,14,0.99) 100%)',
+          background: 'linear-gradient(160deg, rgba(8,14,28,0.97) 0%, rgba(3,5,14,0.99) 100%)',
         }}
         aria-hidden="true"
       />
@@ -36,10 +36,10 @@ function ProjectCard({ project, index, isActive }) {
         viewBox="0 0 100 100"
         style={{ borderRadius: '8px' }}
       >
-        <line x1="0" y1="100" x2="65" y2="0" stroke="rgba(196,181,253,0.07)" strokeWidth="0.4" />
+        <line x1="0" y1="100" x2="65" y2="0" stroke="rgba(0,212,255,0.06)" strokeWidth="0.4" />
         <line x1="25" y1="100" x2="100" y2="15" stroke="rgba(139,92,246,0.05)" strokeWidth="0.4" />
-        <line x1="0" y1="55" x2="100" y2="85" stroke="rgba(139,92,246,0.03)" strokeWidth="0.3" />
-        <line x1="70" y1="0" x2="100" y2="40" stroke="rgba(196,181,253,0.04)" strokeWidth="0.3" />
+        <line x1="0" y1="55" x2="100" y2="85" stroke="rgba(0,212,255,0.03)" strokeWidth="0.3" />
+        <line x1="70" y1="0" x2="100" y2="40" stroke="rgba(139,92,246,0.04)" strokeWidth="0.3" />
       </svg>
 
       {/* Top-right crystal refraction */}
@@ -48,7 +48,7 @@ function ProjectCard({ project, index, isActive }) {
         style={{
           width: '90px',
           height: '90px',
-          background: 'linear-gradient(225deg, rgba(196,181,253,0.11) 0%, rgba(139,92,246,0.04) 35%, transparent 60%)',
+          background: 'linear-gradient(225deg, rgba(0,212,255,0.09) 0%, rgba(0,212,255,0.03) 35%, transparent 60%)',
           borderRadius: '0 8px 0 0',
         }}
         aria-hidden="true"
@@ -70,7 +70,7 @@ function ProjectCard({ project, index, isActive }) {
       {isActive && (
         <motion.div
           className="absolute inset-0 pointer-events-none rounded-lg"
-          style={{ boxShadow: 'inset 0 0 40px rgba(139,92,246,0.08)' }}
+          style={{ boxShadow: 'inset 0 0 40px rgba(0,212,255,0.08)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
@@ -133,8 +133,8 @@ function ProjectCard({ project, index, isActive }) {
           className="absolute bottom-0 left-0 right-0 h-px"
           style={{
             background: isActive
-              ? 'linear-gradient(90deg, rgba(196,181,253,0.5), rgba(139,92,246,0.25), transparent)'
-              : 'linear-gradient(90deg, rgba(139,92,246,0.1), transparent)',
+              ? 'linear-gradient(90deg, rgba(0,212,255,0.4), rgba(139,92,246,0.2), transparent)'
+              : 'linear-gradient(90deg, rgba(0,212,255,0.08), transparent)',
           }}
         />
         {/* Left edge accent */}
@@ -142,7 +142,7 @@ function ProjectCard({ project, index, isActive }) {
           className="absolute left-0 top-8 bottom-8 w-px"
           style={{
             background: isActive
-              ? 'linear-gradient(180deg, transparent, rgba(196,181,253,0.22), transparent)'
+              ? 'linear-gradient(180deg, transparent, rgba(0,212,255,0.18), transparent)'
               : 'none',
           }}
         />

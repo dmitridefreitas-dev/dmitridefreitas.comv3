@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#000000',
+        background: '#02030A',
         foreground: '#F9FAFB',
         muted: {
           DEFAULT: '#9CA3AF',
@@ -25,12 +25,12 @@ module.exports = {
           glow: 'rgba(139,92,246,0.15)',
         },
         surface: {
-          DEFAULT: '#080810',
-          hover: '#0f0f1c',
+          DEFAULT: '#080E1C',
+          hover: '#0C1424',
         },
         border: {
-          DEFAULT: '#160e24',
-          strong: '#231940',
+          DEFAULT: 'rgba(0,212,255,0.08)',
+          strong: 'rgba(0,212,255,0.15)',
         },
         destructive: {
           DEFAULT: '#DC2626',

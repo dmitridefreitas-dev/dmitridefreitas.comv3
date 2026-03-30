@@ -100,10 +100,10 @@ function Carousel3D({ skills, onCardClick }) {
         const el = cardRefs.current[i];
         if (el) {
           el.style.borderColor = i === closest
-            ? 'rgba(139,92,246,0.55)'
-            : 'rgba(139,92,246,0.15)';
+            ? 'rgba(0,212,255,0.5)'
+            : 'rgba(0,212,255,0.1)';
           el.style.boxShadow = i === closest
-            ? '0 0 28px rgba(139,92,246,0.13)'
+            ? '0 0 30px rgba(0,212,255,0.12)'
             : 'none';
         }
       }
@@ -227,8 +227,8 @@ function Carousel3D({ skills, onCardClick }) {
                   height: CARD_H,
                   borderRadius: 12,
                   backfaceVisibility: 'hidden',
-                  background: 'rgba(8,8,16,0.9)',
-                  border: '1px solid rgba(139,92,246,0.15)',
+                  background: 'rgba(8,14,28,0.92)',
+                  border: '1px solid rgba(0,212,255,0.1)',
                   // no transition here — filter/border/shadow driven per-frame
                   transform: `rotateY(${cardAngle}deg) translateZ(${radius}px)`,
                   willChange: 'transform, filter',

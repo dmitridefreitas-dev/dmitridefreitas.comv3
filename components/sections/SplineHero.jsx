@@ -16,7 +16,7 @@ export default function SplineHero() {
           left: 0,
           right: 0,
           height: '180px',
-          background: 'linear-gradient(to bottom, transparent 0%, #000000 100%)',
+          background: 'linear-gradient(to bottom, transparent 0%, #02030A 100%)',
           pointerEvents: 'none',
         }}
       />

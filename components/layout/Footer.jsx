@@ -18,19 +18,19 @@ export default function Footer() {
     <footer
       className="relative overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #0a0516 0%, #06030e 100%)',
-        boxShadow: '0 -1px 0 rgba(196,181,253,0.06), 0 -8px 32px rgba(139,92,246,0.04)',
+        background: 'linear-gradient(180deg, #050810 0%, #02030A 100%)',
+        boxShadow: '0 -1px 0 rgba(0,212,255,0.06), 0 -8px 32px rgba(0,212,255,0.03)',
       }}
     >
       {/* Top edge crystal highlight */}
       <div
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(196,181,253,0.22) 30%, rgba(139,92,246,0.15) 70%, transparent 100%)' }}
+        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.15) 30%, rgba(139,92,246,0.1) 70%, transparent 100%)' }}
       />
       {/* Diagonal facet */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(140deg, rgba(196,181,253,0.022) 0%, transparent 45%, rgba(139,92,246,0.018) 100%)' }}
+        style={{ background: 'linear-gradient(140deg, rgba(0,212,255,0.02) 0%, transparent 45%, rgba(139,92,246,0.015) 100%)' }}
       />
       <div className="max-w-6xl mx-auto px-8 py-6 relative z-10">
 

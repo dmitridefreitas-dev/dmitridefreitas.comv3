@@ -85,7 +85,7 @@ function InterestCard({ interest, index }) {
       {/* Top border sweep */}
       <motion.div
         className="absolute top-0 left-0 right-0 h-px origin-left z-20"
-        style={{ background: 'linear-gradient(90deg, transparent, #8B5CF6, #C4B5FD, transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, #00D4FF, #8B5CF6, transparent)' }}
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
@@ -93,7 +93,7 @@ function InterestCard({ interest, index }) {
       />
 
       <div
-        className="interest-card-inner relative border border-[#160e24] bg-[#080810]/60 p-7 rounded-xl overflow-hidden transition-colors duration-500 group-hover:border-accent/25 flex gap-5 items-start"
+        className="interest-card-inner relative border border-[rgba(0_212_255_/_0.08)] bg-[#080E1C]/65 p-7 rounded-xl overflow-hidden transition-colors duration-500 group-hover:border-[rgba(0_212_255_/_0.25)] flex gap-5 items-start"
         style={{
           transform: 'perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))',
           transition: 'transform 0.12s ease',
@@ -105,7 +105,7 @@ function InterestCard({ interest, index }) {
         <div
           className="absolute inset-0 pointer-events-none rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
-            background: 'radial-gradient(220px circle at var(--sx,50%) var(--sy,50%), rgba(139,92,246,0.1) 0%, transparent 70%)',
+            background: 'radial-gradient(220px circle at var(--sx,50%) var(--sy,50%), rgba(0,212,255,0.08) 0%, transparent 70%)',
           }}
           aria-hidden="true"
         />
@@ -113,7 +113,7 @@ function InterestCard({ interest, index }) {
         {/* Ambient idle pulse */}
         <motion.div
           className="absolute inset-0 pointer-events-none rounded-xl"
-          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,92,246,0.07) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.05) 0%, transparent 70%)' }}
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 4 + index * 0.9, repeat: Infinity, ease: 'easeInOut', delay: index * 0.7 }}
           aria-hidden="true"
@@ -123,7 +123,7 @@ function InterestCard({ interest, index }) {
         <div className="flex-shrink-0 relative">
           <motion.div
             className="absolute inset-0 rounded-lg"
-            style={{ background: 'rgba(139,92,246,0.25)', willChange: 'transform, opacity' }}
+            style={{ background: 'rgba(0,212,255,0.2)', willChange: 'transform, opacity' }}
             animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
             transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.8 }}
             aria-hidden="true"

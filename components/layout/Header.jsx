@@ -31,9 +31,13 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-background/90 backdrop-blur-md border-b border-border shadow-sm'
+          ? 'backdrop-blur-md shadow-sm'
           : 'bg-transparent'
       }`}
+      style={scrolled ? {
+        backgroundColor: 'rgba(2,3,10,0.8)',
+        borderBottom: '1px solid rgba(0,212,255,0.06)',
+      } : undefined}
     >
       <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
         <Link href="/" className="group flex items-center gap-3 relative z-10" data-cursor="expand">

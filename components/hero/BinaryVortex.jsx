@@ -58,7 +58,7 @@ function Vortex() {
 
 export default function BinaryVortex() {
   return (
-    <Canvas camera={{ position: [0, 0, 7], fov: 60 }} style={{ background: '#000000' }} gl={{ antialias: false, powerPreference: 'high-performance' }}>
+    <Canvas camera={{ position: [0, 0, 7], fov: 60 }} style={{ background: '#02030A' }} gl={{ antialias: false, powerPreference: 'high-performance' }}>
       <ambientLight intensity={0.05} />
       <pointLight position={[0, 0, 0]} color="#ffffff" intensity={8} distance={3} />
       <Vortex />

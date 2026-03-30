@@ -27,7 +27,7 @@ export default function HeroToggler() {
       <div aria-hidden="true" style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         height: '180px',
-        background: 'linear-gradient(to bottom, transparent 0%, #000000 100%)',
+        background: 'linear-gradient(to bottom, transparent 0%, #02030A 100%)',
         pointerEvents: 'none',
       }} />
     </section>
