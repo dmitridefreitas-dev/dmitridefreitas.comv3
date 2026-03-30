@@ -108,8 +108,8 @@ export default function ContactPage() {
           </motion.span>
         </motion.p>
 
-        <h1 className="font-serif font-bold text-display text-foreground text-balance will-change-transform relative z-10">
-          <TextReveal splitBy="word" delay={0.4} staggerDelay={0.1}>
+        <h1 className="font-serif font-bold text-display text-foreground text-balance will-change-transform relative z-10 text-center">
+          <TextReveal splitBy="word" delay={0.4} staggerDelay={0.1} center>
             Get in Touch
           </TextReveal>
         </h1>
@@ -316,7 +316,7 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex justify-center mt-12"
+            className="flex justify-center mt-20"
           >
             <motion.a
               href={socialLinks.linkedin}

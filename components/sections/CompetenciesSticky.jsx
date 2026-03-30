@@ -181,7 +181,8 @@ export default function CompetenciesSticky() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-12"
+        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-12 w-full"
+        style={{ textAlign: 'center' }}
       >
         Career Path
       </motion.p>
@@ -383,9 +384,9 @@ export default function CompetenciesSticky() {
                   <p
                     className="font-mono"
                     style={{
-                      fontSize: '9px',
+                      fontSize: '11px',
                       color: 'rgba(139,92,246,0.7)',
-                      marginBottom: '2px',
+                      marginBottom: '3px',
                       lineHeight: 1.2,
                     }}
                   >
@@ -396,9 +397,9 @@ export default function CompetenciesSticky() {
                     style={{
                       fontWeight: 700,
                       color: 'var(--foreground, #e5e5e5)',
-                      fontSize: '11px',
+                      fontSize: '13px',
                       lineHeight: 1.3,
-                      maxWidth: '140px',
+                      maxWidth: '160px',
                       marginLeft: 'auto',
                     }}
                   >
@@ -455,9 +456,9 @@ export default function CompetenciesSticky() {
                   <p
                     className="font-mono"
                     style={{
-                      fontSize: '9px',
+                      fontSize: '11px',
                       color: 'rgba(139,92,246,0.7)',
-                      marginBottom: '2px',
+                      marginBottom: '3px',
                       lineHeight: 1.2,
                     }}
                   >
@@ -468,9 +469,9 @@ export default function CompetenciesSticky() {
                     style={{
                       fontWeight: 700,
                       color: 'var(--foreground, #e5e5e5)',
-                      fontSize: '11px',
+                      fontSize: '13px',
                       lineHeight: 1.3,
-                      maxWidth: '140px',
+                      maxWidth: '160px',
                     }}
                   >
                     {item.title}

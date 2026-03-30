@@ -259,6 +259,14 @@ export default function ProjectsShowcase() {
   const prev = () => setCurrent((c) => Math.max(0, c - 1));
   const next = () => setCurrent((c) => Math.min(total - 1, c + 1));
 
+  // Auto-advance — loops back to 0 after the last card
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCurrent((c) => (c + 1) % total);
+    }, 4000);
+    return () => clearInterval(id);
+  }, [total]);
+
   const cardStep = typeof window !== 'undefined'
     ? (window.innerWidth < 768
         ? window.innerWidth * 0.85 + 24

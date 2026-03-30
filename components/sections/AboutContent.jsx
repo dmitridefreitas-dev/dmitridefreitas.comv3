@@ -395,7 +395,7 @@ export default function AboutContent() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6"
+            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6 text-center"
           >
             Research
           </motion.p>
