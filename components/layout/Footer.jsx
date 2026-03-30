@@ -18,47 +18,47 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-8 py-6">
 
         {/* Main row */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
 
-          {/* Identity */}
-          <div className="flex-shrink-0">
-            <p className="font-serif text-sm font-bold text-foreground">Dmitri De Freitas</p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted/60 mt-0.5">
+          {/* Name only */}
+          <p className="font-serif text-sm font-bold text-foreground flex-shrink-0">Dmitri De Freitas</p>
+
+          {/* Subtitle + nav + social — all on one line */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted/60">
               Data Science &amp; Financial Engineering · WashU
-            </p>
-          </div>
-
-          {/* Nav links — centered on larger screens */}
-          <nav className="flex items-center gap-6" aria-label="Footer navigation">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted/70 hover:text-accent transition-colors"
+            </span>
+            <span className="text-muted/25 hidden sm:inline">·</span>
+            <nav className="flex items-center gap-4" aria-label="Footer navigation">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted/60 hover:text-accent transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <span className="text-muted/25 hidden sm:inline">·</span>
+            <div className="flex items-center gap-0.5">
+              <a
+                href={socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="w-7 h-7 flex items-center justify-center text-muted/60 hover:text-accent transition-colors"
               >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Social */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <a
-              href={socialLinks.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="w-8 h-8 flex items-center justify-center text-muted/70 hover:text-accent transition-colors"
-            >
-              <Linkedin className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href={`mailto:${contactInfo.email}`}
-              aria-label="Email"
-              className="w-8 h-8 flex items-center justify-center text-muted/70 hover:text-accent transition-colors"
-            >
-              <Mail className="h-3.5 w-3.5" />
-            </a>
+                <Linkedin className="h-3 w-3" />
+              </a>
+              <a
+                href={`mailto:${contactInfo.email}`}
+                aria-label="Email"
+                className="w-7 h-7 flex items-center justify-center text-muted/60 hover:text-accent transition-colors"
+              >
+                <Mail className="h-3 w-3" />
+              </a>
+            </div>
           </div>
         </div>
 

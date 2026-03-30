@@ -64,8 +64,9 @@ export default function ContactPage() {
 
   return (
     <>
+      {/* ── Compact hero ─────────────────────────────────────────────── */}
       <section
-        className="section-full flex-col text-center px-6 overflow-hidden pt-28"
+        className="relative text-center px-6 overflow-hidden pt-32 pb-10"
         aria-label="Contact hero"
       >
         {CONTACT_SHAPES.map((shape, i) => (
@@ -89,7 +90,7 @@ export default function ContactPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-5 relative z-10"
+          className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-4 relative z-10"
         >
           <motion.span
             animate={{
@@ -117,18 +118,18 @@ export default function ContactPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="font-mono text-xs uppercase tracking-[0.3em] text-muted mt-5 relative z-10 break-all"
+          className="font-mono text-xs uppercase tracking-[0.3em] text-muted mt-4 relative z-10"
         >
           Available May 2026 &nbsp;&middot;&nbsp; {contactInfo.email}
         </motion.p>
       </section>
 
+      {/* ── Contact info + Form ───────────────────────────────────────── */}
       <section
-        className="px-6 lg:px-16 py-24 relative overflow-hidden"
+        className="px-6 lg:px-16 pt-12 pb-16 relative overflow-hidden"
         aria-label="Contact details and form"
-        style={{ minHeight: '100vh' }}
       >
-        {/* Ambient glow that breathes */}
+        {/* Ambient glow */}
         <motion.div
           className="absolute pointer-events-none"
           style={{
@@ -141,100 +142,55 @@ export default function ContactPage() {
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
           aria-hidden="true"
         />
+
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-start">
+          {/* Left — contact info only */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex flex-col gap-14"
           >
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mb-10">
-                Contact
-              </p>
-              <div className="flex flex-col gap-8">
-                {[
-                  { Icon: Mail, label: 'Email', content: contactInfo.email, href: `mailto:${contactInfo.email}` },
-                  { Icon: Phone, label: 'Phone', content: contactInfo.phone, href: `tel:${contactInfo.phone.replace(/[^+\d]/g, '')}` },
-                  { Icon: MapPin, label: 'Location', content: contactInfo.location, sub: contactInfo.locationNote },
-                ].map(({ Icon, label, content, href, sub }) => (
+            <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mb-10">
+              Contact
+            </p>
+            <div className="flex flex-col gap-8">
+              {[
+                { Icon: Mail, label: 'Email', content: contactInfo.email, href: `mailto:${contactInfo.email}` },
+                { Icon: Phone, label: 'Phone', content: contactInfo.phone, href: `tel:${contactInfo.phone.replace(/[^+\d]/g, '')}` },
+                { Icon: MapPin, label: 'Location', content: contactInfo.location, sub: contactInfo.locationNote },
+              ].map(({ Icon, label, content, href, sub }) => (
+                <motion.div
+                  key={label}
+                  className="flex items-start gap-4"
+                  whileHover={{ x: 4 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                >
                   <motion.div
-                    key={label}
-                    className="flex items-start gap-4"
-                    whileHover={{ x: 4 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  >
-                    <motion.div
                     animate={{ filter: ['drop-shadow(0 0 0px rgba(139,92,246,0))', 'drop-shadow(0 0 6px rgba(139,92,246,0.7))', 'drop-shadow(0 0 0px rgba(139,92,246,0))'] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: label === 'Email' ? 0 : label === 'Phone' ? 1.3 : 2.6 }}
                   >
                     <Icon className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
                   </motion.div>
-                    <div>
-                      <p className="font-mono text-xs uppercase tracking-widest text-muted mb-1">{label}</p>
-                      {href ? (
-                        <a href={href} className="text-foreground hover:text-accent transition-colors text-sm" data-cursor="expand">
-                          {content}
-                        </a>
-                      ) : (
-                        <>
-                          <p className="text-foreground text-sm">{content}</p>
-                          {sub && <p className="text-muted text-xs font-mono">{sub}</p>}
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mb-10">
-                Open To
-              </p>
-              <div className="flex flex-col gap-8">
-                {opportunityGroups.map((group, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.07 }}
-                  >
-                    <motion.p
-                      className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2"
-                      animate={{ opacity: [1, 0.6, 1] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 }}
-                    >
-                      {group.category}
-                    </motion.p>
-                    <div className="flex flex-col gap-1.5">
-                      {group.roles.map((role, j) => (
-                        <span key={j} className="font-mono text-xs uppercase tracking-widest text-muted">
-                          &middot; {role}
-                        </span>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <motion.a
-                href={socialLinks.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-muted hover:text-accent transition-colors w-fit"
-                whileHover={{ x: 4 }}
-                data-cursor="expand"
-              >
-                <Linkedin className="h-3.5 w-3.5" /> LinkedIn
-              </motion.a>
+                  <div>
+                    <p className="font-mono text-xs uppercase tracking-widest text-muted mb-1">{label}</p>
+                    {href ? (
+                      <a href={href} className="text-foreground hover:text-accent transition-colors text-sm" data-cursor="expand">
+                        {content}
+                      </a>
+                    ) : (
+                      <>
+                        <p className="text-foreground text-sm">{content}</p>
+                        {sub && <p className="text-muted text-xs font-mono">{sub}</p>}
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
+          {/* Right — form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -312,21 +268,68 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* ── Open To — full-width centered ────────────────────────────── */}
       <section
-        className="section-full flex-col text-center px-6"
-        aria-label="Closing"
-        style={{ minHeight: '60vh' }}
+        className="px-6 lg:px-16 pt-8 pb-20 border-t border-border"
+        aria-label="Open to opportunities"
       >
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="font-serif italic text-subhead text-muted max-w-2xl leading-relaxed"
-        >
-          Whether you&apos;re building a quant team, running a data-driven fund, or working on something that sits at the intersection of finance and technology &mdash;
-          I&apos;m always happy to connect and discuss opportunities.
-        </motion.p>
+        <div className="max-w-6xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="font-mono text-xs uppercase tracking-[0.35em] text-muted text-center mb-12"
+          >
+            Open To
+          </motion.p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+            {opportunityGroups.map((group, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                <motion.p
+                  className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-4"
+                  animate={{ opacity: [1, 0.6, 1] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 }}
+                >
+                  {group.category}
+                </motion.p>
+                <div className="flex flex-col gap-2">
+                  {group.roles.map((role, j) => (
+                    <span key={j} className="font-mono text-xs uppercase tracking-widest text-muted">
+                      {role}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* LinkedIn centered */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex justify-center mt-12"
+          >
+            <motion.a
+              href={socialLinks.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.25em] text-muted hover:text-accent transition-colors"
+              whileHover={{ y: -2 }}
+              data-cursor="expand"
+            >
+              <Linkedin className="h-3.5 w-3.5" /> LinkedIn
+            </motion.a>
+          </motion.div>
+        </div>
       </section>
     </>
   );

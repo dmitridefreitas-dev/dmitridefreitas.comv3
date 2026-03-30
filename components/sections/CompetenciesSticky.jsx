@@ -1,183 +1,185 @@
 'use client';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
 import { useRef } from 'react';
-import { competencies } from '@/data/constants';
+import { timeline } from '@/data/constants';
 
-function CompCard({ comp, index }) {
-  const Icon = comp.icon;
-  const num  = String(index + 1).padStart(2, '0');
-  const cardRef = useRef(null);
-
-  // Mouse tracking for spotlight
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
-  const springX = useSpring(mouseX, { stiffness: 120, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 120, damping: 20 });
-
-  const spotlightX = useTransform(springX, [0, 1], ['0%', '100%']);
-  const spotlightY = useTransform(springY, [0, 1], ['0%', '100%']);
-
-  const handleMouseMove = (e) => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    mouseX.set((e.clientX - rect.left) / rect.width);
-    mouseY.set((e.clientY - rect.top)  / rect.height);
-  };
-  const handleMouseLeave = () => {
-    mouseX.set(0.5);
-    mouseY.set(0.5);
-  };
+function Stone({ item, index, total }) {
+  const ref = useRef(null);
+  const isVisible = useInView(ref, { once: true, margin: '-80px' });
+  const isEven = index % 2 === 1;
+  const baseDelay = 0.15;
 
   return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden"
+    <div
+      ref={ref}
+      className="relative flex items-center justify-center"
+      style={{ minHeight: index < total - 1 ? 120 : 0 }}
     >
-      {/* Sweep-in top border */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-px origin-left z-20"
-        style={{ background: 'linear-gradient(90deg, #8B5CF6, #C4B5FD, transparent)' }}
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.1, delay: index * 0.15 + 0.35, ease: [0.22, 1, 0.36, 1] }}
-      />
-
-      {/* Travelling light dot along top border */}
-      <motion.div
-        className="absolute top-0 w-6 h-px z-20 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, #C4B5FD, transparent)' }}
-        animate={{ left: ['-10%', '110%'] }}
-        transition={{
-          duration: 3.2 + index * 0.6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: index * 1.1 + 1.5,
-          repeatDelay: 2.5,
-        }}
-      />
-
-      <div className="relative border border-[#160e24] bg-[#080810]/60 p-8 rounded-xl overflow-hidden transition-colors duration-500 group-hover:border-accent/25">
-
-        {/* Mouse-tracked spotlight */}
+      {/* Row container — zigzag layout */}
+      <div
+        className={`flex items-center w-full max-w-[700px] mx-auto gap-5 md:gap-8 ${
+          isEven ? 'flex-row-reverse' : 'flex-row'
+        }`}
+      >
+        {/* Text side */}
         <motion.div
-          className="absolute inset-0 pointer-events-none rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            background: useTransform(
-              [spotlightX, spotlightY],
-              ([x, y]) =>
-                `radial-gradient(260px circle at ${x} ${y}, rgba(139,92,246,0.1) 0%, transparent 70%)`
-            ),
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Idle ambient pulse */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none rounded-xl"
-          style={{ background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139,92,246,0.06) 0%, transparent 70%)' }}
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 3.5 + index * 0.8, repeat: Infinity, ease: 'easeInOut', delay: index * 0.5 }}
-          aria-hidden="true"
-        />
-
-        {/* Scan line sweeping down */}
-        <motion.div
-          className="absolute left-0 right-0 h-8 pointer-events-none z-10"
-          style={{ background: 'linear-gradient(to bottom, transparent, rgba(139,92,246,0.04), transparent)' }}
-          animate={{ top: ['-10%', '110%'] }}
+          className={`flex-1 ${isEven ? 'text-right' : 'text-left'}`}
+          initial={{ opacity: 0, x: isEven ? 30 : -30 }}
+          animate={
+            isVisible
+              ? { opacity: 1, x: 0 }
+              : { opacity: 0, x: isEven ? 30 : -30 }
+          }
           transition={{
-            duration: 4 + index * 0.7,
-            repeat: Infinity,
-            ease: 'linear',
-            delay: index * 1.4,
+            duration: 0.6,
+            delay: baseDelay + 0.25,
+            ease: [0.22, 1, 0.36, 1],
           }}
-          aria-hidden="true"
-        />
-
-        {/* Ghost index number — strobe */}
-        <motion.p
-          className="absolute top-3 right-5 font-mono font-bold select-none pointer-events-none leading-none"
-          style={{ fontSize: '4.5rem', color: 'rgba(139,92,246,1)', letterSpacing: '-0.05em' }}
-          animate={{ opacity: [0.025, 0.055, 0.025, 0.04, 0.025] }}
-          transition={{ duration: 4 + index * 1.3, repeat: Infinity, ease: 'easeInOut', delay: index * 0.9 }}
-          aria-hidden="true"
         >
-          {num}
-        </motion.p>
+          <h3 className="font-serif font-bold text-foreground text-sm md:text-base leading-snug mb-1.5">
+            {item.title}
+          </h3>
+          <span
+            className={`inline-block font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full ${
+              item.type === 'education'
+                ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30'
+                : 'bg-violet-500/15 text-violet-400 border border-violet-500/30'
+            }`}
+          >
+            {item.type}
+          </span>
+        </motion.div>
 
-        {/* Icon with pulsing glow ring */}
-        <div className="flex items-center gap-2 mb-7 relative">
-          <motion.span
-            className="font-mono text-xl leading-none select-none"
-            style={{ color: 'rgba(139,92,246,0.3)' }}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
-          >[</motion.span>
-
-          <div className="relative flex items-center justify-center">
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%)' }}
-              animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0, 0.4] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: index * 0.6 }}
-              aria-hidden="true"
-            />
-            <Icon className="w-5 h-5 text-accent relative z-10" strokeWidth={1.5} />
-          </div>
-
-          <motion.span
-            className="font-mono text-xl leading-none select-none"
-            style={{ color: 'rgba(139,92,246,0.3)' }}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 + 0.3 }}
-          >]</motion.span>
-        </div>
-
-        <h3 className="font-serif font-bold text-lg text-foreground mb-3 leading-tight">
-          {comp.title}
-        </h3>
-
-        <p className="text-sm text-muted leading-relaxed">
-          {comp.description}
-        </p>
-
-        {/* Bottom accent — animates width on hover */}
+        {/* Stone circle */}
         <motion.div
-          className="mt-7 h-px"
-          style={{ background: 'linear-gradient(90deg, #8B5CF6, transparent)' }}
-          initial={{ width: 0 }}
-          whileHover={{ width: 48 }}
-          animate={{ width: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        />
+          className="relative flex-shrink-0 w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center z-10"
+          style={{
+            border: '2px solid rgba(139,92,246,0.7)',
+            background: 'rgba(139,92,246,0.15)',
+          }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={
+            isVisible
+              ? { scale: [0, 1.3, 1], opacity: [0, 1, 1] }
+              : { scale: 0, opacity: 0 }
+          }
+          transition={{
+            duration: 0.55,
+            delay: baseDelay,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+        >
+          {/* Landing glow */}
+          <motion.div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            initial={{ boxShadow: '0 0 0px rgba(139,92,246,0)' }}
+            animate={
+              isVisible
+                ? {
+                    boxShadow: [
+                      '0 0 0px rgba(139,92,246,0)',
+                      '0 0 24px rgba(139,92,246,0.6)',
+                      '0 0 8px rgba(139,92,246,0.2)',
+                    ],
+                  }
+                : { boxShadow: '0 0 0px rgba(139,92,246,0)' }
+            }
+            transition={{
+              duration: 1,
+              delay: baseDelay + 0.1,
+              ease: 'easeOut',
+            }}
+          />
+          <span className="font-mono font-bold text-accent text-[9px] md:text-xs leading-none text-center whitespace-nowrap select-none">
+            {item.year}
+          </span>
+        </motion.div>
+
+        {/* Spacer to balance the other side */}
+        <div className="flex-1" />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 export default function CompetenciesSticky() {
+  const sectionRef = useRef(null);
+  const trailRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start 0.85', 'end 0.6'],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 60,
+    damping: 20,
+    restDelta: 0.001,
+  });
+
+  const trailHeight = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+
+  // Gradient position for the "flowing" effect
+  const gradientY = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+
   return (
-    <section className="section-full flex-col px-6 lg:px-12" aria-label="Core Competencies">
+    <section
+      ref={sectionRef}
+      className="relative py-24 px-6 lg:px-12 overflow-hidden"
+      style={{ background: '#000000' }}
+      aria-label="Career Path"
+    >
+      {/* Section heading */}
       <motion.p
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-12"
+        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-16 md:mb-20"
       >
-        Core Competencies
+        Career Path
       </motion.p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full">
-        {competencies.map((comp, i) => (
-          <CompCard key={comp.title} comp={comp} index={i} />
-        ))}
+      {/* Timeline container */}
+      <div className="relative max-w-[700px] mx-auto">
+        {/* Vertical trail line — positioned at center */}
+        <div
+          ref={trailRef}
+          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-px pointer-events-none"
+          style={{ zIndex: 1 }}
+        >
+          {/* Background track */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'rgba(139,92,246,0.08)' }}
+          />
+          {/* Animated fill */}
+          <motion.div
+            className="absolute top-0 left-0 w-full origin-top"
+            style={{
+              height: trailHeight,
+              background:
+                'linear-gradient(to bottom, rgba(139,92,246,0.1), rgba(139,92,246,0.4) 50%, rgba(139,92,246,0.6))',
+            }}
+          />
+          {/* Flowing glow dot */}
+          <motion.div
+            className="absolute left-1/2 -translate-x-1/2 w-2 h-8 rounded-full pointer-events-none"
+            style={{
+              top: trailHeight,
+              background:
+                'radial-gradient(ellipse at center, rgba(139,92,246,0.8), transparent)',
+              filter: 'blur(2px)',
+              marginTop: '-16px',
+            }}
+          />
+        </div>
+
+        {/* Stones */}
+        <div className="relative flex flex-col gap-[120px] md:gap-[120px]">
+          {timeline.map((item, i) => (
+            <Stone key={i} item={item} index={i} total={timeline.length} />
+          ))}
+        </div>
       </div>
     </section>
   );

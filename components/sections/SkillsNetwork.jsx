@@ -347,17 +347,100 @@ function RobotHelper({ onDismiss }) {
   );
 }
 
+/* ─── Demo label shown during tutorial auto-hover ─────────────────── */
+function DemoLabel({ visible }) {
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            position: 'fixed',
+            left: '16px',
+            top: 'calc(60% + 50px)',
+            zIndex: 50,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-jetbrains), monospace',
+              fontSize: '10px',
+              letterSpacing: '0.08em',
+              color: 'rgba(139, 92, 246, 0.6)',
+              margin: 0,
+            }}
+          >
+            ▶ watching demo
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* ─── Main component ───────────────────────────────────────────────── */
 export default function SkillsNetwork() {
   const [hovered, setHovered]   = useState(null);
+  const [tutorialNode, setTutorialNode] = useState(null);
   const [selected, setSelected] = useState(null);
   const [showRobot, setShowRobot] = useState(true);
   const hasHoveredOnce = useRef(false);
+
+  const effectiveHovered = hovered ?? tutorialNode;
+
+  /* ─── Tutorial auto-demo loop ─────────────────────────────────────── */
+  useEffect(() => {
+    if (!showRobot) return;
+
+    const DEMO_SEQUENCE = ['python', 'bloomberg', 'tableau'];
+    const HOLD_MS = 1200;
+    const INITIAL_DELAY = 2500;
+    const CYCLES = 2;
+
+    let timeouts = [];
+    let cancelled = false;
+
+    const schedule = (fn, ms) => {
+      const id = setTimeout(() => {
+        if (!cancelled) fn();
+      }, ms);
+      timeouts.push(id);
+      return id;
+    };
+
+    let elapsed = INITIAL_DELAY;
+
+    for (let cycle = 0; cycle < CYCLES; cycle++) {
+      for (let i = 0; i < DEMO_SEQUENCE.length; i++) {
+        const nodeId = DEMO_SEQUENCE[i];
+        const showAt = elapsed;
+        schedule(() => {
+          if (!hasHoveredOnce.current) setTutorialNode(nodeId);
+        }, showAt);
+        elapsed += HOLD_MS;
+      }
+      // Clear after each cycle
+      const clearAt = elapsed;
+      schedule(() => {
+        if (!hasHoveredOnce.current) setTutorialNode(null);
+      }, clearAt);
+      elapsed += 800; // short pause between cycles
+    }
+
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+    };
+  }, [showRobot]);
 
   const handleHover = useCallback((nodeId) => {
     setHovered(nodeId);
     if (!hasHoveredOnce.current) {
       hasHoveredOnce.current = true;
+      setTutorialNode(null);
       setShowRobot(false);
     }
   }, []);
@@ -373,11 +456,11 @@ export default function SkillsNetwork() {
   ];
 
   function edgeState(fromId, toId) {
-    if (!hovered) return { active: false, dimmed: false };
-    const connected = getConnectedIds(hovered);
-    const active = fromId === hovered || toId === hovered || (connected.has(fromId) && connected.has(toId));
-    const dimmed = !active && (fromId !== hovered && toId !== hovered);
-    return { active: fromId === hovered || toId === hovered, dimmed };
+    if (!effectiveHovered) return { active: false, dimmed: false };
+    const connected = getConnectedIds(effectiveHovered);
+    const active = fromId === effectiveHovered || toId === effectiveHovered || (connected.has(fromId) && connected.has(toId));
+    const dimmed = !active && (fromId !== effectiveHovered && toId !== effectiveHovered);
+    return { active: fromId === effectiveHovered || toId === effectiveHovered, dimmed };
   }
 
   return (
@@ -386,12 +469,37 @@ export default function SkillsNetwork() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-accent text-center mb-10"
+        className="font-mono text-xs uppercase tracking-[0.4em] text-accent text-center mb-3"
       >
         Tools &amp; Languages
       </motion.p>
 
+      {/* Bobbing hover hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.5 }}
+        className="flex items-center justify-center gap-2 mb-8"
+      >
+        <motion.span
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted/50"
+        >
+          hover
+        </motion.span>
+        <motion.span
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
+          style={{ color: 'rgba(139,92,246,0.4)', fontSize: '10px' }}
+        >
+          ↑
+        </motion.span>
+      </motion.div>
+
       {showRobot && <RobotHelper onDismiss={dismissRobot} />}
+      <DemoLabel visible={showRobot && tutorialNode !== null} />
 
       <div className="max-w-5xl mx-auto">
         <motion.div
@@ -425,7 +533,7 @@ export default function SkillsNetwork() {
               { label: 'TOOLS', x: 660 },
               { label: 'OUTPUT', x: 995 },
             ].map(({ label, x }) => (
-              <text key={label} x={x} y={18} textAnchor="middle" fontSize="8" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill="rgba(139,92,246,0.5)">
+              <text key={label} x={x} y={18} textAnchor="middle" fontSize="11" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill="rgba(196,181,253,0.75)">
                 {label}
               </text>
             ))}
@@ -442,7 +550,7 @@ export default function SkillsNetwork() {
                 <Node
                   key={id}
                   nodeId={id}
-                  hovered={hovered}
+                  hovered={effectiveHovered}
                   onHover={handleHover}
                   onLeave={() => setHovered(null)}
                   onClick={setSelected}
