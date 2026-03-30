@@ -52,6 +52,8 @@ function Carousel3D({ skills, onCardClick }) {
   const dragStartRot = useRef(0);
   const [frontIndex, setFrontIndex] = useState(0);
   const cardRefs = useRef([]);
+  const prevFrontRef = useRef(0);
+  const cardBrightness = useRef([]);
 
   /* cleanup hover timer on unmount */
   useEffect(() => {
@@ -60,40 +62,55 @@ function Carousel3D({ skills, onCardClick }) {
     };
   }, []);
 
-  /* continuous auto-rotation — slow and steady */
+  /* rotation + smooth brightness — one unified frame loop */
   useAnimationFrame((_, delta) => {
     if (!isPaused.current) {
       rotY.set(rotY.get() + delta * 0.007);
     }
-  });
 
-  /* track front card + brightness (direct DOM manipulation to avoid re-renders) */
-  useEffect(() => {
-    let prevFront = -1;
-    const unsub = rotY.onChange((v) => {
-      const norm = ((-v % 360) + 360) % 360;
-      let closest = 0;
-      let minDist = 360;
+    const v = rotY.get();
+    const norm = ((-v % 360) + 360) % 360;
+    let closest = 0;
+    let minDist = 360;
+
+    for (let i = 0; i < total; i++) {
+      const cardAngle = (angleStep * i) % 360;
+      let dist = Math.abs(norm - cardAngle);
+      if (dist > 180) dist = 360 - dist;
+      if (dist < minDist) { minDist = dist; closest = i; }
+
+      // Target brightness based on angular distance from front
+      const target = dist <= 90
+        ? 1 - (dist / 90) * 0.55
+        : 0.45 - ((dist - 90) / 90) * 0.2;
+
+      // Lerp toward target — controls how slowly brightness changes (lower = smoother)
+      if (cardBrightness.current[i] === undefined) cardBrightness.current[i] = 0.45;
+      cardBrightness.current[i] += (target - cardBrightness.current[i]) * 0.06;
+
+      const el = cardRefs.current[i];
+      if (el) {
+        el.style.filter = `brightness(${cardBrightness.current[i].toFixed(3)})`;
+      }
+    }
+
+    // Border + shadow snap to front card (cheap, only on change)
+    if (closest !== prevFrontRef.current) {
       for (let i = 0; i < total; i++) {
-        const cardAngle = (angleStep * i) % 360;
-        let dist = Math.abs(norm - cardAngle);
-        if (dist > 180) dist = 360 - dist;
-        if (dist < minDist) { minDist = dist; closest = i; }
-        const brightness = dist <= 90 ? 1 - (dist / 90) * 0.6 : 0.4 - ((dist - 90) / 90) * 0.25;
         const el = cardRefs.current[i];
         if (el) {
-          el.style.filter = `brightness(${brightness})`;
-          el.style.borderColor = i === closest ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.2)';
-          el.style.boxShadow = i === closest ? '0 0 30px rgba(139,92,246,0.15)' : 'none';
+          el.style.borderColor = i === closest
+            ? 'rgba(139,92,246,0.55)'
+            : 'rgba(139,92,246,0.15)';
+          el.style.boxShadow = i === closest
+            ? '0 0 28px rgba(139,92,246,0.13)'
+            : 'none';
         }
       }
-      if (closest !== prevFront) {
-        prevFront = closest;
-        setFrontIndex(closest);
-      }
-    });
-    return unsub;
-  }, [rotY, total, angleStep]);
+      prevFrontRef.current = closest;
+      setFrontIndex(closest);
+    }
+  });
 
   /* arrow handlers */
   const jumpBy = useCallback(
@@ -204,46 +221,47 @@ function Carousel3D({ skills, onCardClick }) {
               <motion.div
                 key={skill.id}
                 ref={(el) => { cardRefs.current[i] = el; }}
-                className="absolute flex flex-col justify-center items-center text-center px-5 py-6 cursor-pointer"
+                className="absolute cursor-pointer"
                 style={{
                   width: CARD_W,
                   height: CARD_H,
                   borderRadius: 12,
                   backfaceVisibility: 'hidden',
                   background: 'rgba(8,8,16,0.9)',
-                  border: `1px solid ${isFront ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.2)'}`,
-                  boxShadow: isFront ? '0 0 30px rgba(139,92,246,0.15)' : 'none',
-                  transform: `rotateY(${cardAngle}deg) translateZ(${radius}px) ${isFront ? 'scale(1.05)' : 'scale(1)'}`,
-                  filter: `brightness(${i === 0 ? 1 : 0.4})`,
-                  transition: 'border-color 0.3s, box-shadow 0.3s, filter 0.3s',
-                  willChange: 'transform',
+                  border: '1px solid rgba(139,92,246,0.15)',
+                  // no transition here — filter/border/shadow driven per-frame
+                  transform: `rotateY(${cardAngle}deg) translateZ(${radius}px)`,
+                  willChange: 'transform, filter',
                 }}
-                onClick={() => {
-                  if (isFront) onCardClick(skill);
-                }}
+                onClick={() => { if (isFront) onCardClick(skill); }}
               >
-                {/* category */}
-                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted/60 mb-2">
-                  {skill.category}
-                </p>
-                {/* name */}
-                <h3 className="font-serif font-bold text-lg text-accent mb-2 leading-tight">
-                  {skill.name}
-                </h3>
-                {/* description */}
-                <p className="text-xs text-muted line-clamp-3 leading-relaxed max-w-[190px]">
-                  {skill.description}
-                </p>
-                {/* features */}
-                <div className="mt-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
-                  {skill.keyFeatures.slice(0, 3).map((f, fi) => (
-                    <span
-                      key={fi}
-                      className="font-mono text-[10px] uppercase tracking-widest text-muted/50"
-                    >
-                      {f}
-                    </span>
-                  ))}
+                {/* Inner wrapper handles scale — isolated CSS transition */}
+                <div
+                  className="flex flex-col justify-center items-center text-center px-5 py-6 w-full h-full"
+                  style={{
+                    transform: isFront ? 'scale(1.04)' : 'scale(1)',
+                    transition: 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                >
+                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted/60 mb-2">
+                    {skill.category}
+                  </p>
+                  <h3 className="font-serif font-bold text-lg text-accent mb-2 leading-tight">
+                    {skill.name}
+                  </h3>
+                  <p className="text-xs text-muted line-clamp-3 leading-relaxed max-w-[190px]">
+                    {skill.description}
+                  </p>
+                  <div className="mt-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
+                    {skill.keyFeatures.slice(0, 3).map((f, fi) => (
+                      <span
+                        key={fi}
+                        className="font-mono text-[10px] uppercase tracking-widest text-muted/50"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             );
@@ -324,7 +342,7 @@ export default function SkillsHorizontal() {
             className="flex h-full"
             style={{
               width: `${mobileSetWidth * 2}vw`,
-              animation: 'scroll-left-mobile 90s linear infinite',
+              animation: 'scroll-left-mobile 130s linear infinite',
               willChange: 'transform',
             }}
           >
@@ -345,7 +363,7 @@ export default function SkillsHorizontal() {
             className="flex gap-12 items-center"
             style={{
               width: 'max-content',
-              animation: 'scroll-left-mobile 30s linear infinite',
+              animation: 'scroll-left-mobile 65s linear infinite',
               willChange: 'transform',
             }}
           >
@@ -369,7 +387,7 @@ export default function SkillsHorizontal() {
           className="flex gap-16 items-center whitespace-nowrap"
           style={{
             width: 'max-content',
-            animation: 'scroll-left-mobile 120s linear infinite',
+            animation: 'scroll-left-mobile 180s linear infinite',
             willChange: 'transform',
           }}
         >
