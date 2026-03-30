@@ -280,36 +280,24 @@ export default function CompetenciesSticky() {
                 <AnimatePresence>
                   {eduVisible[i] && (
                     <>
-                      {/* Radial glow — uses fixed r with scale transform (GPU-accelerated) */}
-                      <motion.circle
-                        cx={cx}
-                        cy={cy}
-                        r={30}
-                        fill={colors.glow}
+                      {/* Glow — motion.g handles opacity+scale, plain circle avoids SVG attr conflicts */}
+                      <motion.g
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
                         initial={{ scale: 0, opacity: 0 }}
-                        animate={{
-                          scale: [0, 50/30, 1],
-                          opacity: [0, 0.6, 0.15],
-                        }}
+                        animate={{ scale: [0, 1.67, 1], opacity: [0, 0.6, 0.15] }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
-                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform, opacity' }}
-                      />
+                      >
+                        <circle cx={cx} cy={cy} r={30} fill={colors.glow} />
+                      </motion.g>
                       {/* Stone polygon */}
-                      <motion.polygon
-                        points={pts}
-                        fill={colors.fill}
-                        stroke={colors.stroke}
-                        strokeWidth={1.5}
+                      <motion.g
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
                         initial={{ scale: 0 }}
                         animate={{ scale: [0, 1.3, 1] }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 15,
-                          duration: 0.6,
-                        }}
-                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform' }}
-                      />
+                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                      >
+                        <polygon points={pts} fill={colors.fill} stroke={colors.stroke} strokeWidth={1.5} />
+                      </motion.g>
                     </>
                   )}
                 </AnimatePresence>
@@ -327,34 +315,22 @@ export default function CompetenciesSticky() {
                 <AnimatePresence>
                   {careerVisible[i] && (
                     <>
-                      <motion.circle
-                        cx={cx}
-                        cy={cy}
-                        r={30}
-                        fill={colors.glow}
+                      <motion.g
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
                         initial={{ scale: 0, opacity: 0 }}
-                        animate={{
-                          scale: [0, 50/30, 1],
-                          opacity: [0, 0.6, 0.15],
-                        }}
+                        animate={{ scale: [0, 1.67, 1], opacity: [0, 0.6, 0.15] }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
-                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform, opacity' }}
-                      />
-                      <motion.polygon
-                        points={pts}
-                        fill={colors.fill}
-                        stroke={colors.stroke}
-                        strokeWidth={1.5}
+                      >
+                        <circle cx={cx} cy={cy} r={30} fill={colors.glow} />
+                      </motion.g>
+                      <motion.g
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
                         initial={{ scale: 0 }}
                         animate={{ scale: [0, 1.3, 1] }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 15,
-                          duration: 0.6,
-                        }}
-                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform' }}
-                      />
+                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                      >
+                        <polygon points={pts} fill={colors.fill} stroke={colors.stroke} strokeWidth={1.5} />
+                      </motion.g>
                     </>
                   )}
                 </AnimatePresence>
