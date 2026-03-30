@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import TextReveal from '@/components/effects/TextReveal';
@@ -7,192 +7,83 @@ import TiltCard from '@/components/effects/TiltCard';
 import { heroProjects } from '@/data/projects';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 
-// Per-card metrics — real numbers from Dmitri's projects
-const CARD_META = [
-  {
-    // PEAD Market Efficiency
-    metrics: [
-      { label: 'R²',    base: 0.950, range: 0.008, fmt: (v) => v.toFixed(3) },
-      { label: 'SUE Q5', base: 9.2,  range: 0.3,   fmt: (v) => '+' + v.toFixed(1) + 'bps' },
-      { label: 'STOCKS', base: 847,  range: 6,      fmt: (v) => v.toFixed(0) },
-    ],
-    path: 'M0,38 L18,32 L36,26 L54,30 L72,18 L90,13 L108,20 L126,15 L144,10',
-    endY: 10,
-  },
-  {
-    // Institutional Trading Terminal
-    metrics: [
-      { label: 'SHRPE', base: 1.24, range: 0.03, fmt: (v) => v.toFixed(2) },
-      { label: 'VaR95', base: 2.31, range: 0.05, fmt: (v) => '-' + v.toFixed(2) + '%' },
-      { label: 'BETA',  base: 0.87, range: 0.02, fmt: (v) => v.toFixed(2) },
-    ],
-    path: 'M0,10 L18,6 L36,14 L54,22 L72,17 L90,28 L108,22 L126,28 L144,32',
-    endY: 32,
-  },
-  {
-    // Housing Price Intelligence
-    metrics: [
-      { label: 'R²',   base: 0.930, range: 0.006, fmt: (v) => v.toFixed(3) },
-      { label: 'RMSE', base: 18.2,  range: 0.2,   fmt: (v) => '$' + v.toFixed(1) + 'K' },
-      { label: 'N',    base: 15000, range: 0,      fmt: (v) => '15K+' },
-    ],
-    path: 'M0,32 L18,26 L36,30 L54,22 L72,15 L90,21 L108,17 L126,24 L144,20',
-    endY: 20,
-  },
-  {
-    // NFL Win Probability
-    metrics: [
-      { label: 'AUC',   base: 0.921, range: 0.002, fmt: (v) => v.toFixed(3) },
-      { label: 'BRIER', base: 0.141, range: 0.001, fmt: (v) => v.toFixed(3) },
-      { label: 'SSNS',  base: 14,    range: 0,     fmt: (v) => v.toFixed(0) + ' yrs' },
-    ],
-    path: 'M0,20 L18,14 L36,10 L54,17 L72,12 L90,8 L108,14 L126,6 L144,4',
-    endY: 4,
-  },
-];
-
-function LiveMetrics({ meta, active }) {
-  const [vals, setVals] = useState(() =>
-    meta.metrics.map((m) => m.fmt(m.base))
-  );
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      // Only flicker 1 random metric per tick
-      const pick = Math.floor(Math.random() * meta.metrics.length);
-      setVals((prev) => {
-        const next = [...prev];
-        const m = meta.metrics[pick];
-        next[pick] = m.fmt(m.base + (Math.random() - 0.5) * m.range * 2);
-        return next;
-      });
-    }, 900 + Math.random() * 600);
-    return () => clearInterval(id);
-  }, [meta]);
-
-  return (
-    <div className="absolute top-5 left-6 flex gap-7 z-20" aria-hidden="true">
-      {meta.metrics.map((m, i) => (
-        <div key={m.label} className="flex flex-col gap-0.5">
-          <span className="font-mono text-[11px] uppercase tracking-[0.15em]" style={{ color: 'rgba(196,181,253,0.8)' }}>
-            {m.label}
-          </span>
-          <motion.span
-            key={vals[i]}
-            className="font-mono text-[17px] font-bold text-white"
-            initial={{ opacity: 0.4 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.15 }}
-          >
-            {vals[i]}
-          </motion.span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SparkLine({ path, active, endY }) {
-  return (
-    <div className="absolute left-0 right-0 pointer-events-none z-10" style={{ top: '38%' }} aria-hidden="true">
-      <svg
-        viewBox="0 0 144 50"
-        preserveAspectRatio="none"
-        style={{ width: '100%', height: '50px', overflow: 'visible' }}
-      >
-        {/* Fill under the line */}
-        <motion.path
-          d={path + ' L144,50 L0,50 Z'}
-          fill="url(#sparkFill)"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: active ? 0.18 : 0.08 }}
-          transition={{ duration: 0.6 }}
-        />
-        {/* The line itself */}
-        <motion.path
-          d={path}
-          fill="none"
-          stroke="url(#sparkStroke)"
-          strokeWidth="1.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: active ? 0.7 : 0.35 }}
-          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], opacity: { duration: 0.4 } }}
-        />
-        {/* End dot — y matches the path's last point so graph looks continuous */}
-        <motion.circle
-          cx="144" cy={endY ?? 10}
-          r="2"
-          fill="#8B5CF6"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: active ? 1 : 0.4, scale: 1 }}
-          transition={{ delay: 1.2, duration: 0.3 }}
-        />
-        <defs>
-          <linearGradient id="sparkStroke" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="rgba(139,92,246,0.3)" />
-            <stop offset="100%" stopColor="#8B5CF6" />
-          </linearGradient>
-          <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(139,92,246,0.6)" />
-            <stop offset="100%" stopColor="rgba(139,92,246,0)" />
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  );
-}
-
 function ProjectCard({ project, index, isActive }) {
-  const meta = CARD_META[index] || CARD_META[0];
-
   return (
     <TiltCard
       className={`relative flex-shrink-0 w-[82vw] md:w-[50vw] lg:w-[36vw] h-[40vh] overflow-hidden ${
-        isActive ? 'animated-border-card' : 'academic-card'
+        isActive ? 'animated-border-card' : ''
       }`}
-      style={{ borderRadius: '8px' }}
+      style={{
+        borderRadius: '8px',
+        border: isActive ? undefined : '1px solid rgba(139,92,246,0.1)',
+        willChange: 'transform',
+      }}
     >
-      {/* Background gradient */}
+      {/* Crystal dark base */}
       <div
         className="absolute inset-0 rounded-lg"
-        style={{ background: project.gradient || 'linear-gradient(135deg, #1e0f3a 0%, #0a0720 100%)' }}
-        aria-hidden="true"
-      />
-
-      {/* Subtle graph grid */}
-      <div
-        className="absolute inset-0 rounded-lg pointer-events-none"
         style={{
-          backgroundImage:
-            'linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
+          background: 'linear-gradient(160deg, rgba(14,8,28,0.97) 0%, rgba(6,3,14,0.99) 100%)',
         }}
         aria-hidden="true"
       />
 
-      {/* Scan line */}
-      <motion.div
-        className="absolute left-0 right-0 h-12 pointer-events-none z-10"
-        style={{ background: 'linear-gradient(to bottom, transparent, rgba(139,92,246,0.05), transparent)' }}
-        animate={{ top: ['-15%', '115%'] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'linear', delay: index * 1.1 }}
+      {/* Crystal facet lines */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        aria-hidden="true"
+        preserveAspectRatio="none"
+        viewBox="0 0 100 100"
+        style={{ borderRadius: '8px' }}
+      >
+        <line x1="0" y1="100" x2="65" y2="0" stroke="rgba(196,181,253,0.07)" strokeWidth="0.4" />
+        <line x1="25" y1="100" x2="100" y2="15" stroke="rgba(139,92,246,0.05)" strokeWidth="0.4" />
+        <line x1="0" y1="55" x2="100" y2="85" stroke="rgba(139,92,246,0.03)" strokeWidth="0.3" />
+        <line x1="70" y1="0" x2="100" y2="40" stroke="rgba(196,181,253,0.04)" strokeWidth="0.3" />
+      </svg>
+
+      {/* Top-right crystal refraction */}
+      <div
+        className="absolute top-0 right-0 pointer-events-none"
+        style={{
+          width: '90px',
+          height: '90px',
+          background: 'linear-gradient(225deg, rgba(196,181,253,0.11) 0%, rgba(139,92,246,0.04) 35%, transparent 60%)',
+          borderRadius: '0 8px 0 0',
+        }}
         aria-hidden="true"
       />
 
-      {/* Live metrics */}
-      <LiveMetrics meta={meta} active={isActive} />
+      {/* Bottom-left secondary refraction */}
+      <div
+        className="absolute bottom-0 left-0 pointer-events-none"
+        style={{
+          width: '55px',
+          height: '55px',
+          background: 'linear-gradient(45deg, rgba(139,92,246,0.06) 0%, transparent 55%)',
+          borderRadius: '0 0 0 8px',
+        }}
+        aria-hidden="true"
+      />
 
-      {/* Sparkline chart — continuous graph segment per card */}
-      <SparkLine path={meta.path} active={isActive} endY={meta.endY} />
+      {/* Active inset glow */}
+      {isActive && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none rounded-lg"
+          style={{ boxShadow: 'inset 0 0 40px rgba(139,92,246,0.08)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Ghost index */}
       <p
         className="absolute top-5 right-6 font-mono font-bold select-none pointer-events-none z-20"
         style={{
-          fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-          color: isActive ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.09)',
+          fontSize: 'clamp(2rem, 4vw, 3.5rem)',
+          color: isActive ? 'rgba(196,181,253,0.15)' : 'rgba(139,92,246,0.07)',
           lineHeight: 1,
           letterSpacing: '-0.04em',
         }}
@@ -201,48 +92,58 @@ function ProjectCard({ project, index, isActive }) {
         {String(index + 1).padStart(2, '0')}
       </p>
 
-      {/* Live indicator */}
-      {isActive && (
-        <motion.div
-          className="absolute top-[4.5rem] left-6 flex items-center gap-1.5 z-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          aria-hidden="true"
-        >
-          <motion.span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ backgroundColor: '#8B5CF6' }}
-            animate={{ opacity: [1, 0.2, 1] }}
-            transition={{ duration: 1.1, repeat: Infinity }}
-          />
-          <span className="font-mono text-[9px] uppercase tracking-[0.25em]" style={{ color: 'rgba(139,92,246,0.6)' }}>
-            live
-          </span>
-        </motion.div>
-      )}
-
       {/* Card content */}
       <motion.div
-        className="w-full h-full flex flex-col justify-end p-6 md:p-8 overflow-hidden rounded-lg relative z-20"
+        className="w-full h-full flex flex-col justify-end p-6 md:p-8 relative z-20"
         animate={{ opacity: 1, scale: isActive ? 1 : 0.97 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="relative z-10">
-          <h3 className="font-serif font-bold text-lg md:text-xl text-white leading-tight mb-2">
+        <div>
+          <span
+            className="font-mono block mb-3"
+            style={{
+              fontSize: '9px',
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase',
+              color: isActive ? 'rgba(196,181,253,0.65)' : 'rgba(139,92,246,0.38)',
+            }}
+          >
+            {project.subtitle.split('·')[0].trim()}
+          </span>
+          <h3
+            className="font-serif font-bold text-lg md:text-xl leading-tight mb-2"
+            style={{ color: isActive ? '#F9FAFB' : 'rgba(249,250,251,0.68)' }}
+          >
             {project.title}
           </h3>
-          <p className="text-white/60 max-w-xs leading-relaxed font-mono text-xs uppercase tracking-wider">
-            {project.subtitle}
+          <p
+            className="font-mono text-xs uppercase leading-relaxed"
+            style={{
+              color: 'rgba(156,163,175,0.48)',
+              letterSpacing: '0.09em',
+              maxWidth: '280px',
+            }}
+          >
+            {project.subtitle.split('·').slice(1).join('·').trim()}
           </p>
         </div>
 
+        {/* Bottom edge accent */}
         <div
           className="absolute bottom-0 left-0 right-0 h-px"
           style={{
             background: isActive
-              ? 'linear-gradient(90deg, rgba(139,92,246,0.6), rgba(76,29,149,0.4), transparent)'
-              : 'linear-gradient(90deg, rgba(139,92,246,0.2), rgba(76,29,149,0.1), transparent)',
+              ? 'linear-gradient(90deg, rgba(196,181,253,0.5), rgba(139,92,246,0.25), transparent)'
+              : 'linear-gradient(90deg, rgba(139,92,246,0.1), transparent)',
+          }}
+        />
+        {/* Left edge accent */}
+        <div
+          className="absolute left-0 top-8 bottom-8 w-px"
+          style={{
+            background: isActive
+              ? 'linear-gradient(180deg, transparent, rgba(196,181,253,0.22), transparent)'
+              : 'none',
           }}
         />
       </motion.div>
@@ -258,14 +159,6 @@ export default function ProjectsShowcase() {
 
   const prev = () => setCurrent((c) => Math.max(0, c - 1));
   const next = () => setCurrent((c) => Math.min(total - 1, c + 1));
-
-  // Auto-advance — loops back to 0 after the last card
-  useEffect(() => {
-    const id = setInterval(() => {
-      setCurrent((c) => (c + 1) % total);
-    }, 4000);
-    return () => clearInterval(id);
-  }, [total]);
 
   const cardStep = typeof window !== 'undefined'
     ? (window.innerWidth < 768

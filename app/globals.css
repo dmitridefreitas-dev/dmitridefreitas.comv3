@@ -65,6 +65,16 @@
   .gpu { transform: translateZ(0); will-change: transform; }
   .contain-paint { contain: paint; }
 
+  /* Project row — CSS-driven perspective tilt + hover shadow (GPU-accelerated) */
+  .project-row {
+    transform: perspective(1200px) rotateY(var(--ry, 0deg));
+    transition: transform 0.15s ease, box-shadow 0.3s ease, background-color 0.15s;
+  }
+  .project-row:hover {
+    transform: perspective(1200px) rotateY(var(--ry, 0deg)) translateY(-3px);
+    box-shadow: 0 8px 32px rgba(139,92,246,0.13), 0 2px 8px rgba(0,0,0,0.3);
+  }
+
   .nav-link {
     font-family: var(--font-jetbrains), monospace;
     font-size: 10px;

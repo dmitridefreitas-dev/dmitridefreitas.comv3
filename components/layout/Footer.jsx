@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Linkedin, Mail } from 'lucide-react';
 import { socialLinks, contactInfo } from '@/data/constants';
 
@@ -14,8 +15,24 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-surface/50 backdrop-blur-sm">
-      <div className="max-w-6xl mx-auto px-8 py-6">
+    <footer
+      className="relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #0a0516 0%, #06030e 100%)',
+        boxShadow: '0 -1px 0 rgba(196,181,253,0.06), 0 -8px 32px rgba(139,92,246,0.04)',
+      }}
+    >
+      {/* Top edge crystal highlight */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(196,181,253,0.22) 30%, rgba(139,92,246,0.15) 70%, transparent 100%)' }}
+      />
+      {/* Diagonal facet */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'linear-gradient(140deg, rgba(196,181,253,0.022) 0%, transparent 45%, rgba(139,92,246,0.018) 100%)' }}
+      />
+      <div className="max-w-6xl mx-auto px-8 py-6 relative z-10">
 
         {/* Main row */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -42,22 +59,26 @@ export default function Footer() {
             </nav>
             <span className="text-muted/25 hidden sm:inline">·</span>
             <div className="flex items-center gap-0.5">
-              <a
+              <motion.a
                 href={socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
                 className="w-7 h-7 flex items-center justify-center text-muted/60 hover:text-accent transition-colors"
+                whileHover={{ y: -2, scale: 1.15 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
                 <Linkedin className="h-3 w-3" />
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href={`mailto:${contactInfo.email}`}
                 aria-label="Email"
                 className="w-7 h-7 flex items-center justify-center text-muted/60 hover:text-accent transition-colors"
+                whileHover={{ y: -2, scale: 1.15 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
                 <Mail className="h-3 w-3" />
-              </a>
+              </motion.a>
             </div>
           </div>
         </div>

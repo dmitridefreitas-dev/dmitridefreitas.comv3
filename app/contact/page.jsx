@@ -238,7 +238,7 @@ export default function ContactPage() {
                 />
               </div>
 
-              <div className="relative">
+              <div className="relative" style={{ perspective: '800px' }}>
                 <AnimatePresence>
                   {sendSuccess && (
                     <motion.div
@@ -252,7 +252,7 @@ export default function ContactPage() {
                     />
                   )}
                 </AnimatePresence>
-                <MagneticButton type="submit" disabled={isSubmitting} size="lg" data-cursor="expand">
+                <MagneticButton type="submit" disabled={isSubmitting} size="lg" data-cursor="expand" className="shadow-[4px_4px_0px_0px_rgba(139,92,246,1)] hover:shadow-none hover:translate-y-[4px] hover:translate-x-[4px]">
                   {isSubmitting ? (
                     'Sending...'
                   ) : (

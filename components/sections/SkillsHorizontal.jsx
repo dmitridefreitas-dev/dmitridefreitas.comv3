@@ -46,36 +46,51 @@ function Carousel3D({ skills, onCardClick }) {
 
   const rotY = useMotionValue(0);
   const isPaused = useRef(false);
+  const isPausedByHover = useRef(false);
+  const hoverResumeTimer = useRef(null);
   const dragStartX = useRef(null);
   const dragStartRot = useRef(0);
   const [frontIndex, setFrontIndex] = useState(0);
-  const [brightnessMap, setBrightnessMap] = useState(() =>
-    Array.from({ length: skills.length }, (_, i) => (i === 0 ? 1 : 0.4))
-  );
+  const cardRefs = useRef([]);
 
-  /* continuous auto-rotation */
+  /* cleanup hover timer on unmount */
+  useEffect(() => {
+    return () => {
+      if (hoverResumeTimer.current) clearTimeout(hoverResumeTimer.current);
+    };
+  }, []);
+
+  /* continuous auto-rotation — slow and steady */
   useAnimationFrame((_, delta) => {
     if (!isPaused.current) {
-      rotY.set(rotY.get() + delta * 0.012);
+      rotY.set(rotY.get() + delta * 0.007);
     }
   });
 
-  /* track front card + brightness */
+  /* track front card + brightness (direct DOM manipulation to avoid re-renders) */
   useEffect(() => {
+    let prevFront = -1;
     const unsub = rotY.onChange((v) => {
       const norm = ((-v % 360) + 360) % 360;
       let closest = 0;
       let minDist = 360;
-      const bmap = Array(total);
       for (let i = 0; i < total; i++) {
         const cardAngle = (angleStep * i) % 360;
         let dist = Math.abs(norm - cardAngle);
         if (dist > 180) dist = 360 - dist;
         if (dist < minDist) { minDist = dist; closest = i; }
-        bmap[i] = dist <= 90 ? 1 - (dist / 90) * 0.6 : 0.4 - ((dist - 90) / 90) * 0.25;
+        const brightness = dist <= 90 ? 1 - (dist / 90) * 0.6 : 0.4 - ((dist - 90) / 90) * 0.25;
+        const el = cardRefs.current[i];
+        if (el) {
+          el.style.filter = `brightness(${brightness})`;
+          el.style.borderColor = i === closest ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.2)';
+          el.style.boxShadow = i === closest ? '0 0 30px rgba(139,92,246,0.15)' : 'none';
+        }
       }
-      setFrontIndex(closest);
-      setBrightnessMap(bmap);
+      if (closest !== prevFront) {
+        prevFront = closest;
+        setFrontIndex(closest);
+      }
     });
     return unsub;
   }, [rotY, total, angleStep]);
@@ -109,7 +124,45 @@ function Carousel3D({ skills, onCardClick }) {
 
   const onPointerUp = useCallback(() => {
     dragStartX.current = null;
-    isPaused.current = false;
+    // Only unpause if hover isn't holding it paused
+    if (!isPausedByHover.current) {
+      isPaused.current = false;
+    }
+  }, []);
+
+  /* hover-near-center detection — pauses rotation, resumes after 4s */
+  const onMouseMoveWrapper = useCallback((e) => {
+    if (dragStartX.current !== null) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dx = e.clientX - rect.left - rect.width / 2;
+    const dy = e.clientY - rect.top - rect.height / 2;
+    const nearCenter = Math.sqrt(dx * dx + dy * dy) < 75;
+
+    if (nearCenter) {
+      isPausedByHover.current = true;
+      isPaused.current = true;
+      if (hoverResumeTimer.current) {
+        clearTimeout(hoverResumeTimer.current);
+        hoverResumeTimer.current = null;
+      }
+    } else if (isPausedByHover.current && !hoverResumeTimer.current) {
+      hoverResumeTimer.current = setTimeout(() => {
+        isPausedByHover.current = false;
+        isPaused.current = false;
+        hoverResumeTimer.current = null;
+      }, 4000);
+    }
+  }, []);
+
+  const onMouseLeaveWrapper = useCallback(() => {
+    if (dragStartX.current !== null) return;
+    if (isPausedByHover.current && !hoverResumeTimer.current) {
+      hoverResumeTimer.current = setTimeout(() => {
+        isPausedByHover.current = false;
+        isPaused.current = false;
+        hoverResumeTimer.current = null;
+      }, 4000);
+    }
   }, []);
 
   return (
@@ -126,8 +179,8 @@ function Carousel3D({ skills, onCardClick }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
-        onMouseEnter={() => { if (dragStartX.current === null) isPaused.current = true; }}
-        onMouseLeave={() => { if (dragStartX.current === null) isPaused.current = false; }}
+        onMouseMove={onMouseMoveWrapper}
+        onMouseLeave={onMouseLeaveWrapper}
       >
         {/* rotating cylinder */}
         <motion.div
@@ -150,6 +203,7 @@ function Carousel3D({ skills, onCardClick }) {
             return (
               <motion.div
                 key={skill.id}
+                ref={(el) => { cardRefs.current[i] = el; }}
                 className="absolute flex flex-col justify-center items-center text-center px-5 py-6 cursor-pointer"
                 style={{
                   width: CARD_W,
@@ -160,8 +214,9 @@ function Carousel3D({ skills, onCardClick }) {
                   border: `1px solid ${isFront ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.2)'}`,
                   boxShadow: isFront ? '0 0 30px rgba(139,92,246,0.15)' : 'none',
                   transform: `rotateY(${cardAngle}deg) translateZ(${radius}px) ${isFront ? 'scale(1.05)' : 'scale(1)'}`,
-                  filter: `brightness(${brightnessMap[i] ?? 0.4})`,
+                  filter: `brightness(${i === 0 ? 1 : 0.4})`,
                   transition: 'border-color 0.3s, box-shadow 0.3s, filter 0.3s',
+                  willChange: 'transform',
                 }}
                 onClick={() => {
                   if (isFront) onCardClick(skill);

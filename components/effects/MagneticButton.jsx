@@ -25,7 +25,7 @@ export default function MagneticButton({
     default:
       'border border-accent text-accent bg-transparent hover:bg-accent/10 hover:text-foreground shadow-[3px_3px_0px_0px_rgba(139,92,246,1)] hover:shadow-none hover:translate-y-[3px] hover:translate-x-[3px] transition-all rounded-none',
     outline:
-      'border border-accent/40 text-accent hover:bg-accent/10 hover:border-accent/70 rounded-none',
+      'border border-accent/50 text-accent hover:bg-accent/10 hover:border-accent/70 rounded-none shadow-[3px_3px_0px_0px_rgba(139,92,246,0.55)] hover:shadow-none hover:translate-y-[3px] hover:translate-x-[3px] transition-all',
     ghost: 'text-muted hover:text-foreground hover:bg-surface-hover rounded-none',
   };
 

@@ -28,23 +28,25 @@ const CAREER = [
   { year: '2018 – 2021', title: 'Science Club', org: 'Harrison College', type: 'activity' },
 ];
 
-/* ── Stone positions (viewBox 1000x1100) ──────────────────────────── */
+/* ── Stone positions (viewBox 1000x820) ───────────────────────────── */
+
+const VIEWBOX_H = 820;
 
 const EDU_POSITIONS = [
-  { cx: 120, cy: 80 },
-  { cx: 280, cy: 340 },
-  { cx: 150, cy: 620 },
+  { cx: 220, cy: 60 },
+  { cx: 330, cy: 252 },
+  { cx: 220, cy: 460 },
 ];
 
 const CAREER_POSITIONS = [
-  { cx: 680, cy: 60 },
-  { cx: 850, cy: 180 },
-  { cx: 620, cy: 320 },
-  { cx: 800, cy: 460 },
-  { cx: 640, cy: 600 },
-  { cx: 870, cy: 720 },
-  { cx: 660, cy: 860 },
-  { cx: 820, cy: 980 },
+  { cx: 680, cy: 45 },
+  { cx: 840, cy: 134 },
+  { cx: 625, cy: 238 },
+  { cx: 800, cy: 340 },
+  { cx: 640, cy: 445 },
+  { cx: 855, cy: 535 },
+  { cx: 655, cy: 638 },
+  { cx: 820, cy: 726 },
 ];
 
 /* ── Irregular stone polygon shapes (offsets from center) ─────────── */
@@ -144,6 +146,7 @@ export default function CompetenciesSticky() {
   const eduDashoffset = useTransform(smoothProgress, [0, 1], [eduPathLength, 0]);
   const careerDashoffset = useTransform(smoothProgress, [0, 1], [careerPathLength, 0]);
 
+
   useMotionValueEvent(smoothProgress, 'change', (latest) => {
     setEduVisible((prev) => {
       let changed = false;
@@ -188,14 +191,14 @@ export default function CompetenciesSticky() {
       </motion.p>
 
       {/* Main container */}
-      <div style={{ position: 'relative', width: '100%', minHeight: '1100px' }}>
+      <div style={{ position: 'relative', width: '100%', minHeight: `${VIEWBOX_H}px` }}>
 
         {/* Column headers */}
         <div
           className="font-mono text-[10px] uppercase tracking-[0.3em]"
           style={{
             position: 'absolute',
-            left: '12%',
+            left: '20%',
             top: '10px',
             color: 'rgba(160,160,160,0.5)',
             zIndex: 5,
@@ -218,7 +221,7 @@ export default function CompetenciesSticky() {
 
         {/* SVG overlay */}
         <svg
-          viewBox="0 0 1000 1100"
+          viewBox={`0 0 1000 ${VIEWBOX_H}`}
           style={{
             position: 'absolute',
             inset: 0,
@@ -277,17 +280,19 @@ export default function CompetenciesSticky() {
                 <AnimatePresence>
                   {eduVisible[i] && (
                     <>
-                      {/* Radial glow */}
+                      {/* Radial glow — uses fixed r with scale transform (GPU-accelerated) */}
                       <motion.circle
                         cx={cx}
                         cy={cy}
+                        r={30}
                         fill={colors.glow}
-                        initial={{ r: 0, opacity: 0 }}
+                        initial={{ scale: 0, opacity: 0 }}
                         animate={{
-                          r: [0, 50, 30],
+                          scale: [0, 50/30, 1],
                           opacity: [0, 0.6, 0.15],
                         }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
+                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform, opacity' }}
                       />
                       {/* Stone polygon */}
                       <motion.polygon
@@ -303,7 +308,7 @@ export default function CompetenciesSticky() {
                           damping: 15,
                           duration: 0.6,
                         }}
-                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform' }}
                       />
                     </>
                   )}
@@ -325,13 +330,15 @@ export default function CompetenciesSticky() {
                       <motion.circle
                         cx={cx}
                         cy={cy}
+                        r={30}
                         fill={colors.glow}
-                        initial={{ r: 0, opacity: 0 }}
+                        initial={{ scale: 0, opacity: 0 }}
                         animate={{
-                          r: [0, 50, 30],
+                          scale: [0, 50/30, 1],
                           opacity: [0, 0.6, 0.15],
                         }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
+                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform, opacity' }}
                       />
                       <motion.polygon
                         points={pts}
@@ -346,7 +353,7 @@ export default function CompetenciesSticky() {
                           damping: 15,
                           duration: 0.6,
                         }}
-                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                        style={{ transformOrigin: `${cx}px ${cy}px`, willChange: 'transform' }}
                       />
                     </>
                   )}
@@ -361,7 +368,7 @@ export default function CompetenciesSticky() {
           const { cx, cy } = EDU_POSITIONS[i];
           const colors = TYPE_COLORS[item.type];
           const leftPct = (cx / 1000) * 100;
-          const topPct = (cy / 1100) * 100;
+          const topPct = (cy / VIEWBOX_H) * 100;
           return (
             <AnimatePresence key={`edu-label-${i}`}>
               {eduVisible[i] && (
@@ -433,7 +440,7 @@ export default function CompetenciesSticky() {
           const { cx, cy } = CAREER_POSITIONS[i];
           const colors = TYPE_COLORS[item.type];
           const leftPct = (cx / 1000) * 100;
-          const topPct = (cy / 1100) * 100;
+          const topPct = (cy / VIEWBOX_H) * 100;
           return (
             <AnimatePresence key={`career-label-${i}`}>
               {careerVisible[i] && (

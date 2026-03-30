@@ -1,25 +1,46 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { useState, useMemo, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import TextReveal from '@/components/effects/TextReveal';
 import ProjectDetailModal from '@/components/modals/ProjectDetailModal';
 import { allProjects, projectCategories } from '@/data/projects';
 import { ArrowUpRight, FileText } from 'lucide-react';
 
 function ProjectRow({ project, index, onOpen }) {
+  const rowRef = useRef(null);
+
+  const handleMouseMove = useCallback((e) => {
+    const rect = rowRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const norm = (e.clientX - rect.left) / rect.width;
+    const ry = (norm - 0.5) * 3.6; // maps [0,1] to [-1.8, 1.8]
+    e.currentTarget.style.setProperty('--ry', `${ry}deg`);
+  }, []);
+  const handleMouseLeave = useCallback((e) => {
+    e.currentTarget.style.setProperty('--ry', '0deg');
+  }, []);
+
   return (
     <motion.article
+      ref={rowRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.5, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative border-b border-border py-5 cursor-pointer hover:bg-surface transition-all rounded-lg px-4 -mx-4 overflow-hidden"
+      className="project-row group relative border-b border-border py-5 cursor-pointer hover:bg-surface transition-all rounded-lg px-4 -mx-4 overflow-visible"
       onClick={() => onOpen(project)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onOpen(project)}
       data-cursor="expand"
     >
+      {/* 3D bottom edge — visible on hover */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, rgba(139,92,246,0.6), rgba(196,181,253,0.3), transparent)' }}
+      />
       <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
         <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 md:w-24 flex-shrink-0">
           <span
@@ -118,20 +139,15 @@ export default function ProjectsContent() {
           transition={{ delay: 0.3 }}
           className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-6 relative z-10"
         >
-          <motion.span
-            animate={{
-              textShadow: [
-                '0 0 0px rgba(139,92,246,0)',
-                '0 0 16px rgba(139,92,246,0.65)',
-                '0 0 0px rgba(139,92,246,0)',
-              ],
-              opacity: [1, 0.7, 1],
-            }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-            style={{ display: 'inline' }}
-          >
-            Experience &amp; Projects
-          </motion.span>
+          <span className="relative inline-block" style={{ textShadow: '0 0 16px rgba(139,92,246,0.65)' }}>
+            <motion.span
+              animate={{ opacity: [1, 0.7, 1] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+              style={{ display: 'inline' }}
+            >
+              Experience &amp; Projects
+            </motion.span>
+          </span>
         </motion.p>
 
         <h1 className="font-serif font-bold text-display text-foreground text-balance will-change-transform relative z-10">

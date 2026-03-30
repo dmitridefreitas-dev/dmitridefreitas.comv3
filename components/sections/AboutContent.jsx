@@ -1,6 +1,6 @@
 'use client';
-import { useState, useRef } from 'react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { useState, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import TextReveal from '@/components/effects/TextReveal';
 import MagneticButton from '@/components/effects/MagneticButton';
 import ExperienceModal from '@/components/modals/ExperienceModal';
@@ -42,20 +42,33 @@ function InterestCard({ interest, index }) {
   const Icon = interest.icon;
   const cardRef = useRef(null);
 
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
-  const springX = useSpring(mouseX, { stiffness: 120, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 120, damping: 20 });
-  const spotlightX = useTransform(springX, [0, 1], ['0%', '100%']);
-  const spotlightY = useTransform(springY, [0, 1], ['0%', '100%']);
-
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
-    mouseX.set((e.clientX - rect.left) / rect.width);
-    mouseY.set((e.clientY - rect.top) / rect.height);
-  };
-  const handleMouseLeave = () => { mouseX.set(0.5); mouseY.set(0.5); };
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    const rx = (ny - 0.5) * -12;  // maps [0,1] -> [6, -6]
+    const ry = (nx - 0.5) * 16;   // maps [0,1] -> [-8, 8]
+    const sx = (nx * 100).toFixed(1);
+    const sy = (ny * 100).toFixed(1);
+    const inner = cardRef.current?.querySelector('.interest-card-inner');
+    if (inner) {
+      inner.style.setProperty('--rx', `${rx}deg`);
+      inner.style.setProperty('--ry', `${ry}deg`);
+      inner.style.setProperty('--sx', `${sx}%`);
+      inner.style.setProperty('--sy', `${sy}%`);
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const inner = cardRef.current?.querySelector('.interest-card-inner');
+    if (inner) {
+      inner.style.setProperty('--rx', '0deg');
+      inner.style.setProperty('--ry', '0deg');
+      inner.style.setProperty('--sx', '50%');
+      inner.style.setProperty('--sy', '50%');
+    }
+  }, []);
 
   return (
     <motion.div
@@ -67,6 +80,7 @@ function InterestCard({ interest, index }) {
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
       className="group relative overflow-hidden rounded-xl"
+      style={{ perspective: '900px' }}
     >
       {/* Top border sweep */}
       <motion.div
@@ -78,16 +92,20 @@ function InterestCard({ interest, index }) {
         transition={{ duration: 1.2, delay: index * 0.12 + 0.3, ease: [0.22, 1, 0.36, 1] }}
       />
 
-      <div className="relative border border-[#160e24] bg-[#080810]/60 p-7 rounded-xl overflow-hidden transition-colors duration-500 group-hover:border-accent/25 flex gap-5 items-start">
+      <div
+        className="interest-card-inner relative border border-[#160e24] bg-[#080810]/60 p-7 rounded-xl overflow-hidden transition-colors duration-500 group-hover:border-accent/25 flex gap-5 items-start"
+        style={{
+          transform: 'perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))',
+          transition: 'transform 0.12s ease',
+          transformStyle: 'preserve-3d',
+        }}
+      >
 
-        {/* Mouse spotlight */}
-        <motion.div
+        {/* Mouse spotlight — pure CSS via custom properties */}
+        <div
           className="absolute inset-0 pointer-events-none rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
-            background: useTransform(
-              [spotlightX, spotlightY],
-              ([x, y]) => `radial-gradient(220px circle at ${x} ${y}, rgba(139,92,246,0.1) 0%, transparent 70%)`
-            ),
+            background: 'radial-gradient(220px circle at var(--sx,50%) var(--sy,50%), rgba(139,92,246,0.1) 0%, transparent 70%)',
           }}
           aria-hidden="true"
         />
@@ -105,7 +123,7 @@ function InterestCard({ interest, index }) {
         <div className="flex-shrink-0 relative">
           <motion.div
             className="absolute inset-0 rounded-lg"
-            style={{ background: 'rgba(139,92,246,0.25)' }}
+            style={{ background: 'rgba(139,92,246,0.25)', willChange: 'transform, opacity' }}
             animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
             transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.8 }}
             aria-hidden="true"
@@ -159,20 +177,15 @@ export default function AboutContent() {
           transition={{ duration: 0.7, delay: 0.8 }}
           className="font-mono text-xs uppercase tracking-[0.4em] text-accent mt-4"
         >
-          <motion.span
-            animate={{
-              textShadow: [
-                '0 0 0px rgba(139,92,246,0)',
-                '0 0 18px rgba(139,92,246,0.7)',
-                '0 0 0px rgba(139,92,246,0)',
-              ],
-              opacity: [1, 0.75, 1],
-            }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}
-            style={{ display: 'inline' }}
-          >
-            Data Science &amp; Financial Engineering · WashU · Available May 2026
-          </motion.span>
+          <span className="relative inline-block" style={{ textShadow: '0 0 18px rgba(139,92,246,0.7)' }}>
+            <motion.span
+              animate={{ opacity: [1, 0.75, 1] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}
+              style={{ display: 'inline' }}
+            >
+              Data Science &amp; Financial Engineering · WashU · Available May 2026
+            </motion.span>
+          </span>
         </motion.p>
 
         <motion.div
@@ -185,13 +198,8 @@ export default function AboutContent() {
             <motion.span
               key={honor}
               className="font-mono text-xs uppercase tracking-[0.2em] text-accent bg-surface border border-accent/25 rounded px-2 py-1"
-              animate={{
-                boxShadow: [
-                  '0 0 0px rgba(139,92,246,0)',
-                  '0 0 10px rgba(139,92,246,0.35)',
-                  '0 0 0px rgba(139,92,246,0)',
-                ],
-              }}
+              style={{ boxShadow: '0 0 10px rgba(139,92,246,0.35)' }}
+              animate={{ opacity: [1, 0.7, 1] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 2 + i * 1.4 }}
             >
               {honor}
@@ -295,7 +303,7 @@ export default function AboutContent() {
                   <div className="absolute left-[-34px] top-9 w-2.5 h-2.5">
                     <motion.div
                       className="absolute inset-0 rounded-full"
-                      style={{ backgroundColor: 'rgba(139,92,246,0.4)' }}
+                      style={{ backgroundColor: 'rgba(139,92,246,0.4)', willChange: 'transform, opacity' }}
                       animate={{ scale: [1, 2.8, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ duration: 3.2, repeat: Infinity, ease: 'easeOut', delay: i * 1.2 }}
                     />
@@ -361,7 +369,7 @@ export default function AboutContent() {
                   <div className="absolute left-[-34px] top-9 w-2.5 h-2.5">
                     <motion.div
                       className="absolute inset-0 rounded-full"
-                      style={{ backgroundColor: 'rgba(139,92,246,0.4)' }}
+                      style={{ backgroundColor: 'rgba(139,92,246,0.4)', willChange: 'transform, opacity' }}
                       animate={{ scale: [1, 2.8, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 0.9 }}
                     />
@@ -418,7 +426,7 @@ export default function AboutContent() {
                   <div className="absolute left-[-34px] top-10 w-2.5 h-2.5">
                     <motion.div
                       className="absolute inset-0 rounded-full"
-                      style={{ backgroundColor: 'rgba(139,92,246,0.4)' }}
+                      style={{ backgroundColor: 'rgba(139,92,246,0.4)', willChange: 'transform, opacity' }}
                       animate={{ scale: [1, 2.8, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: i * 1.1 }}
                     />
