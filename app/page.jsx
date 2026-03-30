@@ -5,7 +5,6 @@ import SkillsNetwork from '@/components/sections/SkillsNetwork';
 import ProjectsShowcase from '@/components/sections/ProjectsShowcase';
 import SkillsHorizontal from '@/components/sections/SkillsHorizontal';
 import CompetenciesSticky from '@/components/sections/CompetenciesSticky';
-import TimelineScroll from '@/components/sections/TimelineScroll';
 import CTASection from '@/components/sections/CTASection';
 import SectionAtmosphere from '@/components/effects/SectionAtmosphere';
 
@@ -32,9 +31,6 @@ export default function Home() {
       </SectionAtmosphere>
       <SectionAtmosphere atmosphere="skills">
         <CompetenciesSticky />
-      </SectionAtmosphere>
-      <SectionAtmosphere atmosphere="timeline">
-        <TimelineScroll />
       </SectionAtmosphere>
       <SectionAtmosphere atmosphere="cta">
         <CTASection />

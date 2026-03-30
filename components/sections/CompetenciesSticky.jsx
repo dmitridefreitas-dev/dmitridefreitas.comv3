@@ -1,263 +1,166 @@
 'use client';
 import {
   motion,
+  AnimatePresence,
   useScroll,
   useTransform,
   useSpring,
   useMotionValueEvent,
-  AnimatePresence,
 } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { timeline } from '@/data/constants';
 
-const stonePositions = [
-  { left: '15%', top: '2%' },
-  { left: '38%', top: '18%' },
-  { left: '58%', top: '35%' },
-  { left: '28%', top: '54%' },
-  { left: '48%', top: '72%' },
+/* ── Data ─────────────────────────────────────────────────────────── */
+
+const EDUCATION = [
+  { year: '2024 – 2026', title: 'BS Data Science & Financial Engineering — WashU', type: 'education' },
+  { year: '2021 – 2023', title: 'BA Mathematics — Drew University', type: 'education' },
+  { year: '2015 – 2021', title: 'A-Levels — Harrison College, Cambridge', type: 'education' },
 ];
 
-const stoneBorderRadii = [
-  '45% 55% 60% 40% / 50% 45% 55% 50%',
-  '55% 45% 40% 60% / 45% 55% 45% 55%',
-  '40% 60% 55% 45% / 60% 40% 50% 50%',
-  '50% 50% 45% 55% / 40% 60% 55% 45%',
-  '60% 40% 50% 50% / 55% 45% 40% 60%',
+const CAREER = [
+  { year: '2024', title: 'Data Scientist Intern', org: 'Amphora Investment Management', type: 'finance' },
+  { year: '2023', title: 'Startup Founder', org: 'MobileHub Barbados', type: 'finance' },
+  { year: '2024 – Present', title: 'Front Desk Associate', org: 'WashU Recreation Center', type: 'finance' },
+  { year: '2022 – 2023', title: 'Personal Care Assistant', type: 'finance' },
+  { year: '2024 – Present', title: 'PEAD Market Efficiency Research', org: 'WashU', type: 'research' },
+  { year: '2023 – Present', title: 'Quantitative & Algorithmic Trading Research', type: 'research' },
+  { year: '2018 – 2020', title: 'Duke of Edinburgh Award', type: 'activity' },
+  { year: '2018 – 2021', title: 'Science Club', org: 'Harrison College', type: 'activity' },
 ];
 
-const stoneSizes = [
-  { width: 68, height: 58 },
-  { width: 74, height: 64 },
-  { width: 62, height: 56 },
-  { width: 78, height: 66 },
-  { width: 66, height: 60 },
+/* ── Stone positions (viewBox 1000x1100) ──────────────────────────── */
+
+const EDU_POSITIONS = [
+  { cx: 120, cy: 80 },
+  { cx: 280, cy: 340 },
+  { cx: 150, cy: 620 },
 ];
 
-const stoneThresholds = [0.0, 0.2, 0.4, 0.6, 0.8];
-
-// Label positions: alternate above/below based on index
-const labelOffsets = [
-  { top: -54, left: '50%', transform: 'translateX(-50%)', align: 'center' }, // above
-  { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 8, align: 'center' }, // below
-  { top: -54, left: '50%', transform: 'translateX(-50%)', align: 'center' }, // above
-  { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 8, align: 'center' }, // below
-  { top: -54, left: '50%', transform: 'translateX(-50%)', align: 'center' }, // above
+const CAREER_POSITIONS = [
+  { cx: 680, cy: 60 },
+  { cx: 850, cy: 180 },
+  { cx: 620, cy: 320 },
+  { cx: 800, cy: 460 },
+  { cx: 640, cy: 600 },
+  { cx: 870, cy: 720 },
+  { cx: 660, cy: 860 },
+  { cx: 820, cy: 980 },
 ];
 
-// Compute SVG path centers based on percentages of container
-// Container is ~600px tall, width is 100% of parent
-// We use viewBox coordinates: 800 x 600
-function getStoneCenters() {
-  return stonePositions.map((pos, i) => ({
-    x: (parseFloat(pos.left) / 100) * 800 + stoneSizes[i].width / 2,
-    y: (parseFloat(pos.top) / 100) * 600 + stoneSizes[i].height / 2,
-  }));
-}
+/* ── Irregular stone polygon shapes (offsets from center) ─────────── */
 
-function buildPath(centers) {
-  if (centers.length < 2) return '';
-  let d = `M ${centers[0].x} ${centers[0].y}`;
-  for (let i = 1; i < centers.length; i++) {
-    const prev = centers[i - 1];
-    const curr = centers[i];
-    const cpx1 = prev.x + (curr.x - prev.x) * 0.5;
-    const cpy1 = prev.y;
-    const cpx2 = prev.x + (curr.x - prev.x) * 0.5;
-    const cpy2 = curr.y;
-    d += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${curr.x} ${curr.y}`;
+const EDU_SHAPES = [
+  '-28,-18 -12,-32 15,-28 30,-8 22,20 -5,28 -25,12',
+  '-30,-14 -10,-30 18,-26 32,-4 26,18 2,32 -22,16 -32,2',
+  '-26,-20 -8,-34 20,-24 28,-6 24,22 -2,30 -28,14',
+];
+
+const CAREER_SHAPES = [
+  '-32,-12 -14,-30 16,-28 34,-6 28,16 4,32 -24,18 -30,4',
+  '-26,-22 -6,-35 22,-20 30,-2 20,24 -8,30 -28,10',
+  '-30,-16 -12,-32 14,-30 32,-10 26,14 6,28 -20,22 -28,4',
+  '-28,-20 -4,-34 20,-26 34,-8 24,18 0,32 -26,12',
+  '-34,-10 -16,-28 12,-32 30,-14 28,12 8,30 -18,24 -32,6',
+  '-26,-24 -2,-32 24,-22 32,-4 22,20 -4,34 -24,16',
+  '-30,-18 -8,-34 18,-28 34,-6 26,16 2,30 -22,18 -28,2',
+  '-28,-16 -10,-30 16,-26 30,-10 24,14 4,28 -20,20 -26,6',
+];
+
+/* ── Type colors ──────────────────────────────────────────────────── */
+
+const TYPE_COLORS = {
+  education: { fill: 'rgba(99,102,241,0.18)', stroke: 'rgba(99,102,241,0.6)', glow: 'rgba(99,102,241,0.5)', badge_bg: 'rgba(99,102,241,0.15)', badge_text: 'rgb(129,140,248)', badge_border: 'rgba(99,102,241,0.3)' },
+  finance:   { fill: 'rgba(139,92,246,0.18)', stroke: 'rgba(139,92,246,0.6)', glow: 'rgba(139,92,246,0.5)', badge_bg: 'rgba(139,92,246,0.15)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(139,92,246,0.3)' },
+  research:  { fill: 'rgba(124,58,237,0.18)', stroke: 'rgba(124,58,237,0.6)', glow: 'rgba(124,58,237,0.5)', badge_bg: 'rgba(124,58,237,0.15)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(124,58,237,0.3)' },
+  activity:  { fill: 'rgba(109,40,217,0.18)', stroke: 'rgba(109,40,217,0.5)', glow: 'rgba(109,40,217,0.4)', badge_bg: 'rgba(109,40,217,0.15)', badge_text: 'rgb(167,139,250)', badge_border: 'rgba(109,40,217,0.3)' },
+};
+
+/* ── Stone thresholds ─────────────────────────────────────────────── */
+
+const EDU_THRESHOLDS = [0.05, 0.45, 0.85];
+const CAREER_THRESHOLDS = [0.05, 0.18, 0.32, 0.46, 0.60, 0.73, 0.86, 0.95];
+
+/* ── Path builder ─────────────────────────────────────────────────── */
+
+function buildPath(positions) {
+  if (positions.length < 2) return '';
+  let d = `M ${positions[0].cx} ${positions[0].cy}`;
+  for (let i = 1; i < positions.length; i++) {
+    const prev = positions[i - 1];
+    const curr = positions[i];
+    const cpx1 = prev.cx + (curr.cx - prev.cx) * 0.5;
+    const cpy1 = prev.cy;
+    const cpx2 = prev.cx + (curr.cx - prev.cx) * 0.5;
+    const cpy2 = curr.cy;
+    d += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${curr.cx} ${curr.cy}`;
   }
   return d;
 }
 
-function StoneElement({ item, index, visible }) {
-  const size = stoneSizes[index];
-  const isEven = index % 2 === 0;
-  const labelOffset = labelOffsets[index];
-  const altTint = index % 2 === 0
-    ? 'rgba(139,92,246,0.12)'
-    : 'rgba(99,102,241,0.12)';
+/* ── Polygon points with offset ───────────────────────────────────── */
 
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: stonePositions[index].left,
-        top: stonePositions[index].top,
-        width: size.width,
-        height: size.height,
-      }}
-    >
-      {/* The stone */}
-      <AnimatePresence>
-        {visible && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{
-              scale: [0, 1.3, 1],
-              opacity: [0, 1, 1],
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 400,
-              damping: 15,
-              duration: 0.6,
-            }}
-            style={{
-              width: size.width,
-              height: size.height,
-              borderRadius: stoneBorderRadii[index],
-              background: altTint,
-              backgroundImage:
-                'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.04) 0%, transparent 50%)',
-              border: '1.5px solid rgba(139,92,246,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              cursor: 'default',
-            }}
-          >
-            {/* Glow burst */}
-            <motion.div
-              initial={{ boxShadow: '0 0 0px rgba(139,92,246,0)' }}
-              animate={{
-                boxShadow: [
-                  '0 0 0px rgba(139,92,246,0)',
-                  '0 0 30px rgba(139,92,246,0.8)',
-                  '0 0 10px rgba(139,92,246,0.25)',
-                ],
-              }}
-              transition={{
-                duration: 0.8,
-                ease: 'easeOut',
-              }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: stoneBorderRadii[index],
-                pointerEvents: 'none',
-              }}
-            />
-            {/* Year text */}
-            <span
-              style={{
-                fontFamily: 'var(--font-mono, monospace)',
-                fontWeight: 700,
-                color: 'rgb(139,92,246)',
-                fontSize: '10px',
-                lineHeight: 1,
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-                userSelect: 'none',
-              }}
-            >
-              {item.year}
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Floating label */}
-      <AnimatePresence>
-        {visible && (
-          <motion.div
-            initial={{ opacity: 0, y: isEven ? -8 : 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.2 }}
-            style={{
-              position: 'absolute',
-              top: labelOffset.top,
-              left: labelOffset.left,
-              transform: labelOffset.transform,
-              marginTop: labelOffset.marginTop || 0,
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'var(--font-serif, serif)',
-                fontWeight: 700,
-                color: 'var(--foreground, #e5e5e5)',
-                fontSize: '12px',
-                lineHeight: 1.3,
-                marginBottom: '4px',
-              }}
-            >
-              {item.title.length > 40 ? item.title.slice(0, 38) + '...' : item.title}
-            </p>
-            <span
-              style={{
-                display: 'inline-block',
-                fontFamily: 'var(--font-mono, monospace)',
-                fontSize: '9px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                padding: '2px 8px',
-                borderRadius: '9999px',
-                background:
-                  item.type === 'education'
-                    ? 'rgba(99,102,241,0.15)'
-                    : 'rgba(139,92,246,0.15)',
-                color:
-                  item.type === 'education'
-                    ? 'rgb(129,140,248)'
-                    : 'rgb(167,139,250)',
-                border:
-                  item.type === 'education'
-                    ? '1px solid rgba(99,102,241,0.3)'
-                    : '1px solid rgba(139,92,246,0.3)',
-              }}
-            >
-              {item.type}
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+function offsetPoints(shapeStr, cx, cy) {
+  return shapeStr
+    .split(' ')
+    .map((pair) => {
+      const [x, y] = pair.split(',').map(Number);
+      return `${cx + x},${cy + y}`;
+    })
+    .join(' ');
 }
+
+/* ── Component ────────────────────────────────────────────────────── */
 
 export default function CompetenciesSticky() {
   const sectionRef = useRef(null);
-  const [visibleStones, setVisibleStones] = useState(
-    () => new Array(timeline.length).fill(false)
-  );
-  const [pathLength, setPathLength] = useState(0);
-  const pathRef = useRef(null);
+  const eduPathRef = useRef(null);
+  const careerPathRef = useRef(null);
 
-  const centers = getStoneCenters();
-  const pathD = buildPath(centers);
+  const [eduPathLength, setEduPathLength] = useState(0);
+  const [careerPathLength, setCareerPathLength] = useState(0);
+
+  const [eduVisible, setEduVisible] = useState(() => new Array(EDUCATION.length).fill(false));
+  const [careerVisible, setCareerVisible] = useState(() => new Array(CAREER.length).fill(false));
+
+  const eduPathD = buildPath(EDU_POSITIONS);
+  const careerPathD = buildPath(CAREER_POSITIONS);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.9', 'end 0.2'],
+    offset: ['start 0.85', 'end 0.15'],
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 35,
-    damping: 20,
+    stiffness: 28,
+    damping: 18,
     restDelta: 0.001,
   });
 
-  // Measure path length after mount
   useEffect(() => {
-    if (pathRef.current) {
-      setPathLength(pathRef.current.getTotalLength());
-    }
+    if (eduPathRef.current) setEduPathLength(eduPathRef.current.getTotalLength());
+    if (careerPathRef.current) setCareerPathLength(careerPathRef.current.getTotalLength());
   }, []);
 
-  const strokeDashoffset = useTransform(smoothProgress, [0, 1], [pathLength, 0]);
+  const eduDashoffset = useTransform(smoothProgress, [0, 1], [eduPathLength, 0]);
+  const careerDashoffset = useTransform(smoothProgress, [0, 1], [careerPathLength, 0]);
 
-  // Imperatively trigger stone visibility based on scroll progress
   useMotionValueEvent(smoothProgress, 'change', (latest) => {
-    setVisibleStones((prev) => {
+    setEduVisible((prev) => {
       let changed = false;
       const next = [...prev];
-      for (let i = 0; i < stoneThresholds.length; i++) {
-        if (!next[i] && latest >= stoneThresholds[i]) {
+      for (let i = 0; i < EDU_THRESHOLDS.length; i++) {
+        if (!next[i] && latest >= EDU_THRESHOLDS[i]) {
+          next[i] = true;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+    setCareerVisible((prev) => {
+      let changed = false;
+      const next = [...prev];
+      for (let i = 0; i < CAREER_THRESHOLDS.length; i++) {
+        if (!next[i] && latest >= CAREER_THRESHOLDS[i]) {
           next[i] = true;
           changed = true;
         }
@@ -269,8 +172,8 @@ export default function CompetenciesSticky() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 px-6 lg:px-12 overflow-hidden"
-      style={{ background: '#000000', minHeight: '700px' }}
+      className="relative py-20 px-4 overflow-hidden"
+      style={{ background: '#000000' }}
       aria-label="Career Path"
     >
       {/* Section heading */}
@@ -278,24 +181,43 @@ export default function CompetenciesSticky() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-16"
+        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-12"
       >
         Career Path
       </motion.p>
 
-      {/* Path container */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '800px',
-          height: '600px',
-          margin: '0 auto',
-        }}
-      >
-        {/* SVG path connecting stones */}
+      {/* Main container */}
+      <div style={{ position: 'relative', width: '100%', minHeight: '1100px' }}>
+
+        {/* Column headers */}
+        <div
+          className="font-mono text-[10px] uppercase tracking-[0.3em]"
+          style={{
+            position: 'absolute',
+            left: '12%',
+            top: '10px',
+            color: 'rgba(160,160,160,0.5)',
+            zIndex: 5,
+          }}
+        >
+          Education
+        </div>
+        <div
+          className="font-mono text-[10px] uppercase tracking-[0.3em]"
+          style={{
+            position: 'absolute',
+            left: '62%',
+            top: '10px',
+            color: 'rgba(160,160,160,0.5)',
+            zIndex: 5,
+          }}
+        >
+          Career
+        </div>
+
+        {/* SVG overlay */}
         <svg
-          viewBox="0 0 800 600"
+          viewBox="0 0 1000 1100"
           style={{
             position: 'absolute',
             inset: 0,
@@ -306,35 +228,288 @@ export default function CompetenciesSticky() {
           fill="none"
           preserveAspectRatio="xMidYMid meet"
         >
-          {/* Background faint path */}
+          {/* ── Education path ── */}
           <path
-            d={pathD}
-            stroke="rgba(139,92,246,0.08)"
+            d={eduPathD}
+            stroke="rgba(139,92,246,0.06)"
             strokeWidth={2}
+            strokeDasharray="5 4"
             fill="none"
           />
-          {/* Animated drawn path */}
           <motion.path
-            ref={pathRef}
-            d={pathD}
-            stroke="rgba(139,92,246,0.35)"
+            ref={eduPathRef}
+            d={eduPathD}
+            stroke="rgba(99,102,241,0.4)"
             strokeWidth={2}
-            strokeDasharray={`${pathLength}`}
-            style={{ strokeDashoffset }}
             strokeLinecap="round"
             fill="none"
+            strokeDasharray={eduPathLength}
+            style={{ strokeDashoffset: eduDashoffset }}
           />
+
+          {/* ── Career path ── */}
+          <path
+            d={careerPathD}
+            stroke="rgba(139,92,246,0.06)"
+            strokeWidth={2}
+            strokeDasharray="5 4"
+            fill="none"
+          />
+          <motion.path
+            ref={careerPathRef}
+            d={careerPathD}
+            stroke="rgba(139,92,246,0.4)"
+            strokeWidth={2}
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray={careerPathLength}
+            style={{ strokeDashoffset: careerDashoffset }}
+          />
+
+          {/* ── Education stones ── */}
+          {EDUCATION.map((item, i) => {
+            const { cx, cy } = EDU_POSITIONS[i];
+            const pts = offsetPoints(EDU_SHAPES[i], cx, cy);
+            const colors = TYPE_COLORS[item.type];
+            return (
+              <g key={`edu-${i}`}>
+                <AnimatePresence>
+                  {eduVisible[i] && (
+                    <>
+                      {/* Radial glow */}
+                      <motion.circle
+                        cx={cx}
+                        cy={cy}
+                        fill={colors.glow}
+                        initial={{ r: 0, opacity: 0 }}
+                        animate={{
+                          r: [0, 50, 30],
+                          opacity: [0, 0.6, 0.15],
+                        }}
+                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                      />
+                      {/* Stone polygon */}
+                      <motion.polygon
+                        points={pts}
+                        fill={colors.fill}
+                        stroke={colors.stroke}
+                        strokeWidth={1.5}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.3, 1] }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 15,
+                          duration: 0.6,
+                        }}
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                      />
+                    </>
+                  )}
+                </AnimatePresence>
+              </g>
+            );
+          })}
+
+          {/* ── Career stones ── */}
+          {CAREER.map((item, i) => {
+            const { cx, cy } = CAREER_POSITIONS[i];
+            const pts = offsetPoints(CAREER_SHAPES[i], cx, cy);
+            const colors = TYPE_COLORS[item.type];
+            return (
+              <g key={`career-${i}`}>
+                <AnimatePresence>
+                  {careerVisible[i] && (
+                    <>
+                      <motion.circle
+                        cx={cx}
+                        cy={cy}
+                        fill={colors.glow}
+                        initial={{ r: 0, opacity: 0 }}
+                        animate={{
+                          r: [0, 50, 30],
+                          opacity: [0, 0.6, 0.15],
+                        }}
+                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                      />
+                      <motion.polygon
+                        points={pts}
+                        fill={colors.fill}
+                        stroke={colors.stroke}
+                        strokeWidth={1.5}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.3, 1] }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 15,
+                          duration: 0.6,
+                        }}
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                      />
+                    </>
+                  )}
+                </AnimatePresence>
+              </g>
+            );
+          })}
         </svg>
 
-        {/* Stones */}
-        {timeline.slice(0, 5).map((item, i) => (
-          <StoneElement
-            key={i}
-            item={item}
-            index={i}
-            visible={visibleStones[i]}
-          />
-        ))}
+        {/* ── Education labels (HTML, left of stones) ── */}
+        {EDUCATION.map((item, i) => {
+          const { cx, cy } = EDU_POSITIONS[i];
+          const colors = TYPE_COLORS[item.type];
+          const leftPct = (cx / 1000) * 100;
+          const topPct = (cy / 1100) * 100;
+          return (
+            <AnimatePresence key={`edu-label-${i}`}>
+              {eduVisible[i] && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  style={{
+                    position: 'absolute',
+                    left: `${leftPct}%`,
+                    top: `${topPct}%`,
+                    transform: 'translateX(-100%) translateY(-50%)',
+                    paddingRight: '12px',
+                    textAlign: 'right',
+                    pointerEvents: 'none',
+                    zIndex: 4,
+                    maxWidth: '160px',
+                  }}
+                >
+                  <p
+                    className="font-mono"
+                    style={{
+                      fontSize: '9px',
+                      color: 'rgba(139,92,246,0.7)',
+                      marginBottom: '2px',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {item.year}
+                  </p>
+                  <p
+                    className="font-serif"
+                    style={{
+                      fontWeight: 700,
+                      color: 'var(--foreground, #e5e5e5)',
+                      fontSize: '11px',
+                      lineHeight: 1.3,
+                      maxWidth: '140px',
+                      marginLeft: 'auto',
+                    }}
+                  >
+                    {item.title}
+                  </p>
+                  <span
+                    className="font-mono"
+                    style={{
+                      display: 'inline-block',
+                      marginTop: '4px',
+                      fontSize: '9px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      padding: '2px 8px',
+                      borderRadius: '9999px',
+                      background: colors.badge_bg,
+                      color: colors.badge_text,
+                      border: `1px solid ${colors.badge_border}`,
+                    }}
+                  >
+                    {item.type}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          );
+        })}
+
+        {/* ── Career labels (HTML, right of stones) ── */}
+        {CAREER.map((item, i) => {
+          const { cx, cy } = CAREER_POSITIONS[i];
+          const colors = TYPE_COLORS[item.type];
+          const leftPct = (cx / 1000) * 100;
+          const topPct = (cy / 1100) * 100;
+          return (
+            <AnimatePresence key={`career-label-${i}`}>
+              {careerVisible[i] && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  style={{
+                    position: 'absolute',
+                    left: `${leftPct}%`,
+                    top: `${topPct}%`,
+                    transform: 'translateY(-50%)',
+                    paddingLeft: '12px',
+                    textAlign: 'left',
+                    pointerEvents: 'none',
+                    zIndex: 4,
+                    maxWidth: '180px',
+                  }}
+                >
+                  <p
+                    className="font-mono"
+                    style={{
+                      fontSize: '9px',
+                      color: 'rgba(139,92,246,0.7)',
+                      marginBottom: '2px',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {item.year}
+                  </p>
+                  <p
+                    className="font-serif"
+                    style={{
+                      fontWeight: 700,
+                      color: 'var(--foreground, #e5e5e5)',
+                      fontSize: '11px',
+                      lineHeight: 1.3,
+                      maxWidth: '140px',
+                    }}
+                  >
+                    {item.title}
+                  </p>
+                  {item.org && (
+                    <p
+                      className="font-mono"
+                      style={{
+                        fontSize: '9px',
+                        color: 'rgba(160,160,160,0.6)',
+                        marginTop: '1px',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {item.org}
+                    </p>
+                  )}
+                  <span
+                    className="font-mono"
+                    style={{
+                      display: 'inline-block',
+                      marginTop: '4px',
+                      fontSize: '9px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      padding: '2px 8px',
+                      borderRadius: '9999px',
+                      background: colors.badge_bg,
+                      color: colors.badge_text,
+                      border: `1px solid ${colors.badge_border}`,
+                    }}
+                  >
+                    {item.type}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          );
+        })}
       </div>
     </section>
   );
