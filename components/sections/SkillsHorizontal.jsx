@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, useMotionValue, useAnimationFrame } from 'framer-motion';
+import { motion, useMotionValue, useAnimationFrame, useInView } from 'framer-motion';
 import SkillDetailModal from '@/components/modals/SkillDetailModal';
 import { skillsData } from '@/data/skills';
 
@@ -44,6 +44,9 @@ function Carousel3D({ skills, onCardClick }) {
   const radius = Math.round((CARD_W / 2) / Math.tan(Math.PI / total));
   const angleStep = 360 / total;
 
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { margin: '0px 0px -20% 0px' });
+
   const rotY = useMotionValue(0);
   const isPaused = useRef(false);
   const isPausedByHover = useRef(false);
@@ -64,7 +67,7 @@ function Carousel3D({ skills, onCardClick }) {
 
   /* rotation + smooth brightness — one unified frame loop */
   useAnimationFrame((_, delta) => {
-    if (!isPaused.current) {
+    if (!isPaused.current && isInView) {
       rotY.set(rotY.get() + delta * 0.007);
     }
 
@@ -183,7 +186,7 @@ function Carousel3D({ skills, onCardClick }) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full relative select-none">
+    <div ref={containerRef} className="flex flex-col items-center justify-center w-full h-full relative select-none">
       {/* perspective wrapper */}
       <div
         className="relative"

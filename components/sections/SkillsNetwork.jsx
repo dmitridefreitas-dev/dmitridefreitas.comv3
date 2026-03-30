@@ -2,7 +2,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import SkillDetailModal from '@/components/modals/SkillDetailModal';
+import ProjectDetailModal from '@/components/modals/ProjectDetailModal';
 import { skillsData } from '@/data/skills';
+import { allProjects } from '@/data/projects';
 
 /* ─── Network topology ─────────────────────────────────────────────── */
 const INPUT_NODES = [
@@ -59,10 +61,32 @@ const EDGES = [
   ['fred',       'out-da'],   ['fred',       'out-quant'],
 ];
 
-const VB_W = 1100;
+/* ── Project layer ──────────────────────────────────────────────────── */
+const PROJECT_NODES_DATA = {
+  'pead':             { label: 'PEAD Research',    category: 'Quant Finance', x: 1390, y: 120 },
+  'trading-terminal': { label: 'Trading Terminal', category: 'Quant Finance', x: 1390, y: 255 },
+  'housing-price':    { label: 'Housing Price ML', category: 'Data Science',  x: 1390, y: 390 },
+  'nfl-win':          { label: 'NFL Win Prob',     category: 'Data Science',  x: 1390, y: 505 },
+};
+
+const PROJECT_EDGE_LIST = [
+  ['out-quant', 'pead'],
+  ['out-quant', 'trading-terminal'],
+  ['out-ml',    'housing-price'],
+  ['out-ml',    'nfl-win'],
+  ['out-da',    'trading-terminal'],
+  ['out-da',    'housing-price'],
+];
+
+const ALL_EDGES = [...EDGES, ...PROJECT_EDGE_LIST];
+
+const VB_W = 1500;
 const VB_H = 610;
 
 function getNode(id) {
+  const projData = PROJECT_NODES_DATA[id];
+  if (projData) return { id, ...projData, isSkill: false, isProject: true };
+
   const skill = skillsData.find((s) => s.id === id);
   if (skill) {
     const pos = SKILL_POSITIONS[id] || { x: 500, y: 300 };
@@ -77,7 +101,7 @@ function getNode(id) {
 
 function getConnectedIds(nodeId) {
   const connected = new Set();
-  EDGES.forEach(([a, b]) => {
+  ALL_EDGES.forEach(([a, b]) => {
     if (a === nodeId) connected.add(b);
     if (b === nodeId) connected.add(a);
   });
@@ -89,9 +113,12 @@ function Edge({ fromId, toId, active, dimmed }) {
   const to   = getNode(toId);
   if (!from || !to) return null;
 
+  const isProjectEdge = !!(PROJECT_NODES_DATA[fromId] || PROJECT_NODES_DATA[toId]);
   const opacity = active ? 0.75 : dimmed ? 0.04 : 0.12;
   const strokeW = active ? 1.4 : 0.7;
-  const color   = active ? '#8B5CF6' : 'rgba(139,92,246,0.9)';
+  const color   = active
+    ? (isProjectEdge ? '#00D4FF' : '#8B5CF6')
+    : (isProjectEdge ? 'rgba(0,212,255,0.9)' : 'rgba(139,92,246,0.9)');
 
   const mx = (from.x + to.x) / 2;
   const my = (from.y + to.y) / 2 - 18;
@@ -224,6 +251,59 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
           </motion.text>
         );
       })}
+    </g>
+  );
+}
+
+/* ─── Project node (right column) ──────────────────────────────────── */
+function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick }) {
+  const PW = 162;
+  const PH = 60;
+  const node = PROJECT_NODES_DATA[nodeId];
+  if (!node) return null;
+
+  const connected  = getConnectedIds(nodeId);
+  const isHovered  = hovered === nodeId;
+  const isLinked   = hovered && connected.has(hovered);
+  const isDimmed   = hovered && !isHovered && !isLinked;
+
+  const color       = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
+  const fillColor   = isHovered ? 'rgba(0,212,255,0.10)' : isDimmed ? 'rgba(8,14,28,0.5)' : 'rgba(8,14,28,0.88)';
+  const strokeColor = isHovered ? color : isDimmed ? 'rgba(0,212,255,0.04)' : isLinked ? 'rgba(0,212,255,0.38)' : 'rgba(0,212,255,0.18)';
+  const textPrimary = isHovered ? '#F9FAFB' : isDimmed ? 'rgba(249,250,251,0.12)' : 'rgba(249,250,251,0.85)';
+  const textSec     = isHovered ? color : isDimmed ? 'rgba(0,212,255,0.08)' : 'rgba(0,212,255,0.45)';
+  const glow        = isHovered
+    ? `drop-shadow(0 0 16px ${color}60)`
+    : isLinked ? `drop-shadow(0 0 6px ${color}28)` : 'none';
+
+  return (
+    <g style={{ cursor: 'pointer' }} onMouseEnter={() => onHover(nodeId)} onMouseLeave={onLeave} onClick={() => onClick(nodeId)}>
+      <rect
+        x={node.x - PW / 2} y={node.y - PH / 2}
+        width={PW} height={PH} rx={10}
+        fill={fillColor} stroke={strokeColor}
+        strokeWidth={isHovered ? 1.5 : 1}
+        style={{ transition: 'fill 0.25s, stroke 0.25s', filter: glow }}
+      />
+      <text
+        x={node.x} y={node.y - 9}
+        textAnchor="middle" fontSize={9}
+        fontFamily="var(--font-jetbrains), monospace"
+        letterSpacing="0.2em" fill={textSec}
+        style={{ transition: 'fill 0.25s' }}
+      >
+        {node.category.toUpperCase()}
+      </text>
+      <text
+        x={node.x} y={node.y + 11}
+        textAnchor="middle" fontSize={12}
+        fontFamily="var(--font-jetbrains), monospace"
+        fontWeight={isHovered ? '700' : '500'}
+        fill={textPrimary}
+        style={{ transition: 'fill 0.25s' }}
+      >
+        {node.label}
+      </text>
     </g>
   );
 }
@@ -388,6 +468,7 @@ export default function SkillsNetwork() {
   const [tutorialNode, setTutorialNode] = useState(null);
   const [flashOn, setFlashOn] = useState(true);
   const [selected, setSelected] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [showRobot, setShowRobot] = useState(true);
   const hasHoveredOnce = useRef(false);
 
@@ -404,7 +485,7 @@ export default function SkillsNetwork() {
     }
     const interval = setInterval(() => {
       setFlashOn((prev) => !prev);
-    }, 500);
+    }, 1400);
     return () => {
       clearInterval(interval);
       setFlashOn(true);
@@ -457,6 +538,11 @@ export default function SkillsNetwork() {
     };
   }, [showRobot, isInView]);
 
+  const handleProjectClick = useCallback((projectId) => {
+    const project = allProjects.find((p) => p.id === projectId);
+    if (project) setSelectedProject(project);
+  }, []);
+
   const handleHover = useCallback((nodeId) => {
     setHovered(nodeId);
     if (!hasHoveredOnce.current) {
@@ -476,6 +562,7 @@ export default function SkillsNetwork() {
     ...skillsData.map((s) => s.id),
     ...OUTPUT_NODES.map((n) => n.id),
   ];
+  const allProjectIds = Object.keys(PROJECT_NODES_DATA);
 
   function edgeState(fromId, toId) {
     if (!effectiveHovered) return { active: false, dimmed: false };
@@ -523,7 +610,7 @@ export default function SkillsNetwork() {
       {showRobot && <RobotHelper onDismiss={dismissRobot} active={isInView} />}
       <DemoLabel visible={showRobot && tutorialNode !== null} />
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -541,27 +628,34 @@ export default function SkillsNetwork() {
                 <stop offset="0%" stopColor="rgba(139,92,246,0.04)" />
                 <stop offset="100%" stopColor="rgba(0,0,0,0)" />
               </radialGradient>
+              <radialGradient id="projBg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(0,212,255,0.04)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+              </radialGradient>
             </defs>
 
-            <ellipse cx={VB_W / 2} cy={VB_H / 2} rx={500} ry={260} fill="url(#netBg)" />
+            <ellipse cx={650} cy={VB_H / 2} rx={580} ry={280} fill="url(#netBg)" />
+            <ellipse cx={1390} cy={VB_H / 2} rx={160} ry={300} fill="url(#projBg)" />
 
-            <line x1="220" y1="20" x2="220" y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
-            <line x1="490" y1="20" x2="490" y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
-            <line x1="770" y1="20" x2="770" y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+            <line x1="220"  y1="20" x2="220"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+            <line x1="490"  y1="20" x2="490"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+            <line x1="770"  y1="20" x2="770"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+            <line x1="1185" y1="20" x2="1185" y2={VB_H - 20} stroke="rgba(0,212,255,0.07)"  strokeWidth="1" strokeDasharray="4 6" />
 
             {[
-              { label: 'INPUT', x: 105 },
-              { label: 'LANGUAGES', x: 340 },
-              { label: 'TOOLS', x: 660 },
-              { label: 'OUTPUT', x: 995 },
-            ].map(({ label, x }) => (
-              <text key={label} x={x} y={18} textAnchor="middle" fontSize="11" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill="rgba(196,181,253,0.75)">
+              { label: 'INPUT',     x: 105,  color: 'rgba(196,181,253,0.75)' },
+              { label: 'LANGUAGES', x: 340,  color: 'rgba(196,181,253,0.75)' },
+              { label: 'TOOLS',     x: 660,  color: 'rgba(196,181,253,0.75)' },
+              { label: 'OUTPUT',    x: 995,  color: 'rgba(196,181,253,0.75)' },
+              { label: 'PROJECTS',  x: 1390, color: 'rgba(0,212,255,0.75)'   },
+            ].map(({ label, x, color }) => (
+              <text key={label} x={x} y={18} textAnchor="middle" fontSize="11" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
                 {label}
               </text>
             ))}
 
             <g>
-              {EDGES.map(([a, b], i) => {
+              {ALL_EDGES.map(([a, b], i) => {
                 const { active, dimmed } = edgeState(a, b);
                 return <Edge key={i} fromId={a} toId={b} active={active} dimmed={dimmed} />;
               })}
@@ -579,6 +673,19 @@ export default function SkillsNetwork() {
                 />
               ))}
             </g>
+
+            <g>
+              {allProjectIds.map((id) => (
+                <ProjectNode
+                  key={id}
+                  nodeId={id}
+                  hovered={effectiveHovered}
+                  onHover={handleHover}
+                  onLeave={() => setHovered(null)}
+                  onClick={handleProjectClick}
+                />
+              ))}
+            </g>
           </svg>
         </motion.div>
       </div>
@@ -593,7 +700,8 @@ export default function SkillsNetwork() {
         {[
           { label: 'Languages', value: '6' },
           { label: 'Libraries & Viz', value: '6' },
-          { label: 'Connections', value: String(EDGES.length) },
+          { label: 'Projects', value: String(allProjectIds.length) },
+          { label: 'Connections', value: String(ALL_EDGES.length) },
         ].map(({ label, value }) => (
           <div key={label} className="text-center">
             <p className="font-mono text-xl font-bold text-accent">{value}</p>
@@ -608,6 +716,15 @@ export default function SkillsNetwork() {
             skill={selected}
             isOpen={!!selected}
             onClose={() => setSelected(null)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetailModal
+            project={selectedProject}
+            isOpen={!!selectedProject}
+            onClose={() => setSelectedProject(null)}
           />
         )}
       </AnimatePresence>
