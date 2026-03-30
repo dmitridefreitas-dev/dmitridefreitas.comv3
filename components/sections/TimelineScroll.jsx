@@ -18,8 +18,16 @@ const TYPE_LABELS = {
   activity:  'Activity',
 };
 
-const left  = timeline.filter((e) => e.type === 'education');
-const right = experiences;
+const _edu  = timeline.filter((e) => e.type === 'education');
+const _exp  = experiences;
+
+// Interleave education and experience entries into one alternating list
+const merged = [];
+const _max = Math.max(_edu.length, _exp.length);
+for (let i = 0; i < _max; i++) {
+  if (_edu[i]) merged.push(_edu[i]);
+  if (_exp[i]) merged.push(_exp[i]);
+}
 
 function Entry({ entry, align = 'left', rowIdx = 0 }) {
   const isRight = align === 'right';
@@ -131,8 +139,6 @@ export default function TimelineScroll() {
   });
   const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
-  const rows = Math.max(left.length, right.length);
-
   return (
     <section ref={sectionRef} className="py-20 px-6 lg:px-12" aria-label="Timeline">
 
@@ -155,14 +161,6 @@ export default function TimelineScroll() {
         Education &nbsp;·&nbsp; Experience &nbsp;·&nbsp; Research
       </motion.p>
 
-      {/* Column labels */}
-      <div className="max-w-3xl mx-auto mb-4">
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-8">
-          <p className="text-right font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Education</p>
-          <div className="w-3.5" />
-          <p className="text-left font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Experience</p>
-        </div>
-      </div>
 
       <div className="relative max-w-3xl mx-auto">
         {/* Ghost center line */}
@@ -182,17 +180,15 @@ export default function TimelineScroll() {
         />
 
         <div className="flex flex-col">
-          {Array.from({ length: rows }).map((_, rowIdx) => {
-            const leftEntry  = left[rowIdx];
-            const rightEntry = right[rowIdx];
-            const activeType = (leftEntry || rightEntry)?.type;
-            const dotColor   = TYPE_COLORS[activeType] || '#8B5CF6';
+          {merged.map((entry, idx) => {
+            const isLeft   = idx % 2 === 0;
+            const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
 
             return (
-              <div key={rowIdx} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-8 py-8">
+              <div key={entry.id ?? idx} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-8 py-8">
 
                 <div className="flex justify-end">
-                  {leftEntry && <Entry entry={leftEntry} align="right" rowIdx={rowIdx} />}
+                  {isLeft && <Entry entry={entry} align="right" rowIdx={idx} />}
                 </div>
 
                 {/* Multi-layer glowing dot */}
@@ -202,23 +198,20 @@ export default function TimelineScroll() {
                     initial={{ scale: 0, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: rowIdx * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.5, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    {/* Outer pulse ring */}
                     <motion.div
                       className="absolute rounded-full"
                       style={{ width: '38px', height: '38px', border: `1px solid ${dotColor}` }}
                       animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
-                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: idx * 0.25 }}
                     />
-                    {/* Mid pulse ring */}
                     <motion.div
                       className="absolute rounded-full"
                       style={{ width: '24px', height: '24px', border: `1px solid ${dotColor}70` }}
                       animate={{ scale: [1, 1.5], opacity: [0.45, 0] }}
-                      transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 + 0.5 }}
+                      transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: idx * 0.25 + 0.5 }}
                     />
-                    {/* Solid core */}
                     <div
                       style={{
                         width: '14px',
@@ -236,7 +229,7 @@ export default function TimelineScroll() {
                 </div>
 
                 <div className="flex justify-start">
-                  {rightEntry && <Entry entry={rightEntry} align="left" rowIdx={rowIdx} />}
+                  {!isLeft && <Entry entry={entry} align="left" rowIdx={idx} />}
                 </div>
               </div>
             );
