@@ -49,6 +49,9 @@ function Carousel3D({ skills, onCardClick }) {
   const dragStartX = useRef(null);
   const dragStartRot = useRef(0);
   const [frontIndex, setFrontIndex] = useState(0);
+  const [brightnessMap, setBrightnessMap] = useState(() =>
+    Array.from({ length: skills.length }, (_, i) => (i === 0 ? 1 : 0.4))
+  );
 
   /* continuous auto-rotation */
   useAnimationFrame((_, delta) => {
@@ -57,22 +60,22 @@ function Carousel3D({ skills, onCardClick }) {
     }
   });
 
-  /* track front card */
+  /* track front card + brightness */
   useEffect(() => {
-    const unsub = rotY.on('change', (v) => {
+    const unsub = rotY.onChange((v) => {
       const norm = ((-v % 360) + 360) % 360;
       let closest = 0;
       let minDist = 360;
+      const bmap = Array(total);
       for (let i = 0; i < total; i++) {
         const cardAngle = (angleStep * i) % 360;
         let dist = Math.abs(norm - cardAngle);
         if (dist > 180) dist = 360 - dist;
-        if (dist < minDist) {
-          minDist = dist;
-          closest = i;
-        }
+        if (dist < minDist) { minDist = dist; closest = i; }
+        bmap[i] = dist <= 90 ? 1 - (dist / 90) * 0.6 : 0.4 - ((dist - 90) / 90) * 0.25;
       }
       setFrontIndex(closest);
+      setBrightnessMap(bmap);
     });
     return unsub;
   }, [rotY, total, angleStep]);
@@ -109,20 +112,8 @@ function Carousel3D({ skills, onCardClick }) {
     isPaused.current = false;
   }, []);
 
-  /* brightness helper — angular distance from front */
-  const getBrightness = (index) => {
-    const currentRot = rotY.get();
-    const norm = ((-currentRot % 360) + 360) % 360;
-    const cardAngle = (angleStep * index) % 360;
-    let dist = Math.abs(norm - cardAngle);
-    if (dist > 180) dist = 360 - dist;
-    // 0° → 1, 90° → 0.4, 180° → 0.15
-    if (dist <= 90) return 1 - (dist / 90) * 0.6;
-    return 0.4 - ((dist - 90) / 90) * 0.25;
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center flex-1 relative select-none">
+    <div className="flex flex-col items-center justify-center w-full h-full relative select-none">
       {/* perspective wrapper */}
       <div
         className="relative"
@@ -169,7 +160,7 @@ function Carousel3D({ skills, onCardClick }) {
                   border: `1px solid ${isFront ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.2)'}`,
                   boxShadow: isFront ? '0 0 30px rgba(139,92,246,0.15)' : 'none',
                   transform: `rotateY(${cardAngle}deg) translateZ(${radius}px) ${isFront ? 'scale(1.05)' : 'scale(1)'}`,
-                  filter: `brightness(${isFront ? 1 : getBrightness(i)})`,
+                  filter: `brightness(${brightnessMap[i] ?? 0.4})`,
                   transition: 'border-color 0.3s, box-shadow 0.3s, filter 0.3s',
                 }}
                 onClick={() => {
@@ -255,7 +246,7 @@ export default function SkillsHorizontal() {
           </motion.p>
         </div>
 
-        <div className="flex items-center justify-center" style={{ height: 'calc(88vh - 3rem)' }}>
+        <div className="flex items-center justify-center" style={{ height: 'calc(88vh - 3rem)', overflow: 'hidden' }}>
           <Carousel3D skills={skillsData} onCardClick={setSelectedSkill} />
         </div>
       </div>

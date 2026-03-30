@@ -2,7 +2,24 @@
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
-      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 | Select-Object -ExpandProperty OwningProcess\")"
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(grep -E \"^three$|react-three\")",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(cmd /c \"taskkill /F /PID 22904\")",
+      "Bash(cmd /c \"taskkill /F /PID 22904 2>&1 && echo SUCCESS || echo FAILED\")",
+      "Bash(powershell -Command \"Stop-Process -Id 22904 -Force -ErrorAction SilentlyContinue; Write-Host done\")",
+      "Bash(netstat -ano)",
+      "Bash(xargs -I{} sh -c 'kill -9 {} 2>/dev/null || true')",
+      "Bash(grep -v \"^0$\")",
+      "Bash(cmd /c 'taskkill /F /PID 30096')",
+      "Bash(powershell -NonInteractive -Command 'Stop-Process -Id 30096 -Force')",
+      "Bash(kill -9 30096)",
+      "Bash(xargs -I{} kill -9 {})",
+      "Bash(cmd /c \"taskkill /F /PID 21316 && echo KILLED\")",
+      "Bash(wmic process:*)",
+      "Bash(node -e \"const fm = require\\(''./node_modules/framer-motion/package.json''\\); console.log\\(fm.version\\)\")"
     ]
   }
 }
