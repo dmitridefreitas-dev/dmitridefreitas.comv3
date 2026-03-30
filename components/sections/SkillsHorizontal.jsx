@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { motion, useMotionValue, useAnimationFrame } from 'framer-motion';
 import SkillDetailModal from '@/components/modals/SkillDetailModal';
 import { skillsData } from '@/data/skills';
 
+/* ── Mobile card (unchanged) ─────────────────────────────────────────── */
 function SkillCard({ skill, onClick, className = '' }) {
   return (
     <div
@@ -12,19 +13,15 @@ function SkillCard({ skill, onClick, className = '' }) {
       role="button"
       tabIndex={0}
     >
-      {/* Category — fixed height, always aligns */}
       <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted/60 mb-2 h-4 flex items-center">
         {skill.category}
       </p>
-      {/* Title — always accent purple */}
       <h3 className="font-sans font-bold text-base md:text-lg text-accent group-hover:text-accent/80 transition-colors duration-300 mb-2 leading-tight">
         {skill.name}
       </h3>
-      {/* Description — clamped to 2 lines max */}
       <p className="text-xs text-muted max-w-[220px] leading-relaxed line-clamp-2">
         {skill.description}
       </p>
-      {/* Features */}
       <div className="mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1">
         {skill.keyFeatures.slice(0, 3).map((f, i) => (
           <span
@@ -39,38 +36,204 @@ function SkillCard({ skill, onClick, className = '' }) {
   );
 }
 
-const ROW_1 = skillsData.slice(0, 5);
-const ROW_2 = skillsData.slice(5, 10);
-const ROW_3 = skillsData.slice(10);
+/* ── 3D Carousel (desktop only) ──────────────────────────────────────── */
+function Carousel3D({ skills, onCardClick }) {
+  const total = skills.length;
+  const CARD_W = 220;
+  const CARD_H = 280;
+  const radius = Math.round((CARD_W / 2) / Math.tan(Math.PI / total));
+  const angleStep = 360 / total;
 
-const CARD_VW = 28;
+  const rotY = useMotionValue(0);
+  const isPaused = useRef(false);
+  const dragStartX = useRef(null);
+  const dragStartRot = useRef(0);
+  const [frontIndex, setFrontIndex] = useState(0);
 
-function InfiniteRow({ skills, direction = 'left', duration = 80, onCardClick }) {
-  const tripled = [...skills, ...skills, ...skills];
-  const setWidthVw = skills.length * CARD_VW;
+  /* continuous auto-rotation */
+  useAnimationFrame((_, delta) => {
+    if (!isPaused.current) {
+      rotY.set(rotY.get() + delta * 0.012);
+    }
+  });
+
+  /* track front card */
+  useEffect(() => {
+    const unsub = rotY.on('change', (v) => {
+      const norm = ((-v % 360) + 360) % 360;
+      let closest = 0;
+      let minDist = 360;
+      for (let i = 0; i < total; i++) {
+        const cardAngle = (angleStep * i) % 360;
+        let dist = Math.abs(norm - cardAngle);
+        if (dist > 180) dist = 360 - dist;
+        if (dist < minDist) {
+          minDist = dist;
+          closest = i;
+        }
+      }
+      setFrontIndex(closest);
+    });
+    return unsub;
+  }, [rotY, total, angleStep]);
+
+  /* arrow handlers */
+  const jumpBy = useCallback(
+    (dir) => {
+      rotY.set(rotY.get() - dir * angleStep);
+    },
+    [rotY, angleStep]
+  );
+
+  /* drag handlers */
+  const onPointerDown = useCallback(
+    (e) => {
+      isPaused.current = true;
+      dragStartX.current = e.clientX;
+      dragStartRot.current = rotY.get();
+    },
+    [rotY]
+  );
+
+  const onPointerMove = useCallback(
+    (e) => {
+      if (dragStartX.current === null) return;
+      const dx = e.clientX - dragStartX.current;
+      rotY.set(dragStartRot.current + dx * 0.3);
+    },
+    [rotY]
+  );
+
+  const onPointerUp = useCallback(() => {
+    dragStartX.current = null;
+    isPaused.current = false;
+  }, []);
+
+  /* brightness helper — angular distance from front */
+  const getBrightness = (index) => {
+    const currentRot = rotY.get();
+    const norm = ((-currentRot % 360) + 360) % 360;
+    const cardAngle = (angleStep * index) % 360;
+    let dist = Math.abs(norm - cardAngle);
+    if (dist > 180) dist = 360 - dist;
+    // 0° → 1, 90° → 0.4, 180° → 0.15
+    if (dist <= 90) return 1 - (dist / 90) * 0.6;
+    return 0.4 - ((dist - 90) / 90) * 0.25;
+  };
 
   return (
-    <div className="flex-1 overflow-hidden border-b border-border last:border-b-0 contain-paint">
+    <div className="flex flex-col items-center justify-center flex-1 relative select-none">
+      {/* perspective wrapper */}
       <div
-        className="flex h-full"
+        className="relative"
         style={{
-          width: `${setWidthVw * 3}vw`,
-          animation: `scroll-${direction} ${duration}s linear infinite`,
-          willChange: 'transform',
+          perspective: '1200px',
+          width: CARD_W + 100,
+          height: CARD_H + 40,
         }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
+        onMouseEnter={() => { if (dragStartX.current === null) isPaused.current = true; }}
+        onMouseLeave={() => { if (dragStartX.current === null) isPaused.current = false; }}
       >
-        {tripled.map((skill, i) => (
-          <SkillCard
-            key={`${skill.name}-${i}`}
-            skill={skill}
-            onClick={() => onCardClick(skill)}
-          />
-        ))}
+        {/* rotating cylinder */}
+        <motion.div
+          style={{
+            rotateY: rotY,
+            transformStyle: 'preserve-3d',
+            width: CARD_W,
+            height: CARD_H,
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            marginLeft: -CARD_W / 2,
+            marginTop: -CARD_H / 2,
+          }}
+        >
+          {skills.map((skill, i) => {
+            const cardAngle = angleStep * i;
+            const isFront = i === frontIndex;
+
+            return (
+              <motion.div
+                key={skill.id}
+                className="absolute flex flex-col justify-center items-center text-center px-5 py-6 cursor-pointer"
+                style={{
+                  width: CARD_W,
+                  height: CARD_H,
+                  borderRadius: 12,
+                  backfaceVisibility: 'hidden',
+                  background: 'rgba(8,8,16,0.9)',
+                  border: `1px solid ${isFront ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.2)'}`,
+                  boxShadow: isFront ? '0 0 30px rgba(139,92,246,0.15)' : 'none',
+                  transform: `rotateY(${cardAngle}deg) translateZ(${radius}px) ${isFront ? 'scale(1.05)' : 'scale(1)'}`,
+                  filter: `brightness(${isFront ? 1 : getBrightness(i)})`,
+                  transition: 'border-color 0.3s, box-shadow 0.3s, filter 0.3s',
+                }}
+                onClick={() => {
+                  if (isFront) onCardClick(skill);
+                }}
+              >
+                {/* category */}
+                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted/60 mb-2">
+                  {skill.category}
+                </p>
+                {/* name */}
+                <h3 className="font-serif font-bold text-lg text-accent mb-2 leading-tight">
+                  {skill.name}
+                </h3>
+                {/* description */}
+                <p className="text-xs text-muted line-clamp-3 leading-relaxed max-w-[190px]">
+                  {skill.description}
+                </p>
+                {/* features */}
+                <div className="mt-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
+                  {skill.keyFeatures.slice(0, 3).map((f, fi) => (
+                    <span
+                      key={fi}
+                      className="font-mono text-[10px] uppercase tracking-widest text-muted/50"
+                    >
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </div>
+
+      {/* left / right arrows */}
+      <div className="flex items-center gap-6 mt-8">
+        <button
+          onClick={() => jumpBy(-1)}
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors"
+          aria-label="Previous skill"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M10 3L5 8l5 5" />
+          </svg>
+        </button>
+        <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted/50">
+          {skills[frontIndex].name}
+        </span>
+        <button
+          onClick={() => jumpBy(1)}
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors"
+          aria-label="Next skill"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M6 3l5 5-5 5" />
+          </svg>
+        </button>
       </div>
     </div>
   );
 }
 
+/* ── Main export ──────────────────────────────────────────────────────── */
 export default function SkillsHorizontal() {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const allSkillsTripled = [...skillsData, ...skillsData, ...skillsData];
@@ -79,8 +242,8 @@ export default function SkillsHorizontal() {
   return (
     <section aria-label="Skills" className="overflow-hidden">
 
-      {/* ── Desktop: 3 auto-scrolling infinite rows ──────────────────────── */}
-      <div className="hidden lg:flex flex-col" style={{ height: '88vh' }}>
+      {/* ── Desktop: 3D rotating carousel ────────────────────────────────── */}
+      <div className="hidden lg:block" style={{ height: '88vh' }}>
         <div className="flex items-center px-12 border-b border-border flex-shrink-0" style={{ height: '3rem' }}>
           <motion.p
             initial={{ opacity: 0 }}
@@ -92,9 +255,9 @@ export default function SkillsHorizontal() {
           </motion.p>
         </div>
 
-        <InfiniteRow skills={ROW_1} direction="left"  duration={80}  onCardClick={setSelectedSkill} />
-        <InfiniteRow skills={ROW_2} direction="right" duration={100} onCardClick={setSelectedSkill} />
-        <InfiniteRow skills={ROW_3} direction="left"  duration={90}  onCardClick={setSelectedSkill} />
+        <div className="flex items-center justify-center" style={{ height: 'calc(88vh - 3rem)' }}>
+          <Carousel3D skills={skillsData} onCardClick={setSelectedSkill} />
+        </div>
       </div>
 
       {/* ── Mobile/Tablet: single auto-scrolling row ─────────────────────── */}
