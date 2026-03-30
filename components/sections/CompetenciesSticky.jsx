@@ -1,132 +1,276 @@
 'use client';
-import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
-import { useRef } from 'react';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValueEvent,
+  AnimatePresence,
+} from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 import { timeline } from '@/data/constants';
 
-function Stone({ item, index, total }) {
-  const ref = useRef(null);
-  const isVisible = useInView(ref, { once: true, margin: '-80px' });
-  const isEven = index % 2 === 1;
-  const baseDelay = 0.15;
+const stonePositions = [
+  { left: '15%', top: '2%' },
+  { left: '38%', top: '18%' },
+  { left: '58%', top: '35%' },
+  { left: '28%', top: '54%' },
+  { left: '48%', top: '72%' },
+];
+
+const stoneBorderRadii = [
+  '45% 55% 60% 40% / 50% 45% 55% 50%',
+  '55% 45% 40% 60% / 45% 55% 45% 55%',
+  '40% 60% 55% 45% / 60% 40% 50% 50%',
+  '50% 50% 45% 55% / 40% 60% 55% 45%',
+  '60% 40% 50% 50% / 55% 45% 40% 60%',
+];
+
+const stoneSizes = [
+  { width: 68, height: 58 },
+  { width: 74, height: 64 },
+  { width: 62, height: 56 },
+  { width: 78, height: 66 },
+  { width: 66, height: 60 },
+];
+
+const stoneThresholds = [0.0, 0.2, 0.4, 0.6, 0.8];
+
+// Label positions: alternate above/below based on index
+const labelOffsets = [
+  { top: -54, left: '50%', transform: 'translateX(-50%)', align: 'center' }, // above
+  { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 8, align: 'center' }, // below
+  { top: -54, left: '50%', transform: 'translateX(-50%)', align: 'center' }, // above
+  { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 8, align: 'center' }, // below
+  { top: -54, left: '50%', transform: 'translateX(-50%)', align: 'center' }, // above
+];
+
+// Compute SVG path centers based on percentages of container
+// Container is ~600px tall, width is 100% of parent
+// We use viewBox coordinates: 800 x 600
+function getStoneCenters() {
+  return stonePositions.map((pos, i) => ({
+    x: (parseFloat(pos.left) / 100) * 800 + stoneSizes[i].width / 2,
+    y: (parseFloat(pos.top) / 100) * 600 + stoneSizes[i].height / 2,
+  }));
+}
+
+function buildPath(centers) {
+  if (centers.length < 2) return '';
+  let d = `M ${centers[0].x} ${centers[0].y}`;
+  for (let i = 1; i < centers.length; i++) {
+    const prev = centers[i - 1];
+    const curr = centers[i];
+    const cpx1 = prev.x + (curr.x - prev.x) * 0.5;
+    const cpy1 = prev.y;
+    const cpx2 = prev.x + (curr.x - prev.x) * 0.5;
+    const cpy2 = curr.y;
+    d += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${curr.x} ${curr.y}`;
+  }
+  return d;
+}
+
+function StoneElement({ item, index, visible }) {
+  const size = stoneSizes[index];
+  const isEven = index % 2 === 0;
+  const labelOffset = labelOffsets[index];
+  const altTint = index % 2 === 0
+    ? 'rgba(139,92,246,0.12)'
+    : 'rgba(99,102,241,0.12)';
 
   return (
     <div
-      ref={ref}
-      className="relative flex items-center justify-center"
-      style={{ minHeight: index < total - 1 ? 120 : 0 }}
+      style={{
+        position: 'absolute',
+        left: stonePositions[index].left,
+        top: stonePositions[index].top,
+        width: size.width,
+        height: size.height,
+      }}
     >
-      {/* Row container — zigzag layout */}
-      <div
-        className={`flex items-center w-full max-w-[700px] mx-auto gap-5 md:gap-8 ${
-          isEven ? 'flex-row-reverse' : 'flex-row'
-        }`}
-      >
-        {/* Text side */}
-        <motion.div
-          className={`flex-1 ${isEven ? 'text-right' : 'text-left'}`}
-          initial={{ opacity: 0, x: isEven ? 30 : -30 }}
-          animate={
-            isVisible
-              ? { opacity: 1, x: 0 }
-              : { opacity: 0, x: isEven ? 30 : -30 }
-          }
-          transition={{
-            duration: 0.6,
-            delay: baseDelay + 0.25,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        >
-          <h3 className="font-serif font-bold text-foreground text-sm md:text-base leading-snug mb-1.5">
-            {item.title}
-          </h3>
-          <span
-            className={`inline-block font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full ${
-              item.type === 'education'
-                ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30'
-                : 'bg-violet-500/15 text-violet-400 border border-violet-500/30'
-            }`}
-          >
-            {item.type}
-          </span>
-        </motion.div>
-
-        {/* Stone circle */}
-        <motion.div
-          className="relative flex-shrink-0 w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center z-10"
-          style={{
-            border: '2px solid rgba(139,92,246,0.7)',
-            background: 'rgba(139,92,246,0.15)',
-          }}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={
-            isVisible
-              ? { scale: [0, 1.3, 1], opacity: [0, 1, 1] }
-              : { scale: 0, opacity: 0 }
-          }
-          transition={{
-            duration: 0.55,
-            delay: baseDelay,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        >
-          {/* Landing glow */}
+      {/* The stone */}
+      <AnimatePresence>
+        {visible && (
           <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none"
-            initial={{ boxShadow: '0 0 0px rgba(139,92,246,0)' }}
-            animate={
-              isVisible
-                ? {
-                    boxShadow: [
-                      '0 0 0px rgba(139,92,246,0)',
-                      '0 0 24px rgba(139,92,246,0.6)',
-                      '0 0 8px rgba(139,92,246,0.2)',
-                    ],
-                  }
-                : { boxShadow: '0 0 0px rgba(139,92,246,0)' }
-            }
-            transition={{
-              duration: 1,
-              delay: baseDelay + 0.1,
-              ease: 'easeOut',
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: [0, 1.3, 1],
+              opacity: [0, 1, 1],
             }}
-          />
-          <span className="font-mono font-bold text-accent text-[9px] md:text-xs leading-none text-center whitespace-nowrap select-none">
-            {item.year}
-          </span>
-        </motion.div>
+            transition={{
+              type: 'spring',
+              stiffness: 400,
+              damping: 15,
+              duration: 0.6,
+            }}
+            style={{
+              width: size.width,
+              height: size.height,
+              borderRadius: stoneBorderRadii[index],
+              background: altTint,
+              backgroundImage:
+                'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.04) 0%, transparent 50%)',
+              border: '1.5px solid rgba(139,92,246,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              cursor: 'default',
+            }}
+          >
+            {/* Glow burst */}
+            <motion.div
+              initial={{ boxShadow: '0 0 0px rgba(139,92,246,0)' }}
+              animate={{
+                boxShadow: [
+                  '0 0 0px rgba(139,92,246,0)',
+                  '0 0 30px rgba(139,92,246,0.8)',
+                  '0 0 10px rgba(139,92,246,0.25)',
+                ],
+              }}
+              transition={{
+                duration: 0.8,
+                ease: 'easeOut',
+              }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: stoneBorderRadii[index],
+                pointerEvents: 'none',
+              }}
+            />
+            {/* Year text */}
+            <span
+              style={{
+                fontFamily: 'var(--font-mono, monospace)',
+                fontWeight: 700,
+                color: 'rgb(139,92,246)',
+                fontSize: '10px',
+                lineHeight: 1,
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                userSelect: 'none',
+              }}
+            >
+              {item.year}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Spacer to balance the other side */}
-        <div className="flex-1" />
-      </div>
+      {/* Floating label */}
+      <AnimatePresence>
+        {visible && (
+          <motion.div
+            initial={{ opacity: 0, y: isEven ? -8 : 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.2 }}
+            style={{
+              position: 'absolute',
+              top: labelOffset.top,
+              left: labelOffset.left,
+              transform: labelOffset.transform,
+              marginTop: labelOffset.marginTop || 0,
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'var(--font-serif, serif)',
+                fontWeight: 700,
+                color: 'var(--foreground, #e5e5e5)',
+                fontSize: '12px',
+                lineHeight: 1.3,
+                marginBottom: '4px',
+              }}
+            >
+              {item.title.length > 40 ? item.title.slice(0, 38) + '...' : item.title}
+            </p>
+            <span
+              style={{
+                display: 'inline-block',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: '9px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '2px 8px',
+                borderRadius: '9999px',
+                background:
+                  item.type === 'education'
+                    ? 'rgba(99,102,241,0.15)'
+                    : 'rgba(139,92,246,0.15)',
+                color:
+                  item.type === 'education'
+                    ? 'rgb(129,140,248)'
+                    : 'rgb(167,139,250)',
+                border:
+                  item.type === 'education'
+                    ? '1px solid rgba(99,102,241,0.3)'
+                    : '1px solid rgba(139,92,246,0.3)',
+              }}
+            >
+              {item.type}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 export default function CompetenciesSticky() {
   const sectionRef = useRef(null);
-  const trailRef = useRef(null);
+  const [visibleStones, setVisibleStones] = useState(
+    () => new Array(timeline.length).fill(false)
+  );
+  const [pathLength, setPathLength] = useState(0);
+  const pathRef = useRef(null);
+
+  const centers = getStoneCenters();
+  const pathD = buildPath(centers);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.85', 'end 0.6'],
+    offset: ['start 0.9', 'end 0.2'],
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 60,
+    stiffness: 35,
     damping: 20,
     restDelta: 0.001,
   });
 
-  const trailHeight = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+  // Measure path length after mount
+  useEffect(() => {
+    if (pathRef.current) {
+      setPathLength(pathRef.current.getTotalLength());
+    }
+  }, []);
 
-  // Gradient position for the "flowing" effect
-  const gradientY = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+  const strokeDashoffset = useTransform(smoothProgress, [0, 1], [pathLength, 0]);
+
+  // Imperatively trigger stone visibility based on scroll progress
+  useMotionValueEvent(smoothProgress, 'change', (latest) => {
+    setVisibleStones((prev) => {
+      let changed = false;
+      const next = [...prev];
+      for (let i = 0; i < stoneThresholds.length; i++) {
+        if (!next[i] && latest >= stoneThresholds[i]) {
+          next[i] = true;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  });
 
   return (
     <section
       ref={sectionRef}
       className="relative py-24 px-6 lg:px-12 overflow-hidden"
-      style={{ background: '#000000' }}
+      style={{ background: '#000000', minHeight: '700px' }}
       aria-label="Career Path"
     >
       {/* Section heading */}
@@ -134,52 +278,63 @@ export default function CompetenciesSticky() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-16 md:mb-20"
+        className="font-mono text-xs uppercase tracking-[0.4em] text-muted text-center mb-16"
       >
         Career Path
       </motion.p>
 
-      {/* Timeline container */}
-      <div className="relative max-w-[700px] mx-auto">
-        {/* Vertical trail line — positioned at center */}
-        <div
-          ref={trailRef}
-          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-px pointer-events-none"
-          style={{ zIndex: 1 }}
+      {/* Path container */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '800px',
+          height: '600px',
+          margin: '0 auto',
+        }}
+      >
+        {/* SVG path connecting stones */}
+        <svg
+          viewBox="0 0 800 600"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+          }}
+          fill="none"
+          preserveAspectRatio="xMidYMid meet"
         >
-          {/* Background track */}
-          <div
-            className="absolute inset-0"
-            style={{ background: 'rgba(139,92,246,0.08)' }}
+          {/* Background faint path */}
+          <path
+            d={pathD}
+            stroke="rgba(139,92,246,0.08)"
+            strokeWidth={2}
+            fill="none"
           />
-          {/* Animated fill */}
-          <motion.div
-            className="absolute top-0 left-0 w-full origin-top"
-            style={{
-              height: trailHeight,
-              background:
-                'linear-gradient(to bottom, rgba(139,92,246,0.1), rgba(139,92,246,0.4) 50%, rgba(139,92,246,0.6))',
-            }}
+          {/* Animated drawn path */}
+          <motion.path
+            ref={pathRef}
+            d={pathD}
+            stroke="rgba(139,92,246,0.35)"
+            strokeWidth={2}
+            strokeDasharray={`${pathLength}`}
+            style={{ strokeDashoffset }}
+            strokeLinecap="round"
+            fill="none"
           />
-          {/* Flowing glow dot */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-2 h-8 rounded-full pointer-events-none"
-            style={{
-              top: trailHeight,
-              background:
-                'radial-gradient(ellipse at center, rgba(139,92,246,0.8), transparent)',
-              filter: 'blur(2px)',
-              marginTop: '-16px',
-            }}
-          />
-        </div>
+        </svg>
 
         {/* Stones */}
-        <div className="relative flex flex-col gap-[120px] md:gap-[120px]">
-          {timeline.map((item, i) => (
-            <Stone key={i} item={item} index={i} total={timeline.length} />
-          ))}
-        </div>
+        {timeline.slice(0, 5).map((item, i) => (
+          <StoneElement
+            key={i}
+            item={item}
+            index={i}
+            visible={visibleStones[i]}
+          />
+        ))}
       </div>
     </section>
   );

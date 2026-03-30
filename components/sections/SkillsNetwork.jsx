@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import SkillDetailModal from '@/components/modals/SkillDetailModal';
 import { skillsData } from '@/data/skills';
 
@@ -229,13 +229,14 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
 }
 
 /* ─── Robot helper popup ───────────────────────────────────────────── */
-function RobotHelper({ onDismiss }) {
+function RobotHelper({ onDismiss, active }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    if (!active) return;
     const showTimer = setTimeout(() => setVisible(true), 1500);
     return () => clearTimeout(showTimer);
-  }, []);
+  }, [active]);
 
   useEffect(() => {
     if (!visible) return;
@@ -385,14 +386,34 @@ function DemoLabel({ visible }) {
 export default function SkillsNetwork() {
   const [hovered, setHovered]   = useState(null);
   const [tutorialNode, setTutorialNode] = useState(null);
+  const [flashOn, setFlashOn] = useState(true);
   const [selected, setSelected] = useState(null);
   const [showRobot, setShowRobot] = useState(true);
   const hasHoveredOnce = useRef(false);
 
-  const effectiveHovered = hovered ?? tutorialNode;
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: '-10%' });
+
+  const effectiveHovered = hovered ?? (flashOn ? tutorialNode : null);
+
+  /* ─── Flash interval for tutorial node glow ──────────────────────── */
+  useEffect(() => {
+    if (tutorialNode == null) {
+      setFlashOn(true);
+      return;
+    }
+    const interval = setInterval(() => {
+      setFlashOn((prev) => !prev);
+    }, 500);
+    return () => {
+      clearInterval(interval);
+      setFlashOn(true);
+    };
+  }, [tutorialNode]);
 
   /* ─── Tutorial auto-demo loop ─────────────────────────────────────── */
   useEffect(() => {
+    if (!isInView) return;
     if (!showRobot) return;
 
     const DEMO_SEQUENCE = ['python', 'bloomberg', 'tableau'];
@@ -434,7 +455,7 @@ export default function SkillsNetwork() {
       cancelled = true;
       timeouts.forEach(clearTimeout);
     };
-  }, [showRobot]);
+  }, [showRobot, isInView]);
 
   const handleHover = useCallback((nodeId) => {
     setHovered(nodeId);
@@ -447,6 +468,7 @@ export default function SkillsNetwork() {
 
   const dismissRobot = useCallback(() => {
     setShowRobot(false);
+    setTutorialNode(null);
   }, []);
 
   const allNodeIds = [
@@ -464,7 +486,7 @@ export default function SkillsNetwork() {
   }
 
   return (
-    <section className="py-16 px-6 lg:px-12 overflow-hidden" aria-label="Skills Network">
+    <section ref={sectionRef} className="py-16 px-6 lg:px-12 overflow-hidden" aria-label="Skills Network">
       <motion.p
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -498,7 +520,7 @@ export default function SkillsNetwork() {
         </motion.span>
       </motion.div>
 
-      {showRobot && <RobotHelper onDismiss={dismissRobot} />}
+      {showRobot && <RobotHelper onDismiss={dismissRobot} active={isInView} />}
       <DemoLabel visible={showRobot && tutorialNode !== null} />
 
       <div className="max-w-5xl mx-auto">
