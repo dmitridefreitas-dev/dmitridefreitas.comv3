@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Erich Huang — Financial Engineering & Accounting';
+export const alt = 'Dmitri De Freitas — Data Science & Financial Engineering';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -81,7 +81,7 @@ export default async function Image() {
               marginBottom: '20px',
             }}
           >
-            Portfolio — Available Summer 2026
+            Portfolio — Available May 2026
           </div>
 
           {/* Name */}
@@ -96,7 +96,7 @@ export default async function Image() {
               marginBottom: '28px',
             }}
           >
-            Erich Huang
+            Dmitri De Freitas
           </div>
 
           {/* Divider */}
@@ -121,7 +121,7 @@ export default async function Image() {
               marginBottom: '12px',
             }}
           >
-            Financial Engineering &amp; Accounting
+            Data Science &amp; Financial Engineering
           </div>
 
           {/* Subtitle row 2 */}
@@ -134,7 +134,7 @@ export default async function Image() {
               color: 'rgba(139,92,246,0.75)',
             }}
           >
-            Washington University in St. Louis · Incoming MUFG Financial Analyst
+            Washington University in St. Louis · Data Scientist · Quant Researcher
           </div>
         </div>
 
@@ -166,7 +166,7 @@ export default async function Image() {
             userSelect: 'none',
           }}
         >
-          H
+          D
         </div>
       </div>
     ),

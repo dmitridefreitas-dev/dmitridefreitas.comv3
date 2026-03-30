@@ -7,46 +7,45 @@ import TiltCard from '@/components/effects/TiltCard';
 import { heroProjects } from '@/data/projects';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 
-// Per-card finance data — sparkline paths are connected segments of one continuous graph
-// Each segment starts at the y-value where the previous one ended
+// Per-card metrics — real numbers from Dmitri's projects
 const CARD_META = [
   {
+    // PEAD Market Efficiency
     metrics: [
-      { label: 'SOFR', base: 5.28, range: 0.06, fmt: (v) => v.toFixed(2) + '%' },
-      { label: 'SPRD', base: 142,  range: 5,    fmt: (v) => v.toFixed(0) + 'bps' },
-      { label: 'YLDS', base: 4.18, range: 0.04, fmt: (v) => v.toFixed(2) + '%' },
+      { label: 'R²',    base: 0.950, range: 0.008, fmt: (v) => v.toFixed(3) },
+      { label: 'SUE Q5', base: 9.2,  range: 0.3,   fmt: (v) => '+' + v.toFixed(1) + 'bps' },
+      { label: 'STOCKS', base: 847,  range: 6,      fmt: (v) => v.toFixed(0) },
     ],
-    // Segment 1 — ends at y=10
     path: 'M0,38 L18,32 L36,26 L54,30 L72,18 L90,13 L108,20 L126,15 L144,10',
     endY: 10,
   },
   {
+    // Institutional Trading Terminal
     metrics: [
-      { label: 'MLR ', base: 83.2, range: 0.3, fmt: (v) => v.toFixed(1) + '%' },
-      { label: 'CAPX', base: 998,  range: 3,   fmt: (v) => '$' + v.toFixed(0) + 'M' },
-      { label: 'VAR ', base: 4.9,  range: 0.3, fmt: (v) => '$' + v.toFixed(1) + 'M' },
+      { label: 'SHRPE', base: 1.24, range: 0.03, fmt: (v) => v.toFixed(2) },
+      { label: 'VaR95', base: 2.31, range: 0.05, fmt: (v) => '-' + v.toFixed(2) + '%' },
+      { label: 'BETA',  base: 0.87, range: 0.02, fmt: (v) => v.toFixed(2) },
     ],
-    // Segment 2 — starts at y=10, ends at y=32
     path: 'M0,10 L18,6 L36,14 L54,22 L72,17 L90,28 L108,22 L126,28 L144,32',
     endY: 32,
   },
   {
+    // Housing Price Intelligence
     metrics: [
-      { label: 'ASST', base: 10.2, range: 0.1, fmt: (v) => '$' + v.toFixed(1) + 'M' },
-      { label: 'TXN ', base: 1024, range: 8,   fmt: (v) => v.toFixed(0) },
-      { label: 'RISK', base: 12,   range: 1,   fmt: (v) => v.toFixed(0) + ' flags' },
+      { label: 'R²',   base: 0.930, range: 0.006, fmt: (v) => v.toFixed(3) },
+      { label: 'RMSE', base: 18.2,  range: 0.2,   fmt: (v) => '$' + v.toFixed(1) + 'K' },
+      { label: 'N',    base: 15000, range: 0,      fmt: (v) => '15K+' },
     ],
-    // Segment 3 — starts at y=32, ends at y=20
     path: 'M0,32 L18,26 L36,30 L54,22 L72,15 L90,21 L108,17 L126,24 L144,20',
     endY: 20,
   },
   {
+    // NFL Win Probability
     metrics: [
-      { label: 'DSET', base: 2000, range: 0,   fmt: (v) => v.toFixed(0) },
-      { label: 'CONF', base: 80.1, range: 0.3, fmt: (v) => v.toFixed(1) + '%' },
-      { label: 'FREQ', base: 1.42, range: 0.02, fmt: (v) => v.toFixed(2) + 'GHz' },
+      { label: 'AUC',   base: 0.921, range: 0.002, fmt: (v) => v.toFixed(3) },
+      { label: 'BRIER', base: 0.141, range: 0.001, fmt: (v) => v.toFixed(3) },
+      { label: 'SSNS',  base: 14,    range: 0,     fmt: (v) => v.toFixed(0) + ' yrs' },
     ],
-    // Segment 4 — starts at y=20, ends at y=4
     path: 'M0,20 L18,14 L36,10 L54,17 L72,12 L90,8 L108,14 L126,6 L144,4',
     endY: 4,
   },

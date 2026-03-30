@@ -19,7 +19,7 @@
   body {
     background-color: #000000;
     color: #F9FAFB;
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -99,7 +99,7 @@
     border-bottom: 1px solid #231940;
     padding: 8px 0;
     font-size: 14px;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-space-grotesk), sans-serif;
     color: #F9FAFB;
     outline: none;
     transition: border-color 0.25s;
@@ -114,7 +114,7 @@
     border-bottom: 1px solid #231940;
     padding: 8px 0;
     font-size: 14px;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-space-grotesk), sans-serif;
     color: #F9FAFB;
     outline: none;
     resize: none;

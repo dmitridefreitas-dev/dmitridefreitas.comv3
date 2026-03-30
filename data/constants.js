@@ -1,132 +1,126 @@
-import { TrendingUp, Shield, BarChart3 } from 'lucide-react';
+import { BarChart2, Cpu, Database } from 'lucide-react';
 
 export const targetRoles = [
-  'Financial Analyst',
-  'Investment Banking',
-  'Asset Management',
-  'Risk & Credit Analysis',
+  'Quantitative Research Analyst',
+  'Financial Engineer',
+  'Data Scientist',
+  'Algorithmic Trading Developer',
 ];
 
 export const competencies = [
   {
-    icon: TrendingUp,
-    title: 'Financial Analysis & FP&A',
-    description: 'Forecasting models, capital budgeting, Medical Loss Ratio optimization, and variance analysis using Excel, OneStream, and PowerBI',
+    icon: BarChart2,
+    title: 'Quantitative Finance & Research',
+    description: 'OLS regression, credit spread analysis, PEAD market efficiency research, and algorithmic trading strategy development using Python, R, and MATLAB',
   },
   {
-    icon: Shield,
-    title: 'Audit & Assurance',
-    description: 'Reconciliation of liquid assets across legal entities, forensic data analytics, GAAP/PCAOB compliance, and fraud risk identification',
+    icon: Cpu,
+    title: 'Machine Learning & Data Science',
+    description: 'Supervised learning pipelines, feature engineering, and predictive modeling for financial and scientific datasets using scikit-learn, pandas, and NumPy',
   },
   {
-    icon: BarChart3,
-    title: 'Quantitative Research',
-    description: 'OLS regression modeling for credit spread analysis, SOFR volatility attribution, and non-linear credit elasticity research',
+    icon: Database,
+    title: 'Data Engineering & Visualization',
+    description: 'ETL pipeline construction, large-scale dataset processing (70K+ data points), and dashboard development with Power BI, Tableau, Matplotlib, and Seaborn',
   },
 ];
 
 export const timeline = [
   {
-    year: '2026',
-    title: 'Incoming Summer Financial Analyst — MUFG',
-    description: 'Summer 2026 analyst position in Phoenix, AZ at Mitsubishi UFJ Financial Group',
-    type: 'finance',
-  },
-  {
-    year: '2026 – Present',
-    title: 'Credit Risk Research',
-    description: 'Developed OLS regression models isolating drivers of credit spread widening; demonstrated SOFR volatility accounts for 55% of spread variance in Health Insurance',
-    type: 'research',
-  },
-  {
-    year: 'Dec 2025 – Mar 2026',
-    title: 'Audit & Assurance Intern — Anders CPA',
-    description: 'Reconciled $10M in liquid assets across 5 legal entities; performed forensic analytics on 1,000+ transactions identifying 10+ risk-sensitive outliers',
-    type: 'finance',
-  },
-  {
-    year: 'May 2025 – Aug 2025',
-    title: 'FP&A Intern — Centene Corporation',
-    description: 'Built financial forecasting models for stop-loss provisions; facilitated $1B quarterly capital budgeting using PowerBI and OneStream',
-    type: 'finance',
-  },
-  {
-    year: '2024 – 2027',
-    title: 'Washington University in St. Louis',
-    description: 'BS Financial Engineering, Minor in Accounting — Pi Mu Epsilon, Phi Beta Kappa',
+    year: '2024 – 2026',
+    title: 'BS Data Science & Financial Engineering — WashU',
+    description: 'Bachelor of Science in Data Science & Financial Engineering at Washington University in St. Louis. GPA 3.7. Dean\'s List.',
     type: 'education',
   },
   {
-    year: 'Jan 2024 – May 2024',
-    title: 'Communications Intern — City of Lancaster',
-    description: 'Synthesized financial and operational data for 4 infrastructure projects; managed outreach campaigns reaching 20,000 residents',
-    type: 'activity',
+    year: '2024',
+    title: 'Data Scientist Intern — Amphora Investment Management',
+    description: 'Built ML-driven quantitative models for credit market analysis; processed 70K+ data points achieving 95% average explanatory power across models',
+    type: 'finance',
+  },
+  {
+    year: '2021 – 2023',
+    title: 'BA Mathematics — Drew University',
+    description: 'Bachelor of Arts in Mathematics, GPA 3.7',
+    type: 'education',
+  },
+  {
+    year: '2023',
+    title: 'Startup Founder — MobileHub Barbados',
+    description: 'Founded a mobile services startup in Barbados; developed business model, managed operations, and drove early customer acquisition',
+    type: 'finance',
+  },
+  {
+    year: '2015 – 2021',
+    title: 'A-Levels — Harrison College, Cambridge',
+    description: 'Cambridge A-Level examinations — GRADE I, AAA',
+    type: 'education',
   },
 ];
 
 export const opportunityGroups = [
   {
-    category: 'Investment Banking',
-    roles: ['Financial Analyst', 'M&A Advisory', 'Capital Markets'],
+    category: 'Quantitative Finance',
+    roles: ['Quantitative Research Analyst', 'Algorithmic Trading Developer', 'Credit Risk Analyst'],
   },
   {
-    category: 'Asset Management',
-    roles: ['Credit Analysis', 'Fixed Income', 'Portfolio Strategy'],
+    category: 'Data Science',
+    roles: ['Financial Data Scientist', 'ML Engineer (Finance)', 'Portfolio Analytics'],
   },
   {
-    category: 'Corporate Finance',
-    roles: ['FP&A Analyst', 'Audit & Assurance', 'Risk Management'],
+    category: 'Financial Engineering',
+    roles: ['Derivatives Pricing', 'Risk Modeling', 'Quantitative Strategist'],
   },
 ];
 
 export const contactInfo = {
-  email: 'erichhuang2002@gmail.com',
-  phone: '717-333-5758',
-  location: 'Washington University in St. Louis',
-  locationNote: 'St. Louis, MO',
+  email: 'd.defreitas@wustl.edu',
+  phone: '+1-314-646-9845',
+  location: 'Washington University, St. Louis',
+  locationNote: 'Until May 2026',
 };
 
 export const socialLinks = {
-  linkedin: 'https://www.linkedin.com/in/erichhuang/',
-  github: 'https://github.com/erichhuang',
+  linkedin: 'https://www.linkedin.com/in/dmitri-de-freitas-16a540347/',
+  github: '',
+  resume: 'https://drive.google.com/file/u/5/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link',
 };
 
 export const tickerTerms = [
-  'Novelty Hill Capital',
-  'Wells Fargo',
-  'Guggenheim Securities',
-  'General Atlantic',
-  'CIFC Asset Management',
-  'CIBC',
-  'Edward Jones',
-  'AllianceBernstein',
-  'Susquehanna International Group',
-  'Lazard',
-  'PIMCO',
-  'Ares Management',
-  'Balyasny Asset Management',
-  'Focus Financial Partners',
-  'Anders',
-  'Reinsurance Group of America',
-  'Alera Group',
-  'Northborne Partners',
-  'Kennedy Capital Management',
-  'NISA Investment Advisors',
-  'MUFG',
-  'Federal Reserve Bank of St. Louis',
-  'World Wide Technology',
+  'Quantitative Modeling',
+  'Machine Learning',
+  'Credit Risk Analysis',
+  'OLS Regression',
+  'PEAD Market Efficiency',
+  'Algorithmic Trading',
+  'Time Series Analysis',
+  'Financial Engineering',
+  'Data Pipelines',
+  'Statistical Inference',
+  'Portfolio Optimization',
+  'Monte Carlo Simulation',
+  'Fixed Income Analytics',
+  'Bloomberg Terminal',
+  'Python · R · MATLAB',
+  'Amphora Investment Management',
+  'WashU Olin Business School',
+  'FRED Economic Data',
+  'QuantLib',
+  'Derivatives Pricing',
+  'Factor Models',
+  'Volatility Surface',
 ];
 
 export const kpiMetrics = [
-  { label: 'Internships', value: '4' },
-  { label: 'Honor Societies', value: '2' },
-  { label: 'Languages', value: '2' },
-  { label: 'Technical Tools', value: '10+' },
+  { label: 'ML Approaches', value: '8+' },
+  { label: 'Data Points', value: '70K+' },
+  { label: 'Avg Explanatory Power', value: '95%' },
+  { label: 'Financial Domains', value: '4' },
 ];
 
 export const aboutKpiMetrics = [
-  { label: 'Internships', value: '4' },
-  { label: 'Honor Societies', value: '2' },
-  { label: 'Dean\'s List', value: '4+' },
-  { label: 'Available', value: 'Summer 2026', condensed: true },
+  { label: 'ML Approaches', value: '8+' },
+  { label: 'Data Points', value: '70K+' },
+  { label: 'Avg Explanatory Power', value: '95%' },
+  { label: 'Available', value: 'May 2026', condensed: true },
 ];

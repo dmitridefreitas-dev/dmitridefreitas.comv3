@@ -1,7 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import Image from 'next/image';
 import TextReveal from '@/components/effects/TextReveal';
 import MagneticButton from '@/components/effects/MagneticButton';
 import ExperienceModal from '@/components/modals/ExperienceModal';
@@ -9,13 +8,13 @@ import { education } from '@/data/education';
 import { experiences } from '@/data/experiences';
 import { skillCategories } from '@/data/skills';
 import { socialLinks } from '@/data/constants';
-import { ArrowUpRight, Linkedin, Trees, Wind, Flower2 } from 'lucide-react';
+import { ArrowUpRight, Linkedin, Trophy, Plane, BarChart3 } from 'lucide-react';
 
 const storyParagraphs = [
-  "I'm pursuing a Bachelor of Science in Financial Engineering with a Minor in Accounting at Washington University in St. Louis, graduating December 2027.",
-  "My professional experience spans financial planning & analysis at Centene Corporation, audit & assurance at Anders CPA Advisors, and an upcoming summer analyst position at MUFG — one of the world's largest financial groups.",
-  "My research focuses on credit risk analysis, where I've built OLS regression models to isolate drivers of credit spread widening and analyzed non-linear credit elasticity across yield curve inversions.",
-  "I'm seeking opportunities in investment banking, asset management, and corporate finance starting Summer 2026.",
+  "I'm pursuing a Bachelor of Science in Data Science & Financial Engineering at Washington University in St. Louis, graduating May 2026.",
+  "My professional experience includes building ML-driven quantitative models for credit market analysis at Amphora Investment Management, where I processed 70K+ data points across 8+ statistical approaches, achieving 95% average explanatory power.",
+  "My research focuses on market efficiency and quantitative finance — from PEAD anomaly analysis testing semi-strong EMH to algorithmic trading strategy development and full-stack trading terminal infrastructure.",
+  "I'm seeking full-time roles in quantitative research, financial engineering, and data science starting May 2026.",
 ];
 
 const financeExps = experiences.filter((e) => e.type === 'finance');
@@ -23,19 +22,19 @@ const researchExps = experiences.filter((e) => e.type === 'research');
 
 const personalInterests = [
   {
-    icon: Trees,
-    title: 'Golfing',
-    description: 'Enjoy the strategy and precision of golf — a great way to stay sharp and network on the course.',
+    icon: Trophy,
+    title: 'Cricket',
+    description: 'Competitive cricket player — a lifelong passion from growing up in Barbados that sharpened strategy, teamwork, and composure under pressure.',
   },
   {
-    icon: Wind,
-    title: 'Paragliding',
-    description: 'An adrenaline-driven passion for paragliding and exploring new perspectives from above.',
+    icon: Plane,
+    title: 'Travel & Adventure',
+    description: 'Committed to exploring new cultures and environments. Duke of Edinburgh Award expeditions sparked a love of outdoor challenge and discovery.',
   },
   {
-    icon: Flower2,
-    title: 'Horticulture',
-    description: 'A grounding interest in cultivating plants and understanding the patience required for growth.',
+    icon: BarChart3,
+    title: 'Open Source Quant Research',
+    description: 'Building and sharing quantitative finance tools and datasets — contributing to the open-source research community.',
   },
 ];
 
@@ -148,37 +147,9 @@ export default function AboutContent() {
         className="section-full flex-col text-center px-6 pt-28 relative overflow-hidden"
         aria-label="About hero"
       >
-<motion.div
-          initial={{ opacity: 0, scale: 0.88 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9 }}
-          className="relative mb-6"
-        >
-          <div className="headshot-ring-outer" aria-hidden="true" />
-          <div className="headshot-glow-pulse" aria-hidden="true" />
-          <motion.div
-            whileHover={{ scale: 1.04 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative w-40 h-40 md:w-52 md:h-52 rounded-full overflow-hidden ring-1 ring-accent/20 headshot-container"
-            style={{ boxShadow: '0 0 60px rgba(139,92,246,0.22)' }}
-          >
-            {/* Negative inset zooms the image; rounded-full overflow-hidden on parent keeps it a circle */}
-            <div style={{ position: 'absolute', inset: '-18%' }}>
-              <Image
-                src="/images/erich-headshot.png"
-                alt="Erich Huang"
-                fill
-                className="object-cover"
-                style={{ objectPosition: '50% 8%' }}
-                priority
-              />
-            </div>
-          </motion.div>
-        </motion.div>
-
         <h1 className="font-serif font-bold text-display text-foreground will-change-transform text-balance">
           <TextReveal splitBy="word" delay={0.3} staggerDelay={0.1}>
-            Erich Huang
+            Dmitri De Freitas
           </TextReveal>
         </h1>
 
@@ -188,7 +159,6 @@ export default function AboutContent() {
           transition={{ duration: 0.7, delay: 0.8 }}
           className="font-mono text-xs uppercase tracking-[0.4em] text-accent mt-4"
         >
-          {/* Slow glow pulse on the subtitle text */}
           <motion.span
             animate={{
               textShadow: [
@@ -201,7 +171,7 @@ export default function AboutContent() {
             transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}
             style={{ display: 'inline' }}
           >
-            Financial Engineering &amp; Accounting · WashU · Available Summer 2026
+            Data Science &amp; Financial Engineering · WashU · Available May 2026
           </motion.span>
         </motion.p>
 
@@ -211,7 +181,7 @@ export default function AboutContent() {
           transition={{ duration: 0.6, delay: 1.0 }}
           className="mt-4 flex flex-wrap justify-center gap-2"
         >
-          {['Pi Mu Epsilon', 'Phi Beta Kappa'].map((honor, i) => (
+          {["Dean's List", 'GPA 3.7'].map((honor, i) => (
             <motion.span
               key={honor}
               className="font-mono text-xs uppercase tracking-[0.2em] text-accent bg-surface border border-accent/25 rounded px-2 py-1"
@@ -230,90 +200,79 @@ export default function AboutContent() {
         </motion.div>
       </section>
 
-      <div className="lg:grid lg:grid-cols-2 lg:gap-x-16 lg:gap-y-16 lg:max-w-[1400px] lg:mx-auto px-6 lg:px-12 py-12 relative items-start">
+      <div className="lg:max-w-[1400px] lg:mx-auto px-6 lg:px-12 py-12 relative">
 
-        <section className="flex flex-col mb-12 lg:mb-0" aria-label="Background">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6 self-start"
-          >
-            Background
-          </motion.p>
-
-          <div className="flex flex-col gap-8">
-            {storyParagraphs.map((para, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-10%' }}
-                transition={{ duration: 0.8, delay: i * 0.08 }}
-                className="text-base text-muted leading-relaxed font-sans"
-              >
-                {para}
-              </motion.p>
-            ))}
-          </div>
-        </section>
-
-        <section className="mb-12 lg:mb-0" aria-label="Professional Experience">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6"
-          >
-            Professional Experience
-          </motion.p>
-
-          <div className="relative border-l border-border pl-8 flex flex-col gap-0">
-            {financeExps.map((exp, i) => (
-              <motion.article
-                key={exp.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: i * 0.06 }}
-                className="py-7 relative group cursor-pointer bg-transparent hover:bg-surface transition-colors rounded-xl px-5 -mx-5"
-                role="button"
-                tabIndex={0}
-                data-cursor="expand"
-                onClick={() => setSelectedExperience(exp)}
-                onKeyDown={(e) => e.key === 'Enter' && setSelectedExperience(exp)}
-              >
-                <div className="absolute left-[-34px] top-9 w-2.5 h-2.5">
-                  <motion.div
-                    className="absolute inset-0 rounded-full"
-                    style={{ backgroundColor: 'rgba(139,92,246,0.4)' }}
-                    animate={{ scale: [1, 2.8, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 0.9 }}
-                  />
-                  <div className="absolute inset-0 rounded-full border-2 border-background" style={{ backgroundColor: 'rgba(139,92,246,0.5)' }} />
-                </div>
+        {/* Row 1: Background + Proficiency */}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-16 mb-16 items-start">
+          <section className="flex flex-col mb-12 lg:mb-0" aria-label="Background">
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6 self-start"
+            >
+              Background
+            </motion.p>
+            <div className="flex flex-col gap-8">
+              {storyParagraphs.map((para, i) => (
                 <motion.p
-                  className="font-mono text-xs uppercase tracking-[0.25em] mb-2 text-accent"
-                  animate={{ opacity: [1, 0.6, 1] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.5 }}
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-10%' }}
+                  transition={{ duration: 0.8, delay: i * 0.08 }}
+                  className="text-base text-muted leading-relaxed font-sans"
                 >
-                  {exp.date}
+                  {para}
                 </motion.p>
-                <h3 className="font-serif font-bold text-base md:text-lg text-foreground mb-1 group-hover:text-accent transition-colors leading-snug">
-                  {exp.title}
-                </h3>
-                <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted mb-2">
-                  {exp.organization}
-                </p>
-                <p className="text-[12px] text-muted leading-relaxed max-w-sm line-clamp-2">
-                  {exp.shortDescription}
-                </p>
-              </motion.article>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
 
-        <div className="flex flex-col mb-12 lg:mb-0">
+          <section aria-label="Skills Proficiency">
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6"
+            >
+              Proficiency
+            </motion.p>
+            <div className="flex flex-col gap-7">
+              {skillCategories.map((cat, ci) => (
+                <motion.div
+                  key={cat.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: ci * 0.06 }}
+                >
+                  <div className="flex justify-between items-baseline mb-3">
+                    <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
+                      {cat.name}
+                    </p>
+                    <span className="font-mono text-xs text-accent/70">
+                      {cat.proficiency}%
+                    </span>
+                  </div>
+                  <div className="h-[2px] bg-surface rounded">
+                    <motion.div
+                      className="h-full rounded"
+                      style={{ background: 'linear-gradient(90deg, #8B5CF6, #4C1D95)' }}
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${cat.proficiency}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, delay: ci * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* Row 2: Education + Professional Experience */}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-16 mb-16 items-start">
           <section aria-label="Education">
             <motion.p
               initial={{ opacity: 0 }}
@@ -323,7 +282,6 @@ export default function AboutContent() {
             >
               Education
             </motion.p>
-
             <div className="relative border-l border-border pl-8 flex flex-col gap-0">
               {education.map((edu, i) => (
                 <motion.article
@@ -350,7 +308,7 @@ export default function AboutContent() {
                   >
                     {edu.years}
                   </motion.p>
-                  <h3 className="font-serif font-bold text-base md:text-lg text-foreground mb-1">
+                  <h3 className="font-sans font-bold text-base md:text-lg text-foreground mb-1">
                     {edu.school}
                   </h3>
                   {edu.department && (
@@ -376,16 +334,72 @@ export default function AboutContent() {
             </div>
           </section>
 
-          <section className="pt-0 lg:-mt-[1px]" aria-label="Research">
+          <section aria-label="Professional Experience">
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6 mt-8"
+              className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6"
             >
-              Research
+              Professional Experience
             </motion.p>
+            <div className="relative border-l border-border pl-8 flex flex-col gap-0">
+              {financeExps.map((exp, i) => (
+                <motion.article
+                  key={exp.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: i * 0.06 }}
+                  className="py-7 relative group cursor-pointer bg-transparent hover:bg-surface transition-colors rounded-xl px-5 -mx-5"
+                  role="button"
+                  tabIndex={0}
+                  data-cursor="expand"
+                  onClick={() => setSelectedExperience(exp)}
+                  onKeyDown={(e) => e.key === 'Enter' && setSelectedExperience(exp)}
+                >
+                  <div className="absolute left-[-34px] top-9 w-2.5 h-2.5">
+                    <motion.div
+                      className="absolute inset-0 rounded-full"
+                      style={{ backgroundColor: 'rgba(139,92,246,0.4)' }}
+                      animate={{ scale: [1, 2.8, 1], opacity: [0.5, 0, 0.5] }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 0.9 }}
+                    />
+                    <div className="absolute inset-0 rounded-full border-2 border-background" style={{ backgroundColor: 'rgba(139,92,246,0.5)' }} />
+                  </div>
+                  <motion.p
+                    className="font-mono text-xs uppercase tracking-[0.25em] mb-2 text-accent"
+                    animate={{ opacity: [1, 0.6, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.5 }}
+                  >
+                    {exp.date}
+                  </motion.p>
+                  <h3 className="font-sans font-bold text-base md:text-lg text-foreground mb-1 group-hover:text-accent transition-colors leading-snug">
+                    {exp.title}
+                  </h3>
+                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted mb-2">
+                    {exp.organization}
+                  </p>
+                  <p className="text-[12px] text-muted leading-relaxed max-w-sm line-clamp-2">
+                    {exp.shortDescription}
+                  </p>
+                </motion.article>
+              ))}
+            </div>
+          </section>
+        </div>
 
+        {/* Row 3: Research — full width */}
+        <section aria-label="Research">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6"
+          >
+            Research
+          </motion.p>
+          <div className="lg:grid lg:grid-cols-2 lg:gap-x-16">
             <div className="relative border-l border-border pl-8 flex flex-col gap-0">
               {researchExps.map((exp, i) => (
                 <motion.article
@@ -417,7 +431,7 @@ export default function AboutContent() {
                   >
                     {exp.date}
                   </motion.p>
-                  <h3 className="font-serif font-bold text-lg md:text-xl text-foreground mb-1 group-hover:text-accent transition-colors leading-snug">
+                  <h3 className="font-sans font-bold text-lg md:text-xl text-foreground mb-1 group-hover:text-accent transition-colors leading-snug">
                     {exp.title}
                   </h3>
                   <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted mb-3">
@@ -429,48 +443,6 @@ export default function AboutContent() {
                 </motion.article>
               ))}
             </div>
-          </section>
-        </div>
-
-        <section aria-label="Skills Proficiency">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6"
-          >
-            Proficiency
-          </motion.p>
-
-          <div className="flex flex-col gap-7">
-            {skillCategories.map((cat, ci) => (
-              <motion.div
-                key={cat.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: ci * 0.06 }}
-              >
-                <div className="flex justify-between items-baseline mb-3">
-                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-                    {cat.name}
-                  </p>
-                  <span className="font-mono text-xs text-accent/70">
-                    {cat.proficiency}%
-                  </span>
-                </div>
-                <div className="h-[2px] bg-surface rounded">
-                  <motion.div
-                    className="h-full rounded"
-                    style={{ background: 'linear-gradient(90deg, #8B5CF6, #4C1D95)' }}
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${cat.proficiency}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: ci * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </div>
-              </motion.div>
-            ))}
           </div>
         </section>
       </div>
@@ -487,7 +459,7 @@ export default function AboutContent() {
             transition={{ duration: 1 }}
             className="font-serif italic text-subhead text-foreground leading-relaxed"
           >
-            &ldquo;The stock market is a device for transferring money from the impatient to the patient.&rdquo;
+            &ldquo;In God we trust. All others must bring data.&rdquo;
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -496,7 +468,7 @@ export default function AboutContent() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="font-mono text-xs uppercase tracking-[0.3em] text-muted mt-6"
           >
-            — Warren Buffett
+            — W. Edwards Deming
           </motion.p>
         </blockquote>
       </section>

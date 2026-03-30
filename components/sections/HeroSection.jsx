@@ -102,7 +102,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="font-mono text-xs uppercase tracking-[0.45em] text-accent mb-5"
         >
-          Portfolio — Available Summer 2026
+          Portfolio — Available May 2026
         </motion.p>
 
         <h1
@@ -110,7 +110,7 @@ export default function HeroSection() {
           style={{ animation: 'glow-text-pulse 5s ease-in-out infinite' }}
         >
           <TextReveal splitBy="word" delay={0.4} staggerDelay={0.1}>
-            Erich Huang
+            Dmitri De Freitas
           </TextReveal>
         </h1>
 
@@ -139,7 +139,7 @@ export default function HeroSection() {
             animation: 'gradient-shift-subtitle 6s ease infinite',
           }}
         >
-          Financial Engineering &amp; Accounting
+          Data Science &amp; Financial Engineering
         </motion.p>
 
         <motion.p
@@ -158,7 +158,7 @@ export default function HeroSection() {
           className="mt-7 flex flex-col sm:flex-row items-center gap-4"
         >
           <MagneticButton href="/projects" data-cursor="expand">
-            View Experience
+            View Projects
           </MagneticButton>
           <MagneticButton href="/contact" variant="ghost" data-cursor="expand">
             Get in Touch

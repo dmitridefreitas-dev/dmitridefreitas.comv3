@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
 const ITEMS = [
-  { label: 'Financial Engineering & Accounting', href: null },
+  { label: 'Data Science & Financial Engineering', href: null },
   { label: 'Washington University in St. Louis', href: null },
-  { label: 'View Experience', href: '/projects' },
+  { label: 'View Projects', href: '/projects' },
   { label: 'Get in Touch', href: '/contact' },
 ];
 

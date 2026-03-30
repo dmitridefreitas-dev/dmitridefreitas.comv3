@@ -1,7 +1,7 @@
 import HeroToggler from '@/components/hero/HeroToggler';
 import InfoBanner from '@/components/sections/InfoBanner';
 import AcademicTicker from '@/components/sections/FinanceTicker';
-import KPIFullscreen from '@/components/sections/KPIFullscreen';
+import SkillsNetwork from '@/components/sections/SkillsNetwork';
 import ProjectsShowcase from '@/components/sections/ProjectsShowcase';
 import SkillsHorizontal from '@/components/sections/SkillsHorizontal';
 import CompetenciesSticky from '@/components/sections/CompetenciesSticky';
@@ -10,9 +10,9 @@ import CTASection from '@/components/sections/CTASection';
 import SectionAtmosphere from '@/components/effects/SectionAtmosphere';
 
 export const metadata = {
-  title: 'Erich Huang — Financial Engineering & Accounting',
+  title: 'Dmitri De Freitas — Data Science & Financial Engineering',
   description:
-    'Portfolio of Erich Huang — Financial Engineering and Accounting at WashU. Incoming MUFG Financial Analyst. Credit risk research, FP&A, audit & assurance.',
+    'Portfolio of Dmitri De Freitas — Data Science & Financial Engineering at WashU. Data Scientist at Amphora Investment Management. PEAD research, ML modeling, algorithmic trading.',
 };
 
 export default function Home() {
@@ -21,8 +21,8 @@ export default function Home() {
       <HeroToggler />
       <InfoBanner />
       <AcademicTicker />
-      <SectionAtmosphere atmosphere="work">
-        <KPIFullscreen />
+      <SectionAtmosphere atmosphere="skills">
+        <SkillsNetwork />
       </SectionAtmosphere>
       <SectionAtmosphere atmosphere="work">
         <ProjectsShowcase />

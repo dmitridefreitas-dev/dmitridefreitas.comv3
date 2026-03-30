@@ -35,12 +35,12 @@ export default function CTASection() {
           viewport={{ once: true }}
           className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-5"
         >
-          Available — Summer 2026
+          Available — May 2026
         </motion.p>
 
         <h2 className="font-serif font-bold text-headline text-foreground text-center w-full will-change-transform mb-6">
           <TextReveal splitBy="word" staggerDelay={0.08} center>
-            Seeking Finance Opportunities
+            Open to Opportunities
           </TextReveal>
         </h2>
 
@@ -51,8 +51,8 @@ export default function CTASection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-body-fluid text-muted max-w-lg mx-auto leading-relaxed mb-7"
         >
-          Interested in investment banking, asset management, and corporate finance 
-          roles. Incoming MUFG Financial Analyst with experience in FP&A, audit, and credit risk research.
+          Pursuing quantitative research, financial engineering, and data science roles.
+          BS Data Science &amp; Financial Engineering at WashU (May 2026) with hands-on experience in ML modeling, credit analysis, and algorithmic trading research.
         </motion.p>
 
         <motion.div

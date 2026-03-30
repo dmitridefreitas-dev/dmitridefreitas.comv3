@@ -119,7 +119,7 @@ export default function ContactPage() {
           transition={{ delay: 0.9 }}
           className="font-mono text-xs uppercase tracking-[0.3em] text-muted mt-5 relative z-10 break-all"
         >
-          Available Summer 2026 &nbsp;&middot;&nbsp; {contactInfo.email}
+          Available May 2026 &nbsp;&middot;&nbsp; {contactInfo.email}
         </motion.p>
       </section>
 
@@ -324,7 +324,7 @@ export default function ContactPage() {
           transition={{ duration: 1 }}
           className="font-serif italic text-subhead text-muted max-w-2xl leading-relaxed"
         >
-          Whether you&apos;re in investment banking, asset management, or corporate finance &mdash; 
+          Whether you&apos;re building a quant team, running a data-driven fund, or working on something that sits at the intersection of finance and technology &mdash;
           I&apos;m always happy to connect and discuss opportunities.
         </motion.p>
       </section>

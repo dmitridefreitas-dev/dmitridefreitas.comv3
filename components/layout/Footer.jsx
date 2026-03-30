@@ -19,9 +19,9 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-10">
           <div>
-            <p className="font-serif text-lg font-bold text-foreground">Erich Huang</p>
+            <p className="font-serif text-lg font-bold text-foreground">Dmitri De Freitas</p>
             <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted mt-1">
-              Financial Engineering &amp; Accounting · WashU
+              Data Science &amp; Financial Engineering · WashU
             </p>
           </div>
 
@@ -63,10 +63,10 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-            &copy; {year} Erich Huang &middot; St. Louis, MO
+            &copy; {year} Dmitri De Freitas &middot; St. Louis, MO
           </p>
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-            Available for Finance &amp; IB &middot; Summer 2026
+            Available for Full-Time Roles &middot; May 2026
           </p>
         </div>
       </div>

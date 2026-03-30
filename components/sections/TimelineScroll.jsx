@@ -2,6 +2,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { timeline } from '@/data/constants';
+import { experiences } from '@/data/experiences';
 
 const TYPE_COLORS = {
   finance:   '#8B5CF6',
@@ -10,8 +11,11 @@ const TYPE_COLORS = {
   activity:  '#8B5CF6',
 };
 
-const left  = timeline.filter((e) => e.type !== 'finance');
-const right = timeline.filter((e) => e.type === 'finance');
+// Left: education entries from timeline
+const left = timeline.filter((e) => e.type === 'education');
+
+// Right: ALL work/research/activity experiences
+const right = experiences;
 
 function Entry({ entry, align = 'left' }) {
   const dot = TYPE_COLORS[entry.type] || '#8B5CF6';
@@ -32,13 +36,13 @@ function Entry({ entry, align = 'left' }) {
         </span>
       </div>
       <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted/60 leading-none">
-        {entry.year}
+        {entry.year ?? entry.date}
       </p>
-      <h3 className="font-serif font-bold text-base md:text-lg text-foreground leading-snug max-w-[260px]">
+      <h3 className="font-sans font-bold text-base md:text-lg text-foreground leading-snug max-w-[260px]">
         {entry.title}
       </h3>
       <p className="text-xs text-muted/70 leading-relaxed max-w-[260px] line-clamp-2">
-        {entry.description}
+        {entry.description ?? entry.shortDescription}
       </p>
     </motion.div>
   );

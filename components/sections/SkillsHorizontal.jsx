@@ -7,25 +7,29 @@ import { skillsData } from '@/data/skills';
 function SkillCard({ skill, onClick, className = '' }) {
   return (
     <div
-      className={`flex-shrink-0 w-[75vw] md:w-[44vw] lg:w-[28vw] h-full flex flex-col justify-center items-center text-center px-8 md:px-10 border-r border-border cursor-pointer group bg-surface/60 hover:bg-surface transition-colors ${className}`}
+      className={`flex-shrink-0 w-[75vw] md:w-[44vw] lg:w-[28vw] h-full flex flex-col justify-center items-center text-center px-8 md:px-10 border-r border-border cursor-pointer group bg-surface/60 hover:bg-surface transition-colors overflow-hidden ${className}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
     >
-      <p className="font-mono text-xs uppercase tracking-[0.35em] text-accent mb-3">
+      {/* Category — fixed height, always aligns */}
+      <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted/60 mb-2 h-4 flex items-center">
         {skill.category}
       </p>
-      <h3 className="font-serif font-bold text-base md:text-lg text-foreground mb-1.5 group-hover:text-accent transition-colors duration-300">
+      {/* Title — always accent purple */}
+      <h3 className="font-sans font-bold text-base md:text-lg text-accent group-hover:text-accent/80 transition-colors duration-300 mb-2 leading-tight">
         {skill.name}
       </h3>
-      <p className="text-xs text-muted max-w-xs leading-relaxed">
+      {/* Description — clamped to 2 lines max */}
+      <p className="text-xs text-muted max-w-[220px] leading-relaxed line-clamp-2">
         {skill.description}
       </p>
-      <div className="mt-4 flex flex-wrap justify-center gap-2">
+      {/* Features */}
+      <div className="mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1">
         {skill.keyFeatures.slice(0, 3).map((f, i) => (
           <span
             key={i}
-            className="font-mono text-xs uppercase tracking-widest text-muted border-b border-muted/20 pb-0.5"
+            className="font-mono text-[10px] uppercase tracking-widest text-muted/50 border-b border-muted/15 pb-0.5"
           >
             {f}
           </span>
@@ -156,7 +160,7 @@ export default function SkillsHorizontal() {
           className="flex gap-16 items-center whitespace-nowrap"
           style={{
             width: 'max-content',
-            animation: 'scroll-left-mobile 40s linear infinite',
+            animation: 'scroll-left-mobile 120s linear infinite',
             willChange: 'transform',
           }}
         >

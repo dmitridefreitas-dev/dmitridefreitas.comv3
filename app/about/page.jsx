@@ -1,23 +1,23 @@
 import AboutContent from '@/components/sections/AboutContent';
 
 export const metadata = {
-  title: 'About — Erich Huang | Financial Engineering Student',
+  title: 'About — Dmitri De Freitas | Data Science & Financial Engineering',
   description:
-    'Erich Huang — BS Financial Engineering & Accounting minor at WashU (Dec 2027). Incoming Summer Analyst at MUFG. FP&A at Centene, audit at Anders CPA. Pi Mu Epsilon & Phi Beta Kappa honors. Seeking investment banking, asset management, and corporate finance roles for Summer 2026.',
+    'Dmitri De Freitas — BS Data Science & Financial Engineering at WashU (May 2026). GPA 3.7, Dean\'s List. Data Scientist at Amphora Investment Management. PEAD research, algorithmic trading, ML quantitative modeling. Available May 2026.',
   keywords: [
-    'Erich Huang about',
-    'Erich Huang WashU financial engineering',
-    'Erich Huang MUFG analyst',
-    'WashU financial engineering student',
-    'financial engineering accounting minor',
-    'Pi Mu Epsilon WashU',
-    'Phi Beta Kappa WashU',
-    'investment banking summer 2026',
+    'Dmitri De Freitas about',
+    'Dmitri De Freitas WashU data science',
+    'Dmitri De Freitas financial engineering',
+    'WashU data science student',
+    'quantitative research analyst',
+    'financial engineering student portfolio',
+    'data scientist finance',
+    'algorithmic trading developer',
   ],
   openGraph: {
-    title: 'About Erich Huang — Financial Engineering & Accounting',
+    title: 'About Dmitri De Freitas — Data Science & Financial Engineering',
     description:
-      'Incoming MUFG Summer Analyst. BS Financial Engineering at WashU. Pi Mu Epsilon · Phi Beta Kappa. Seeking IB, asset management, and corporate finance roles.',
+      'BS Data Science & Financial Engineering at WashU. GPA 3.7. Data Scientist at Amphora Investment Management. PEAD research · ML modeling · Algorithmic trading.',
   },
 };
 

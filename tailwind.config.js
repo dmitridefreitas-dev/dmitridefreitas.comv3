@@ -38,9 +38,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+        serif: ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-jetbrains)', 'Consolas', 'monospace'],
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'display':    ['clamp(1.75rem,3.5vw,2.75rem)', { lineHeight: '1.0',  letterSpacing: '-0.03em' }],
@@ -74,7 +74,7 @@ module.exports = {
         },
       },
       animation: {
-        'ticker-scroll':     'ticker-scroll 60s linear infinite',
+        'ticker-scroll':     'ticker-scroll 78s linear infinite',
         'pulse-glow':        'pulse-glow 2s ease-in-out infinite',
         'grid-breathe':      'grid-breathe 20s ease-in-out infinite',
         'aurora-shift':      'aurora-shift 25s ease-in-out infinite',

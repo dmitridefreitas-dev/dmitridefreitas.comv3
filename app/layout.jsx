@@ -1,4 +1,4 @@
-import { Inter, Playfair_Display, JetBrains_Mono } from 'next/font/google';
+import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AtmosphericBlobs from '@/components/effects/AtmosphericBlobs';
@@ -6,15 +6,10 @@ import ClientShell from '@/components/layout/ClientShell';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
+  variable: '--font-space-grotesk',
+  weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -26,35 +21,31 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata = {
   title: {
-    default: 'Erich Huang — Financial Engineering & Accounting | WashU',
-    template: '%s | Erich Huang',
+    default: 'Dmitri De Freitas — Data Science & Financial Engineering | WashU',
+    template: '%s | Dmitri De Freitas',
   },
   description:
-    'Erich Huang — BS Financial Engineering & Accounting minor at Washington University in St. Louis (Dec 2027). Incoming Summer Analyst at MUFG. FP&A at Centene, audit at Anders CPA. Credit risk research, OLS regression, quantitative modeling. Available Summer 2026.',
+    'Dmitri De Freitas — BS Data Science & Financial Engineering at Washington University in St. Louis (May 2026). Data Scientist at Amphora Investment Management. PEAD market efficiency research, ML quantitative modeling, algorithmic trading. Available May 2026.',
   keywords: [
-    'Erich Huang',
-    'Erich Huang MUFG',
-    'Erich Huang WashU',
-    'Erich Huang financial engineering',
-    'financial engineering student',
-    'Washington University in St. Louis finance',
+    'Dmitri De Freitas',
+    'Dmitri De Freitas WashU',
+    'Dmitri De Freitas data science',
+    'Dmitri De Freitas financial engineering',
+    'data science financial engineering student',
+    'Washington University in St. Louis data science',
     'WashU financial engineering',
-    'MUFG summer analyst 2026',
-    'Centene FPA analyst',
-    'Anders CPA audit',
-    'credit risk analysis',
-    'investment banking analyst',
-    'asset management student',
+    'Amphora Investment Management data scientist',
+    'PEAD market efficiency research',
+    'quantitative research analyst',
+    'algorithmic trading developer',
+    'machine learning finance',
+    'OLS regression',
     'quantitative finance student',
-    'OLS regression credit spreads',
-    'SOFR volatility research',
-    'Pi Mu Epsilon WashU',
-    'Phi Beta Kappa WashU',
-    'financial engineering portfolio',
-    'finance student portfolio',
+    'financial engineer portfolio',
+    'data scientist finance portfolio',
   ],
-  authors: [{ name: 'Erich Huang', url: 'https://www.linkedin.com/in/erichhuang/' }],
-  creator: 'Erich Huang',
+  authors: [{ name: 'Dmitri De Freitas', url: 'https://www.linkedin.com/in/dmitri-de-freitas-16a540347/' }],
+  creator: 'Dmitri De Freitas',
   robots: {
     index: true,
     follow: true,
@@ -67,99 +58,94 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: 'Erich Huang — Financial Engineering & Accounting',
+    title: 'Dmitri De Freitas — Data Science & Financial Engineering',
     description:
-      'Erich Huang — Incoming MUFG Summer Analyst. BS Financial Engineering at WashU. FP&A at Centene, audit at Anders CPA, credit risk research. Available Summer 2026.',
-    siteName: 'Erich Huang',
-    url: 'https://erichhuang.com',
+      'Dmitri De Freitas — BS Data Science & Financial Engineering at WashU. Data Scientist at Amphora Investment Management. PEAD research, ML modeling, algorithmic trading. Available May 2026.',
+    siteName: 'Dmitri De Freitas',
+    url: 'https://dmitridefreitas.com',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Erich Huang — Financial Engineering & Accounting',
+    title: 'Dmitri De Freitas — Data Science & Financial Engineering',
     description:
-      'Incoming MUFG Summer Analyst. BS Financial Engineering at WashU. FP&A at Centene, audit at Anders CPA, credit risk research.',
-    creator: '@erichhuang',
+      'BS Data Science & Financial Engineering at WashU. Data Scientist at Amphora. PEAD research, ML quantitative modeling, algorithmic trading.',
   },
   alternates: {
-    canonical: 'https://erichhuang.com',
+    canonical: 'https://dmitridefreitas.com',
   },
 };
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Erich Huang',
-  givenName: 'Erich',
-  familyName: 'Huang',
-  jobTitle: 'Financial Engineering Student & Incoming MUFG Summer Analyst',
+  name: 'Dmitri De Freitas',
+  givenName: 'Dmitri',
+  familyName: 'De Freitas',
+  jobTitle: 'Data Science & Financial Engineering Student',
   description:
-    'Erich Huang is a Financial Engineering and Accounting student at Washington University in St. Louis, incoming Summer Analyst at MUFG, with FP&A experience at Centene Corporation and audit experience at Anders CPA Advisors. Available for full-time roles in investment banking, asset management, and corporate finance starting Summer 2026.',
-  url: 'https://erichhuang.com',
-  image: 'https://erichhuang.com/images/erich-headshot.png',
-  email: 'erichhuang2002@gmail.com',
-  telephone: '717-333-5758',
+    'Dmitri De Freitas is a Data Science and Financial Engineering student at Washington University in St. Louis. Former Data Scientist Intern at Amphora Investment Management. Researcher in PEAD market efficiency and quantitative trading. Available for full-time quantitative research, financial engineering, and data science roles starting May 2026.',
+  url: 'https://dmitridefreitas.com',
+  email: 'd.defreitas@wustl.edu',
+  telephone: '+1-314-646-9845',
   alumniOf: [
     {
       '@type': 'CollegeOrUniversity',
       name: 'Washington University in St. Louis',
       sameAs: 'https://wustl.edu',
     },
+    {
+      '@type': 'CollegeOrUniversity',
+      name: 'Drew University',
+    },
   ],
   worksFor: [
     {
       '@type': 'Organization',
-      name: 'MUFG',
-      description: 'Incoming Summer Analyst 2026',
+      name: 'Amphora Investment Management',
+      description: 'Data Scientist Intern',
     },
   ],
   hasOccupation: {
     '@type': 'Occupation',
-    name: 'Financial Analyst',
+    name: 'Quantitative Research Analyst',
     occupationLocation: { '@type': 'Country', name: 'United States' },
     skills:
-      'Financial Engineering, Accounting, Credit Risk Analysis, Financial Planning & Analysis, OLS Regression, Quantitative Modeling, Audit & Assurance, Bloomberg Terminal, Python, Excel, PowerBI, SQL, VBA',
+      'Data Science, Financial Engineering, Machine Learning, OLS Regression, Python, R, MATLAB, SQL, Bloomberg Terminal, QuantLib, PEAD Research, Algorithmic Trading, Statistical Modeling',
   },
   sameAs: [
-    'https://www.linkedin.com/in/erichhuang/',
+    'https://www.linkedin.com/in/dmitri-de-freitas-16a540347/',
   ],
   knowsAbout: [
+    'Data Science',
     'Financial Engineering',
-    'Accounting',
-    'Credit Risk Analysis',
-    'Financial Planning & Analysis',
-    'Investment Banking',
-    'Asset Management',
-    'Corporate Finance',
+    'Machine Learning',
+    'Quantitative Finance',
+    'PEAD Market Efficiency',
+    'Algorithmic Trading',
     'OLS Regression',
-    'Quantitative Modeling',
-    'Credit Spread Analysis',
-    'SOFR Volatility',
-    'Audit & Assurance',
-    'GAAP',
-    'PCAOB',
+    'Time Series Analysis',
+    'Portfolio Optimization',
+    'Credit Risk Analysis',
     'Python',
-    'Excel',
-    'Bloomberg Terminal',
-    'PowerBI',
-    'OneStream',
+    'R',
+    'MATLAB',
     'SQL',
-    'VBA',
-    'Fieldguide',
+    'Bloomberg Terminal',
+    'QuantLib',
+    'Power BI',
+    'Tableau',
+    'Statistical Modeling',
   ],
-  award: ['Pi Mu Epsilon', 'Phi Beta Kappa'],
-  memberOf: [
-    { '@type': 'Organization', name: 'Pi Mu Epsilon' },
-    { '@type': 'Organization', name: 'Phi Beta Kappa' },
-  ],
+  award: ["Dean's List"],
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable} ${jetbrains.variable}`}
+      className={`${spaceGrotesk.variable} ${jetbrains.variable}`}
     >
       <head>
         <script

@@ -35,31 +35,40 @@ export default function Header() {
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="group flex items-center gap-2 relative z-10" data-cursor="expand">
+      <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
+        <Link href="/" className="group flex items-center gap-3 relative z-10" data-cursor="expand">
           <motion.span
             className="font-serif text-xl font-bold text-foreground group-hover:text-accent transition-colors duration-200"
             whileHover={{ scale: 1.04 }}
           >
-            E. Huang
+            D. De Freitas
           </motion.span>
-          <span className="hidden sm:block font-mono text-sm uppercase tracking-[0.2em] text-muted mt-0.5">
-            — finance
-          </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2" aria-label="Main navigation">
+        <nav className="hidden md:flex items-center gap-10 absolute left-1/2 -translate-x-1/2" aria-label="Main navigation">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+            const isHome    = link.href === '/';
+            const isContact = link.href === '/contact';
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative font-mono text-xs uppercase tracking-[0.25em] transition-colors duration-200 hover:text-accent"
+                className="relative flex items-center gap-2 font-mono text-xs uppercase tracking-[0.25em] transition-colors duration-200 hover:text-accent"
                 style={{ color: isActive ? '#8B5CF6' : '#9CA3AF' }}
                 data-cursor="expand"
               >
+                {isHome && (
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted/35 hidden lg:block">
+                    data sci
+                  </span>
+                )}
                 {link.label}
+                {isContact && (
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted/35 hidden lg:block">
+                    fin eng
+                  </span>
+                )}
                 {isActive && (
                   <motion.span
                     layoutId="nav-underline"
@@ -90,7 +99,7 @@ export default function Header() {
           >
             <Mail className="h-4 w-4" />
           </a>
-          <MagneticButton href="https://drive.google.com/file/d/1YnPdQlsCzY19ouxQIuSmshTizdMssxrA/view?usp=drive_link" target="_blank" rel="noopener noreferrer" variant="ghost" className="text-sm px-4 py-1.5" data-cursor="expand">
+          <MagneticButton href={socialLinks.resume} target="_blank" rel="noopener noreferrer" variant="ghost" className="text-sm px-4 py-1.5" data-cursor="expand">
             Resume
           </MagneticButton>
         </div>
@@ -112,7 +121,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden bg-background/98 backdrop-blur-md border-b border-border px-6 py-8 flex flex-col gap-6"
+            className="md:hidden bg-background/98 backdrop-blur-md border-b border-border px-8 py-8 flex flex-col gap-6"
           >
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
