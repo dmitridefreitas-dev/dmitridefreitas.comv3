@@ -1,90 +1,273 @@
 'use client';
 import { motion } from 'framer-motion';
-import TextReveal from '@/components/effects/TextReveal';
-import MagneticButton from '@/components/effects/MagneticButton';
+import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import { targetRoles } from '@/data/constants';
-import { ArrowUpRight } from 'lucide-react';
+
+/* ── Floating particle canvas ────────────────────────────────────── */
+
+function ParticleField() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animId;
+    let particles = [];
+
+    function resize() {
+      canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+      canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+      ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+    }
+
+    function init() {
+      resize();
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      particles = Array.from({ length: 40 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5,
+        color: ['rgba(139,92,246,0.3)', 'rgba(0,212,255,0.25)', 'rgba(0,229,160,0.2)'][Math.floor(Math.random() * 3)],
+      }));
+    }
+
+    function draw() {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = w;
+        if (p.x > w) p.x = 0;
+        if (p.y < 0) p.y = h;
+        if (p.y > h) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      }
+      animId = requestAnimationFrame(draw);
+    }
+
+    init();
+    draw();
+    window.addEventListener('resize', resize);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ opacity: 0.6 }}
+    />
+  );
+}
+
+/* ── Stagger variants ────────────────────────────────────────────── */
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+};
+
+/* ── Component ───────────────────────────────────────────────────── */
 
 export default function CTASection() {
   return (
     <section
-      className="section-full flex-col text-center px-6 overflow-hidden"
+      className="relative py-28 px-6 overflow-hidden"
+      style={{ background: '#02030A' }}
       aria-label="Available for Opportunities"
     >
-      <p
-        className="absolute font-mono font-bold select-none pointer-events-none"
+      {/* Particle background */}
+      <ParticleField />
+
+      {/* Gradient top rule */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
         style={{
-          fontSize: 'clamp(2rem, 6vw, 5.5rem)',
-          color: 'rgba(139,92,246,0.04)',
-          letterSpacing: '-0.05em',
-          lineHeight: 1,
+          background: 'linear-gradient(90deg, transparent, #8B5CF6, #00D4FF, #00E5A0, transparent)',
+        }}
+      />
+
+      {/* Subtle radial glow behind content */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          whiteSpace: 'nowrap',
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)',
         }}
-        aria-hidden="true"
+      />
+
+      <motion.div
+        className="relative z-10 max-w-2xl mx-auto flex flex-col items-center text-center"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-80px' }}
       >
-        PV = FV / (1+r)^n
-      </p>
-
-      <div className="relative z-10 max-w-3xl mx-auto">
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-5"
+        {/* Availability badge */}
+        <motion.div
+          variants={itemVariants}
+          className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full"
+          style={{
+            background: 'rgba(0,229,160,0.06)',
+            border: '1px solid rgba(0,229,160,0.2)',
+          }}
         >
-          Available — May 2026
-        </motion.p>
+          <motion.span
+            className="inline-block w-2 h-2 rounded-full"
+            style={{
+              background: '#00E5A0',
+              boxShadow: '0 0 8px rgba(0,229,160,0.6)',
+            }}
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <span
+            className="font-mono text-[11px] uppercase tracking-[0.2em]"
+            style={{ color: '#34D399' }}
+          >
+            Available May 2026
+          </span>
+        </motion.div>
 
-        <h2 className="font-serif font-bold text-headline text-foreground text-center w-full will-change-transform mb-6">
-          <TextReveal splitBy="word" staggerDelay={0.08} center>
-            Open to Opportunities
-          </TextReveal>
-        </h2>
+        {/* Heading with gradient */}
+        <motion.h2
+          variants={itemVariants}
+          className="font-serif font-bold mb-5"
+          style={{
+            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+            lineHeight: 1.15,
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #00D4FF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          Let&apos;s Build Something
+        </motion.h2>
 
+        {/* Subtext */}
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-body-fluid text-muted max-w-lg mx-auto leading-relaxed mb-7"
+          variants={itemVariants}
+          className="text-base leading-relaxed mb-6 max-w-lg"
+          style={{ color: 'rgba(229,229,229,0.55)' }}
         >
           Pursuing quantitative research, financial engineering, and data science roles.
-          BS Data Science &amp; Financial Engineering at WashU (May 2026) with hands-on experience in ML modeling, credit analysis, and algorithmic trading research.
+          BS Data Science &amp; Financial Engineering at WashU with hands-on experience
+          in ML modeling, credit analysis, and algorithmic trading research.
         </motion.p>
 
+        {/* Role tags */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8"
+          variants={itemVariants}
+          className="flex flex-wrap justify-center gap-2 mb-10"
         >
-          {targetRoles.map((role, i) => (
+          {targetRoles.map((role) => (
             <span
               key={role}
-              className="font-mono text-xs uppercase tracking-[0.2em] text-muted"
+              className="font-mono text-[10px] uppercase tracking-[0.15em] px-3 py-1 rounded-sm"
+              style={{
+                background: 'rgba(139,92,246,0.08)',
+                border: '1px solid rgba(139,92,246,0.18)',
+                color: 'rgba(167,139,250,0.7)',
+              }}
             >
-              {i > 0 && <span className="mr-6 text-accent/50">·</span>}
               {role}
             </span>
           ))}
         </motion.div>
 
+        {/* CTA buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.7 }}
+          variants={itemVariants}
+          className="flex flex-wrap justify-center gap-4"
         >
-          <MagneticButton href="/contact" size="lg" data-cursor="expand">
-            Get in Touch
-            <ArrowUpRight className="h-4 w-4" />
-          </MagneticButton>
+          {/* Primary: Get in Touch */}
+          <Link href="/contact" className="group relative">
+            <span
+              className="relative z-10 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.15em] px-7 py-3 rounded-sm transition-all duration-300"
+              style={{
+                background: 'rgba(139,92,246,0.15)',
+                border: '1px solid rgba(139,92,246,0.4)',
+                color: '#A78BFA',
+                boxShadow: '0 0 20px rgba(139,92,246,0.15), inset 0 0 20px rgba(139,92,246,0.05)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(139,92,246,0.25)';
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(139,92,246,0.3), inset 0 0 30px rgba(139,92,246,0.1)';
+                e.currentTarget.style.borderColor = 'rgba(139,92,246,0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(139,92,246,0.15)';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(139,92,246,0.15), inset 0 0 20px rgba(139,92,246,0.05)';
+                e.currentTarget.style.borderColor = 'rgba(139,92,246,0.4)';
+              }}
+            >
+              <span style={{ color: 'rgba(139,92,246,0.4)' }}>$</span>
+              Get in Touch
+              <span style={{ color: 'rgba(139,92,246,0.4)' }}>&rarr;</span>
+            </span>
+          </Link>
+
+          {/* Secondary: View Projects */}
+          <Link href="/projects" className="group relative">
+            <span
+              className="relative z-10 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.15em] px-7 py-3 rounded-sm transition-all duration-300"
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(0,212,255,0.3)',
+                color: 'rgba(0,212,255,0.7)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0,212,255,0.08)';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(0,212,255,0.15)';
+                e.currentTarget.style.borderColor = 'rgba(0,212,255,0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)';
+              }}
+            >
+              <span style={{ color: 'rgba(0,212,255,0.35)' }}>$</span>
+              View Projects
+              <span style={{ color: 'rgba(0,212,255,0.35)' }}>&rarr;</span>
+            </span>
+          </Link>
         </motion.div>
-      </div>
+
+        {/* Bottom terminal-style status */}
+        <motion.p
+          variants={itemVariants}
+          className="font-mono text-[9px] uppercase tracking-[0.3em] mt-12"
+          style={{ color: 'rgba(0,212,255,0.18)' }}
+        >
+          {'/// END TRANSMISSION ///'}
+        </motion.p>
+      </motion.div>
     </section>
   );
 }

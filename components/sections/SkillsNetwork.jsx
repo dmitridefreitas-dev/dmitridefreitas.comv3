@@ -462,6 +462,249 @@ function DemoLabel({ visible }) {
   );
 }
 
+/* ─── Mobile vertical network ─────────────────────────────────────── */
+
+const MOB_W = 400;
+const MOB_H = 1600;
+
+const MOB_INPUT = [
+  { id: 'cat-prog', label: 'Programming\n& Scripting', x: 70,  y: 140 },
+  { id: 'cat-viz',  label: 'Data\nVisualization',      x: 200, y: 140 },
+  { id: 'cat-fin',  label: 'Financial\nTools',          x: 330, y: 140 },
+];
+
+const MOB_LANGS = [
+  { id: 'python', label: 'Python',  x: 50,  y: 340 },
+  { id: 'r',      label: 'R',       x: 130, y: 340 },
+  { id: 'sql',    label: 'SQL',     x: 210, y: 340 },
+  { id: 'matlab', label: 'MATLAB',  x: 290, y: 340 },
+  { id: 'vba',    label: 'VBA',     x: 360, y: 340 },
+  { id: 'git',    label: 'Git',     x: 130, y: 430 },
+];
+
+const MOB_TOOLS = [
+  { id: 'matplotlib', label: 'Matplotlib', x: 70,  y: 620 },
+  { id: 'powerbi',    label: 'Power BI',   x: 200, y: 620 },
+  { id: 'tableau',    label: 'Tableau',    x: 330, y: 620 },
+  { id: 'quantlib',   label: 'QuantLib',   x: 70,  y: 720 },
+  { id: 'bloomberg',  label: 'Bloomberg',  x: 200, y: 720 },
+  { id: 'fred',       label: 'FRED',       x: 330, y: 720 },
+];
+
+const MOB_OUTPUT = [
+  { id: 'out-quant', label: 'Quant\nFinance',   x: 70,  y: 920 },
+  { id: 'out-ml',    label: 'Machine\nLearning', x: 200, y: 920 },
+  { id: 'out-da',    label: 'Data\nEngineering', x: 330, y: 920 },
+];
+
+const MOB_PROJECTS = [
+  { id: 'pead',             label: 'PEAD Research',    category: 'Quant Finance', x: 100, y: 1140 },
+  { id: 'trading-terminal', label: 'Trading Terminal', category: 'Quant Finance', x: 300, y: 1140 },
+  { id: 'housing-price',    label: 'Housing Price ML', category: 'Data Science',  x: 100, y: 1280 },
+  { id: 'nfl-win',          label: 'NFL Win Prob',     category: 'Data Science',  x: 300, y: 1280 },
+];
+
+/* Simplified edges for mobile — category→skills, skills→tools, tools→output, output→projects */
+const MOB_EDGES = [
+  // input → languages
+  ['cat-prog', 'python'], ['cat-prog', 'r'], ['cat-prog', 'sql'],
+  ['cat-prog', 'matlab'], ['cat-prog', 'vba'], ['cat-prog', 'git'],
+  ['cat-viz', 'matplotlib'], ['cat-viz', 'powerbi'], ['cat-viz', 'tableau'],
+  ['cat-fin', 'quantlib'], ['cat-fin', 'bloomberg'], ['cat-fin', 'fred'],
+  // languages → tools (simplified)
+  ['python', 'matplotlib'], ['python', 'quantlib'],
+  ['r', 'tableau'], ['r', 'matplotlib'],
+  ['sql', 'powerbi'], ['sql', 'bloomberg'],
+  ['matlab', 'quantlib'],
+  ['vba', 'powerbi'],
+  ['git', 'tableau'],
+  // tools → output
+  ['matplotlib', 'out-ml'], ['matplotlib', 'out-da'],
+  ['powerbi', 'out-da'],
+  ['tableau', 'out-da'],
+  ['quantlib', 'out-quant'],
+  ['bloomberg', 'out-quant'], ['bloomberg', 'out-da'],
+  ['fred', 'out-quant'], ['fred', 'out-da'],
+  // output → projects
+  ['out-quant', 'pead'], ['out-quant', 'trading-terminal'],
+  ['out-ml', 'housing-price'], ['out-ml', 'nfl-win'],
+  ['out-da', 'trading-terminal'], ['out-da', 'housing-price'],
+];
+
+function getMobNodePos(id) {
+  const all = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT, ...MOB_PROJECTS];
+  return all.find((n) => n.id === id);
+}
+
+function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
+  const allMobNodes = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT];
+  const rowLabels = [
+    { label: 'INPUT',     y: 80,   color: 'rgba(196,181,253,0.75)' },
+    { label: 'LANGUAGES', y: 280,  color: 'rgba(196,181,253,0.75)' },
+    { label: 'TOOLS',     y: 560,  color: 'rgba(196,181,253,0.75)' },
+    { label: 'OUTPUT',    y: 860,  color: 'rgba(196,181,253,0.75)' },
+    { label: 'PROJECTS',  y: 1060, color: 'rgba(0,212,255,0.75)' },
+  ];
+
+  const handleNodeTap = (node) => {
+    const skill = skillsData.find((s) => s.id === node.id);
+    if (skill) onSkillClick(skill);
+  };
+
+  return (
+    <div className="md:hidden">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <svg
+          viewBox={`0 0 ${MOB_W} ${MOB_H}`}
+          preserveAspectRatio="xMidYMid meet"
+          style={{ width: '100%', height: 'auto', overflow: 'visible' }}
+          aria-label="Skills network graph (mobile)"
+        >
+          <defs>
+            <radialGradient id="mobNetBg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(139,92,246,0.04)" />
+              <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+            </radialGradient>
+            <linearGradient id="mobEdgeGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8B5CF6" />
+              <stop offset="100%" stopColor="#00D4FF" />
+            </linearGradient>
+          </defs>
+
+          <rect x="0" y="0" width={MOB_W} height={MOB_H} fill="url(#mobNetBg)" />
+
+          {/* Row separator lines */}
+          {[220, 500, 800, 1020].map((ly) => (
+            <line key={ly} x1="20" y1={ly} x2={MOB_W - 20} y2={ly} stroke="rgba(139,92,246,0.06)" strokeWidth="1" strokeDasharray="4 6" />
+          ))}
+
+          {/* Row labels */}
+          {rowLabels.map(({ label, y, color }) => (
+            <text key={label} x={MOB_W / 2} y={y} textAnchor="middle" fontSize="10" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.25em" fill={color}>
+              {label}
+            </text>
+          ))}
+
+          {/* Edges */}
+          <g>
+            {MOB_EDGES.map(([a, b], i) => {
+              const from = getMobNodePos(a);
+              const to = getMobNodePos(b);
+              if (!from || !to) return null;
+              const isProj = !!MOB_PROJECTS.find((p) => p.id === a || p.id === b);
+              const mx = (from.x + to.x) / 2;
+              const my = (from.y + to.y) / 2 - 10;
+              const d = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
+              return (
+                <path
+                  key={i}
+                  d={d}
+                  fill="none"
+                  stroke={isProj ? 'rgba(0,212,255,0.12)' : 'rgba(139,92,246,0.12)'}
+                  strokeWidth={0.7}
+                  strokeLinecap="round"
+                />
+              );
+            })}
+          </g>
+
+          {/* Skill & category nodes */}
+          <g>
+            {allMobNodes.map((node) => {
+              const isSkill = !!skillsData.find((s) => s.id === node.id);
+              const r = isSkill ? 16 : 10;
+              const lines = node.label.split('\n');
+              return (
+                <g
+                  key={node.id}
+                  style={{ cursor: isSkill ? 'pointer' : 'default' }}
+                  onClick={() => handleNodeTap(node)}
+                >
+                  {/* Outer glow ring */}
+                  <circle cx={node.x} cy={node.y} r={r + 10} fill="transparent" stroke="rgba(139,92,246,0.12)" strokeWidth="0.8" />
+                  {/* Main circle */}
+                  <circle
+                    cx={node.x} cy={node.y} r={r}
+                    fill="rgba(139,92,246,0.12)"
+                    stroke="rgba(139,92,246,0.4)"
+                    strokeWidth={1}
+                  />
+                  {/* Center dot for skills */}
+                  {isSkill && (
+                    <circle cx={node.x} cy={node.y} r={3.5} fill="rgba(139,92,246,0.6)" />
+                  )}
+                  {/* Label */}
+                  {lines.map((line, li) => {
+                    const baseY = node.y + r + 12;
+                    const lineY = lines.length === 1 ? baseY : baseY + (li - (lines.length - 1) / 2) * 12;
+                    return (
+                      <text
+                        key={li}
+                        x={node.x}
+                        y={lineY}
+                        textAnchor="middle"
+                        fontSize={isSkill ? 10 : 9}
+                        fontFamily="var(--font-jetbrains), monospace"
+                        letterSpacing="0.05em"
+                        fill={isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)'}
+                      >
+                        {line}
+                      </text>
+                    );
+                  })}
+                </g>
+              );
+            })}
+          </g>
+
+          {/* Project nodes */}
+          <g>
+            {MOB_PROJECTS.map((node) => {
+              const pw = 140;
+              const ph = 52;
+              const color = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
+              return (
+                <g key={node.id} style={{ cursor: 'pointer' }} onClick={() => onProjectClick(node.id)}>
+                  <rect
+                    x={node.x - pw / 2} y={node.y - ph / 2}
+                    width={pw} height={ph} rx={8}
+                    fill="rgba(8,14,28,0.88)"
+                    stroke="rgba(0,212,255,0.18)"
+                    strokeWidth={1}
+                  />
+                  <text
+                    x={node.x} y={node.y - 7}
+                    textAnchor="middle" fontSize={8}
+                    fontFamily="var(--font-jetbrains), monospace"
+                    letterSpacing="0.15em"
+                    fill={`${color}99`}
+                  >
+                    {node.category.toUpperCase()}
+                  </text>
+                  <text
+                    x={node.x} y={node.y + 10}
+                    textAnchor="middle" fontSize={10}
+                    fontFamily="var(--font-jetbrains), monospace"
+                    fontWeight="500"
+                    fill="rgba(249,250,251,0.85)"
+                  >
+                    {node.label}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        </svg>
+      </motion.div>
+    </div>
+  );
+}
+
 /* ─── Main component ───────────────────────────────────────────────── */
 export default function SkillsNetwork() {
   const [hovered, setHovered]   = useState(null);
@@ -583,13 +826,13 @@ export default function SkillsNetwork() {
         Tools &amp; Languages
       </motion.p>
 
-      {/* Bobbing hover hint */}
+      {/* Bobbing hover hint — desktop only */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.5 }}
-        className="flex items-center justify-center gap-2 mb-8"
+        className="hidden md:flex items-center justify-center gap-2 mb-8"
       >
         <motion.span
           animate={{ y: [0, -5, 0] }}
@@ -607,87 +850,95 @@ export default function SkillsNetwork() {
         </motion.span>
       </motion.div>
 
-      {showRobot && <RobotHelper onDismiss={dismissRobot} active={isInView} />}
-      <DemoLabel visible={showRobot && tutorialNode !== null} />
+      <div className="hidden md:block">
+        {showRobot && <RobotHelper onDismiss={dismissRobot} active={isInView} />}
+        <DemoLabel visible={showRobot && tutorialNode !== null} />
+      </div>
 
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <svg
-            viewBox={`0 0 ${VB_W} ${VB_H}`}
-            preserveAspectRatio="xMidYMid meet"
-            style={{ width: '100%', height: 'auto', overflow: 'visible' }}
-            aria-label="Skills network graph"
+        {/* ── Desktop SVG ── */}
+        <div className="hidden md:block">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <defs>
-              <radialGradient id="netBg" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(139,92,246,0.04)" />
-                <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-              </radialGradient>
-              <radialGradient id="projBg" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(0,212,255,0.04)" />
-                <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-              </radialGradient>
-            </defs>
+            <svg
+              viewBox={`0 0 ${VB_W} ${VB_H}`}
+              preserveAspectRatio="xMidYMid meet"
+              style={{ width: '100%', height: 'auto', overflow: 'visible' }}
+              aria-label="Skills network graph"
+            >
+              <defs>
+                <radialGradient id="netBg" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="rgba(139,92,246,0.04)" />
+                  <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+                </radialGradient>
+                <radialGradient id="projBg" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="rgba(0,212,255,0.04)" />
+                  <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+                </radialGradient>
+              </defs>
 
-            <ellipse cx={650} cy={VB_H / 2} rx={580} ry={280} fill="url(#netBg)" />
-            <ellipse cx={1390} cy={VB_H / 2} rx={160} ry={300} fill="url(#projBg)" />
+              <ellipse cx={650} cy={VB_H / 2} rx={580} ry={280} fill="url(#netBg)" />
+              <ellipse cx={1390} cy={VB_H / 2} rx={160} ry={300} fill="url(#projBg)" />
 
-            <line x1="220"  y1="20" x2="220"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
-            <line x1="490"  y1="20" x2="490"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
-            <line x1="770"  y1="20" x2="770"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
-            <line x1="1185" y1="20" x2="1185" y2={VB_H - 20} stroke="rgba(0,212,255,0.07)"  strokeWidth="1" strokeDasharray="4 6" />
+              <line x1="220"  y1="20" x2="220"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+              <line x1="490"  y1="20" x2="490"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+              <line x1="770"  y1="20" x2="770"  y2={VB_H - 20} stroke="rgba(139,92,246,0.05)" strokeWidth="1" strokeDasharray="4 6" />
+              <line x1="1185" y1="20" x2="1185" y2={VB_H - 20} stroke="rgba(0,212,255,0.07)"  strokeWidth="1" strokeDasharray="4 6" />
 
-            {[
-              { label: 'INPUT',     x: 105,  color: 'rgba(196,181,253,0.75)' },
-              { label: 'LANGUAGES', x: 340,  color: 'rgba(196,181,253,0.75)' },
-              { label: 'TOOLS',     x: 660,  color: 'rgba(196,181,253,0.75)' },
-              { label: 'OUTPUT',    x: 995,  color: 'rgba(196,181,253,0.75)' },
-              { label: 'PROJECTS',  x: 1390, color: 'rgba(0,212,255,0.75)'   },
-            ].map(({ label, x, color }) => (
-              <text key={label} x={x} y={18} textAnchor="middle" fontSize="11" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
-                {label}
-              </text>
-            ))}
-
-            <g>
-              {ALL_EDGES.map(([a, b], i) => {
-                const { active, dimmed } = edgeState(a, b);
-                return <Edge key={i} fromId={a} toId={b} active={active} dimmed={dimmed} />;
-              })}
-            </g>
-
-            <g>
-              {allNodeIds.map((id) => (
-                <Node
-                  key={id}
-                  nodeId={id}
-                  hovered={effectiveHovered}
-                  onHover={handleHover}
-                  onLeave={() => setHovered(null)}
-                  onClick={setSelected}
-                />
+              {[
+                { label: 'INPUT',     x: 105,  color: 'rgba(196,181,253,0.75)' },
+                { label: 'LANGUAGES', x: 340,  color: 'rgba(196,181,253,0.75)' },
+                { label: 'TOOLS',     x: 660,  color: 'rgba(196,181,253,0.75)' },
+                { label: 'OUTPUT',    x: 995,  color: 'rgba(196,181,253,0.75)' },
+                { label: 'PROJECTS',  x: 1390, color: 'rgba(0,212,255,0.75)'   },
+              ].map(({ label, x, color }) => (
+                <text key={label} x={x} y={18} textAnchor="middle" fontSize="11" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
+                  {label}
+                </text>
               ))}
-            </g>
 
-            <g>
-              {allProjectIds.map((id) => (
-                <ProjectNode
-                  key={id}
-                  nodeId={id}
-                  hovered={effectiveHovered}
-                  onHover={handleHover}
-                  onLeave={() => setHovered(null)}
-                  onClick={handleProjectClick}
-                />
-              ))}
-            </g>
-          </svg>
-        </motion.div>
+              <g>
+                {ALL_EDGES.map(([a, b], i) => {
+                  const { active, dimmed } = edgeState(a, b);
+                  return <Edge key={i} fromId={a} toId={b} active={active} dimmed={dimmed} />;
+                })}
+              </g>
+
+              <g>
+                {allNodeIds.map((id) => (
+                  <Node
+                    key={id}
+                    nodeId={id}
+                    hovered={effectiveHovered}
+                    onHover={handleHover}
+                    onLeave={() => setHovered(null)}
+                    onClick={setSelected}
+                  />
+                ))}
+              </g>
+
+              <g>
+                {allProjectIds.map((id) => (
+                  <ProjectNode
+                    key={id}
+                    nodeId={id}
+                    hovered={effectiveHovered}
+                    onHover={handleHover}
+                    onLeave={() => setHovered(null)}
+                    onClick={handleProjectClick}
+                  />
+                ))}
+              </g>
+            </svg>
+          </motion.div>
+        </div>
+
+        {/* ── Mobile SVG (vertical layout) ── */}
+        <MobileSkillsNetwork onSkillClick={setSelected} onProjectClick={handleProjectClick} />
       </div>
 
       <motion.div
@@ -695,7 +946,7 @@ export default function SkillsNetwork() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.4 }}
-        className="flex justify-center gap-12 mt-8"
+        className="flex justify-center gap-6 md:gap-12 mt-8 flex-wrap"
       >
         {[
           { label: 'Languages', value: '6' },

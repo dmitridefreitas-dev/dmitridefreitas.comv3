@@ -2,9 +2,8 @@ import HeroToggler from '@/components/hero/HeroToggler';
 import InfoBanner from '@/components/sections/InfoBanner';
 import AcademicTicker from '@/components/sections/FinanceTicker';
 import SkillsNetwork from '@/components/sections/SkillsNetwork';
-import SkillsHorizontal from '@/components/sections/SkillsHorizontal';
+import SkillsReveal from '@/components/sections/SkillsReveal';
 import CompetenciesSticky from '@/components/sections/CompetenciesSticky';
-import TimelineScroll from '@/components/sections/TimelineScroll';
 import CTASection from '@/components/sections/CTASection';
 import SectionAtmosphere from '@/components/effects/SectionAtmosphere';
 
@@ -24,13 +23,10 @@ export default function Home() {
         <SkillsNetwork />
       </SectionAtmosphere>
       <SectionAtmosphere atmosphere="skills">
-        <SkillsHorizontal />
-      </SectionAtmosphere>
-      <SectionAtmosphere atmosphere="skills">
         <CompetenciesSticky />
       </SectionAtmosphere>
-      <SectionAtmosphere atmosphere="work">
-        <TimelineScroll />
+      <SectionAtmosphere atmosphere="skills">
+        <SkillsReveal />
       </SectionAtmosphere>
       <SectionAtmosphere atmosphere="cta">
         <CTASection />

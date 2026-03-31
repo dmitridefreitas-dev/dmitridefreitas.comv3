@@ -79,8 +79,8 @@ const TYPE_COLORS = {
 
 /* ── Stone thresholds ─────────────────────────────────────────────── */
 
-const EDU_THRESHOLDS = [0.05, 0.45, 0.85];
-const CAREER_THRESHOLDS = [0.05, 0.18, 0.32, 0.46, 0.60, 0.73, 0.86, 0.95];
+const EDU_THRESHOLDS = [0.08, 0.35, 0.62];
+const CAREER_THRESHOLDS = [0.05, 0.14, 0.24, 0.34, 0.44, 0.54, 0.64, 0.74];
 
 /* ── Path builder ─────────────────────────────────────────────────── */
 
@@ -129,7 +129,7 @@ export default function CompetenciesSticky() {
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.85', 'end 0.15'],
+    offset: ['start 0.9', 'end 0.1'],
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
@@ -190,8 +190,185 @@ export default function CompetenciesSticky() {
         Career Path
       </motion.p>
 
-      {/* Main container */}
-      <div style={{ position: 'relative', width: '100%', minHeight: `${VIEWBOX_H}px` }}>
+      {/* ── Mobile vertical list ── */}
+      <div className="md:hidden px-4">
+        {/* Education */}
+        <div className="mb-10">
+          <p
+            className="font-mono text-[10px] uppercase tracking-[0.3em] mb-4"
+            style={{ color: 'rgba(0,212,255,0.6)' }}
+          >
+            Education
+          </p>
+          <div className="space-y-0">
+            {EDUCATION.map((item, i) => {
+              const colors = TYPE_COLORS[item.type];
+              const isLast = i === EDUCATION.length - 1;
+              return (
+                <motion.div
+                  key={`mob-edu-${i}`}
+                  initial={{ opacity: 0, x: -12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="flex"
+                >
+                  {/* Left accent line + dot */}
+                  <div className="flex flex-col items-center mr-3" style={{ width: '16px' }}>
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: colors.stroke,
+                        boxShadow: `0 0 8px ${colors.glow}`,
+                        flexShrink: 0,
+                        marginTop: '4px',
+                      }}
+                    />
+                    {!isLast && (
+                      <div
+                        style={{
+                          width: '1px',
+                          flex: 1,
+                          background: `linear-gradient(to bottom, ${colors.stroke}, transparent)`,
+                          marginTop: '4px',
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* Content */}
+                  <div className="pb-6">
+                    <p
+                      className="font-mono"
+                      style={{ fontSize: '11px', color: 'rgba(139,92,246,0.7)', lineHeight: 1.2, marginBottom: '2px' }}
+                    >
+                      {item.year}
+                    </p>
+                    <p
+                      className="font-serif"
+                      style={{ fontWeight: 700, color: 'var(--foreground, #e5e5e5)', fontSize: '14px', lineHeight: 1.35 }}
+                    >
+                      {item.title}
+                    </p>
+                    <span
+                      className="font-mono"
+                      style={{
+                        display: 'inline-block',
+                        marginTop: '4px',
+                        fontSize: '9px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                        padding: '1px 6px',
+                        borderRadius: '9999px',
+                        background: colors.badge_bg,
+                        color: colors.badge_text,
+                        border: `1px solid ${colors.badge_border}`,
+                      }}
+                    >
+                      {item.type}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Career */}
+        <div>
+          <p
+            className="font-mono text-[10px] uppercase tracking-[0.3em] mb-4"
+            style={{ color: 'rgba(139,92,246,0.6)' }}
+          >
+            Career
+          </p>
+          <div className="space-y-0">
+            {CAREER.map((item, i) => {
+              const colors = TYPE_COLORS[item.type];
+              const isLast = i === CAREER.length - 1;
+              return (
+                <motion.div
+                  key={`mob-career-${i}`}
+                  initial={{ opacity: 0, x: -12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  className="flex"
+                >
+                  {/* Left accent line + dot */}
+                  <div className="flex flex-col items-center mr-3" style={{ width: '16px' }}>
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: colors.stroke,
+                        boxShadow: `0 0 8px ${colors.glow}`,
+                        flexShrink: 0,
+                        marginTop: '4px',
+                      }}
+                    />
+                    {!isLast && (
+                      <div
+                        style={{
+                          width: '1px',
+                          flex: 1,
+                          background: `linear-gradient(to bottom, ${colors.stroke}, transparent)`,
+                          marginTop: '4px',
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* Content */}
+                  <div className="pb-5">
+                    <p
+                      className="font-mono"
+                      style={{ fontSize: '11px', color: 'rgba(139,92,246,0.7)', lineHeight: 1.2, marginBottom: '2px' }}
+                    >
+                      {item.year}
+                    </p>
+                    <p
+                      className="font-serif"
+                      style={{ fontWeight: 700, color: 'var(--foreground, #e5e5e5)', fontSize: '14px', lineHeight: 1.35 }}
+                    >
+                      {item.title}
+                    </p>
+                    {item.org && (
+                      <p
+                        className="font-mono"
+                        style={{ fontSize: '10px', color: 'rgba(160,160,160,0.5)', marginTop: '1px', lineHeight: 1.2 }}
+                      >
+                        {item.org}
+                      </p>
+                    )}
+                    <span
+                      className="font-mono"
+                      style={{
+                        display: 'inline-block',
+                        marginTop: '4px',
+                        fontSize: '9px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                        padding: '1px 6px',
+                        borderRadius: '9999px',
+                        background: colors.badge_bg,
+                        color: colors.badge_text,
+                        border: `1px solid ${colors.badge_border}`,
+                      }}
+                    >
+                      {item.type}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Desktop SVG layout ── */}
+      <div className="hidden md:block" style={{ position: 'relative', width: '100%', minHeight: `${VIEWBOX_H}px` }}>
 
         {/* Column headers */}
         <div
@@ -232,21 +409,51 @@ export default function CompetenciesSticky() {
           fill="none"
           preserveAspectRatio="xMidYMid meet"
         >
+          <defs>
+            <linearGradient id="pathGradient" x1="0" y1="0" x2="0" y2={VIEWBOX_H} gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="#8B5CF6" />
+              <stop offset="55%"  stopColor="#00D4FF" />
+              <stop offset="100%" stopColor="#00E5A0" />
+            </linearGradient>
+            {/* Stone polygon glow — matches card boxShadow style */}
+            <filter id="stoneGlow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="6" result="blur" in="SourceGraphic" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            {/* Matches CSS: 0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(0,212,255,0.2) */}
+            <filter id="pathGlow" x="-200%" y="-10%" width="500%" height="120%">
+              <feGaussianBlur stdDeviation="5" result="blur1" in="SourceGraphic" />
+              <feFlood floodColor="#8B5CF6" floodOpacity="0.6" result="color1" />
+              <feComposite in="color1" in2="blur1" operator="in" result="glow1" />
+              <feGaussianBlur stdDeviation="10" result="blur2" in="SourceGraphic" />
+              <feFlood floodColor="#00D4FF" floodOpacity="0.2" result="color2" />
+              <feComposite in="color2" in2="blur2" operator="in" result="glow2" />
+              <feMerge>
+                <feMergeNode in="glow2" />
+                <feMergeNode in="glow1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
           {/* ── Education path ── */}
           <path
             d={eduPathD}
-            stroke="rgba(139,92,246,0.06)"
-            strokeWidth={2}
-            strokeDasharray="5 4"
+            stroke="rgba(139,92,246,0.07)"
+            strokeWidth={1}
             fill="none"
           />
           <motion.path
             ref={eduPathRef}
             d={eduPathD}
-            stroke="rgba(99,102,241,0.4)"
-            strokeWidth={2}
+            stroke="url(#pathGradient)"
+            strokeWidth={1}
             strokeLinecap="round"
             fill="none"
+            filter="url(#pathGlow)"
             strokeDasharray={eduPathLength}
             style={{ strokeDashoffset: eduDashoffset }}
           />
@@ -254,18 +461,18 @@ export default function CompetenciesSticky() {
           {/* ── Career path ── */}
           <path
             d={careerPathD}
-            stroke="rgba(139,92,246,0.06)"
-            strokeWidth={2}
-            strokeDasharray="5 4"
+            stroke="rgba(139,92,246,0.07)"
+            strokeWidth={1}
             fill="none"
           />
           <motion.path
             ref={careerPathRef}
             d={careerPathD}
-            stroke="rgba(139,92,246,0.4)"
-            strokeWidth={2}
+            stroke="url(#pathGradient)"
+            strokeWidth={1}
             strokeLinecap="round"
             fill="none"
+            filter="url(#pathGlow)"
             strokeDasharray={careerPathLength}
             style={{ strokeDashoffset: careerDashoffset }}
           />
@@ -280,7 +487,6 @@ export default function CompetenciesSticky() {
                 <AnimatePresence>
                   {eduVisible[i] && (
                     <>
-                      {/* Glow — motion.g handles opacity+scale, plain circle avoids SVG attr conflicts */}
                       <motion.g
                         style={{ transformOrigin: `${cx}px ${cy}px` }}
                         initial={{ scale: 0, opacity: 0 }}
@@ -289,15 +495,36 @@ export default function CompetenciesSticky() {
                       >
                         <circle cx={cx} cy={cy} r={30} fill={colors.glow} />
                       </motion.g>
-                      {/* Stone polygon */}
                       <motion.g
                         style={{ transformOrigin: `${cx}px ${cy}px` }}
                         initial={{ scale: 0 }}
                         animate={{ scale: [0, 1.3, 1] }}
                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                       >
-                        <polygon points={pts} fill={colors.fill} stroke={colors.stroke} strokeWidth={1.5} />
+                        <polygon points={pts} fill={colors.fill} stroke={colors.stroke} strokeWidth={2} filter="url(#stoneGlow)" />
                       </motion.g>
+                      {/* Center dot — matches stone type color */}
+                      <motion.circle
+                        cx={cx} cy={cy} r={19}
+                        fill="none" stroke={colors.stroke} strokeWidth="0.8"
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                        animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
+                        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 0.3 }}
+                      />
+                      <motion.circle
+                        cx={cx} cy={cy} r={12}
+                        fill="none" stroke={colors.stroke} strokeWidth="0.8"
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                        animate={{ scale: [1, 1.5], opacity: [0.45, 0] }}
+                        transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: i * 0.3 + 0.5 }}
+                      />
+                      <circle
+                        cx={cx} cy={cy} r={5}
+                        fill={colors.stroke}
+                        stroke="rgba(2,3,10,0.95)"
+                        strokeWidth="1"
+                        style={{ filter: `drop-shadow(0 0 7px ${colors.glow}) drop-shadow(0 0 16px ${colors.glow})` }}
+                      />
                     </>
                   )}
                 </AnimatePresence>
@@ -329,8 +556,30 @@ export default function CompetenciesSticky() {
                         animate={{ scale: [0, 1.3, 1] }}
                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                       >
-                        <polygon points={pts} fill={colors.fill} stroke={colors.stroke} strokeWidth={1.5} />
+                        <polygon points={pts} fill={colors.fill} stroke={colors.stroke} strokeWidth={2} filter="url(#stoneGlow)" />
                       </motion.g>
+                      {/* Center dot — matches stone type color */}
+                      <motion.circle
+                        cx={cx} cy={cy} r={19}
+                        fill="none" stroke={colors.stroke} strokeWidth="0.8"
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                        animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
+                        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: i * 0.3 }}
+                      />
+                      <motion.circle
+                        cx={cx} cy={cy} r={12}
+                        fill="none" stroke={colors.stroke} strokeWidth="0.8"
+                        style={{ transformOrigin: `${cx}px ${cy}px` }}
+                        animate={{ scale: [1, 1.5], opacity: [0.45, 0] }}
+                        transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: i * 0.3 + 0.5 }}
+                      />
+                      <circle
+                        cx={cx} cy={cy} r={5}
+                        fill={colors.stroke}
+                        stroke="rgba(2,3,10,0.95)"
+                        strokeWidth="1"
+                        style={{ filter: `drop-shadow(0 0 7px ${colors.glow}) drop-shadow(0 0 16px ${colors.glow})` }}
+                      />
                     </>
                   )}
                 </AnimatePresence>
