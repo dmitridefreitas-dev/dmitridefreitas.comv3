@@ -4,7 +4,6 @@ import { gsap } from 'gsap';
 import { Observer } from 'gsap/Observer';
 import dynamic from 'next/dynamic';
 
-
 /* ── lazy-load all real section content ─────────────────────────────────── */
 const HeroToggler       = dynamic(() => import('@/components/hero/HeroToggler'),             { ssr: false });
 const InfoBanner        = dynamic(() => import('@/components/sections/InfoBanner'),           { ssr: false });
@@ -52,7 +51,8 @@ const SCENES = [HomeScene, AboutScene, ProjectsScene, ContactScene];
 export default function ZWormhole() {
   const worldRef      = useRef(null);
   const shellRefs     = useRef([]);
-  const vignetteRef   = useRef(null);   // direct DOM ref — avoids setState on every frame
+  const scrollRefs    = useRef([]);   // inner scrollable containers
+  const vignetteRef   = useRef(null); // direct DOM ref — avoids setState on every frame
   const stateRef      = useRef({ cameraZ: 0, velocity: 0 });
   const tweenRef      = useRef(null);
   const activeSc      = useRef(0);
@@ -65,42 +65,48 @@ export default function ZWormhole() {
     return () => clearTimeout(t);
   }, []);
 
+  function applyCamera(z) {
+    if (worldRef.current) {
+      worldRef.current.style.transform = `translateZ(${z}px)`;
+    }
+    const speed = Math.abs(stateRef.current.velocity);
+    for (let i = 0; i < SCENE_COUNT; i++) {
+      const el = shellRefs.current[i];
+      if (!el) continue;
+      const dist = Math.abs(z - i * SCENE_DEPTH);
+      el.style.opacity     = String(Math.max(0, 1 - (dist / SCENE_DEPTH) * 0.95));
+      el.style.visibility  = dist > SCENE_DEPTH * 0.6 ? 'hidden' : 'visible';
+    }
+    if (vignetteRef.current) {
+      vignetteRef.current.style.opacity = speed > 4 ? '1' : '0';
+    }
+  }
+
+  // Set a scene's inner scroll position on arrival.
+  // forward = arrived by scrolling down (land at top); backward = arrived by scrolling up (land at bottom).
+  function setArrivalScroll(idx, forward) {
+    const inner = scrollRefs.current[idx];
+    if (!inner) return;
+    inner.scrollTop = forward ? 0 : inner.scrollHeight;
+  }
+
   const navigateTo = useCallback((idx) => {
+    const forward = idx >= activeSc.current;
     if (tweenRef.current) tweenRef.current.kill();
     stateRef.current.velocity = 0;
     tweenRef.current = gsap.to(stateRef.current, {
       cameraZ: idx * SCENE_DEPTH,
       duration: 1.8,
       ease: 'power3.inOut',
-      onUpdate: () => {
-        applyCamera(stateRef.current.cameraZ);
+      onUpdate: () => applyCamera(stateRef.current.cameraZ),
+      onComplete: () => {
+        tweenRef.current = null;
+        setArrivalScroll(idx, forward);
       },
-      onComplete: () => { tweenRef.current = null; },
     });
     activeSc.current = idx;
     setActiveScene(idx);
   }, []);
-
-  function applyCamera(z) {
-    if (worldRef.current) {
-      worldRef.current.style.transform = `translateZ(${z}px)`;
-    }
-    const s = stateRef.current;
-    const speed = Math.abs(s.velocity);
-    // dim farther scenes — hide anything not near-current during travel
-    for (let i = 0; i < SCENE_COUNT; i++) {
-      const el = shellRefs.current[i];
-      if (!el) continue;
-      const dist = Math.abs(z - i * SCENE_DEPTH);
-      const opacity = Math.max(0, 1 - (dist / SCENE_DEPTH) * 0.95);
-      el.style.opacity  = String(opacity);
-      el.style.visibility = dist > SCENE_DEPTH * 0.6 ? 'hidden' : 'visible';
-    }
-    // update vignette without React state
-    if (vignetteRef.current) {
-      vignetteRef.current.style.opacity = speed > 4 ? '1' : '0';
-    }
-  }
 
   useEffect(() => {
     gsap.registerPlugin(Observer);
@@ -109,18 +115,29 @@ export default function ZWormhole() {
       type: 'wheel,touch',
       preventDefault: true,
       onChangeY(self) {
+        // Cancel any dot-nav tween
         if (tweenRef.current) {
           tweenRef.current.kill();
           tweenRef.current = null;
         }
-        // Always travel in Z — no internal scene scroll
-        stateRef.current.velocity -= self.deltaY * SCROLL_MUL;
+
+        const dy    = self.deltaY;
+        const inner = scrollRefs.current[activeSc.current];
+        const atTop = !inner || inner.scrollTop <= 0;
+        const atBot = !inner || inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 4;
+
+        // Scroll within scene content when there's room
+        if (dy > 0 && !atBot) { inner.scrollTop += dy; return; }
+        if (dy < 0 && !atTop) { inner.scrollTop += dy; return; }
+
+        // At the boundary — Z-travel
+        stateRef.current.velocity -= dy * SCROLL_MUL;
       },
     });
 
     const tick = () => {
       const s = stateRef.current;
-      if (tweenRef.current) return; // tween controls camera
+      if (tweenRef.current) return;
 
       s.velocity *= FRICTION;
 
@@ -131,8 +148,10 @@ export default function ZWormhole() {
         s.velocity    = 0;
         const newScene = Math.round(snapZ / SCENE_DEPTH);
         if (newScene !== activeSc.current) {
+          const forward = newScene > activeSc.current;
           activeSc.current = newScene;
           setActiveScene(newScene);
+          setArrivalScroll(newScene, forward);
         }
       } else {
         s.cameraZ += s.velocity;
@@ -185,15 +204,25 @@ export default function ZWormhole() {
               transformStyle: 'preserve-3d',
               backfaceVisibility: 'hidden',
               willChange: 'opacity',
-              overflow: 'hidden',
             }}
           >
-            <SceneComp />
+            {/* inner scroll container — lets scene content exceed 100vh */}
+            <div
+              ref={(el) => { scrollRefs.current[i] = el; }}
+              style={{
+                width: '100%', height: '100%',
+                overflowY: 'auto', overflowX: 'hidden',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              <SceneComp />
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Speed vignette — opacity driven directly via ref, no React state */}
+      {/* Speed vignette — driven by ref, not React state */}
       <div ref={vignetteRef} style={{
         position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 50,
         background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%)',
@@ -296,7 +325,7 @@ export default function ZWormhole() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes zbounce  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
         @keyframes zhintfade{ 0%{opacity:1} 75%{opacity:1} 100%{opacity:0} }
-        div[style*='overflowY: auto']::-webkit-scrollbar { display: none; }
+        div[style*="overflowY: auto"]::-webkit-scrollbar { display: none; }
       ` }} />
     </div>
   );
