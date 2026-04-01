@@ -201,12 +201,13 @@ export default function ZWormhole() {
               position: 'absolute', top: 0, left: 0,
               width: '100vw', height: '100vh',
               transform: `translateZ(${-i * SCENE_DEPTH}px)`,
-              transformStyle: 'preserve-3d',
+              // No preserve-3d or will-change:opacity — those promote each shell
+              // into its own 3D compositing layer and cause GPU tear lines.
               backfaceVisibility: 'hidden',
-              willChange: 'opacity',
+              contain: 'layout paint style',
             }}
           >
-            {/* inner scroll container — lets scene content exceed 100vh */}
+            {/* inner scroll container */}
             <div
               ref={(el) => { scrollRefs.current[i] = el; }}
               style={{
@@ -214,6 +215,8 @@ export default function ZWormhole() {
                 overflowY: 'auto', overflowX: 'hidden',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
+                // Own compositing layer so scroll repaints stay isolated
+                transform: 'translateZ(0)',
               }}
             >
               <SceneComp />
