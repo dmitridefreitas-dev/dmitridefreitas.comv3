@@ -686,7 +686,6 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
 export default function SkillsNetwork() {
   const [hovered, setHovered]   = useState(null);
   const [tutorialNode, setTutorialNode] = useState(null);
-  const [flashOn, setFlashOn] = useState(true);
   const [selected, setSelected] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showRobot, setShowRobot] = useState(true);
@@ -695,22 +694,8 @@ export default function SkillsNetwork() {
   const sectionRef = useRef(null);
   const isSceneActive = useContext(ActiveSceneContext);
 
-  const effectiveHovered = hovered ?? (flashOn ? tutorialNode : null);
-
-  /* ─── Flash interval for tutorial node glow ──────────────────────── */
-  useEffect(() => {
-    if (tutorialNode == null) {
-      setFlashOn(true);
-      return;
-    }
-    const interval = setInterval(() => {
-      setFlashOn((prev) => !prev);
-    }, 1400);
-    return () => {
-      clearInterval(interval);
-      setFlashOn(true);
-    };
-  }, [tutorialNode]);
+  // No blinking — just use whichever is set
+  const effectiveHovered = hovered ?? tutorialNode;
 
   /* ─── Tutorial auto-demo loop ─────────────────────────────────────── */
   useEffect(() => {

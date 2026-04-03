@@ -210,6 +210,8 @@ export default function ZWormhole() {
               transform: `translateZ(${-i * SCENE_DEPTH}px)`,
               backfaceVisibility: 'hidden',
               willChange: 'opacity',
+              opacity: i === 0 ? 1 : 0,
+              visibility: i === 0 ? 'visible' : 'hidden',
             }}
           >
             {/* inner scroll container */}
@@ -224,7 +226,7 @@ export default function ZWormhole() {
               }}
             >
               <ActiveSceneContext.Provider value={activeScene === i}>
-                {Math.abs(activeScene - i) <= 1 && <SceneComp />}
+                <SceneComp />
               </ActiveSceneContext.Provider>
             </div>
           </div>
