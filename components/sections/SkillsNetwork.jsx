@@ -117,6 +117,68 @@ const MOBILE_Y_LEVELS = {
   projects: 920
 };
 
+/* ─── Restore "Last Night" Mobile Constants (c5c8812) ──────────────── */
+const MOB_W = 400;
+const MOB_H = 1450;
+const MOB_INPUT = [
+  { id: 'cat-prog', label: 'Programming\n& Scripting', x: 70,  y: 140 },
+  { id: 'cat-viz',  label: 'Data\nVisualization',      x: 200, y: 140 },
+  { id: 'cat-fin',  label: 'Financial\nTools',          x: 330, y: 140 },
+];
+const MOB_LANGS = [
+  { id: 'python', label: 'Python',  x: 50,  y: 340 },
+  { id: 'r',      label: 'R',       x: 130, y: 340 },
+  { id: 'sql',    label: 'SQL',     x: 210, y: 340 },
+  { id: 'matlab', label: 'MATLAB',  x: 290, y: 340 },
+  { id: 'vba',    label: 'VBA',     x: 360, y: 340 },
+  { id: 'git',    label: 'Git',     x: 130, y: 430 },
+];
+const MOB_TOOLS = [
+  { id: 'matplotlib', label: 'Matplotlib', x: 70,  y: 620 },
+  { id: 'powerbi',    label: 'Power BI',   x: 200, y: 620 },
+  { id: 'tableau',    label: 'Tableau',    x: 330, y: 620 },
+  { id: 'quantlib',   label: 'QuantLib',   x: 70,  y: 720 },
+  { id: 'bloomberg',  label: 'Bloomberg',  x: 200, y: 720 },
+  { id: 'fred',       label: 'FRED',       x: 330, y: 720 },
+];
+const MOB_OUTPUT = [
+  { id: 'out-quant', label: 'Quant\nFinance',   x: 70,  y: 920 },
+  { id: 'out-ml',    label: 'Machine\nLearning', x: 200, y: 920 },
+  { id: 'out-da',    label: 'Data\nEngineering', x: 330, y: 920 },
+];
+const MOB_PROJECTS = [
+  { id: 'pead',             label: 'PEAD Research',    category: 'Quant Finance', x: 100, y: 1140 },
+  { id: 'trading-terminal', label: 'Trading Terminal', category: 'Quant Finance', x: 300, y: 1140 },
+  { id: 'housing-price',    label: 'Housing Price ML', category: 'Data Science',  x: 100, y: 1280 },
+  { id: 'nfl-win',          label: 'NFL Win Prob',     category: 'Data Science',  x: 300, y: 1280 },
+];
+const MOB_EDGES = [
+  ['cat-prog', 'python'], ['cat-prog', 'r'], ['cat-prog', 'sql'],
+  ['cat-prog', 'matlab'], ['cat-prog', 'vba'], ['cat-prog', 'git'],
+  ['cat-viz', 'matplotlib'], ['cat-viz', 'powerbi'], ['cat-viz', 'tableau'],
+  ['cat-fin', 'quantlib'], ['cat-fin', 'bloomberg'], ['cat-fin', 'fred'],
+  ['python', 'matplotlib'], ['python', 'quantlib'],
+  ['r', 'tableau'], ['r', 'matplotlib'],
+  ['sql', 'powerbi'], ['sql', 'bloomberg'],
+  ['matlab', 'quantlib'],
+  ['vba', 'powerbi'],
+  ['git', 'tableau'],
+  ['matplotlib', 'out-ml'], ['matplotlib', 'out-da'],
+  ['powerbi', 'out-da'],
+  ['tableau', 'out-da'],
+  ['quantlib', 'out-quant'],
+  ['bloomberg', 'out-quant'], ['bloomberg', 'out-da'],
+  ['fred', 'out-quant'], ['fred', 'out-da'],
+  ['out-quant', 'pead'], ['out-quant', 'trading-terminal'],
+  ['out-ml', 'housing-price'], ['out-ml', 'nfl-win'],
+  ['out-da', 'trading-terminal'], ['out-da', 'housing-price'],
+];
+
+function getMobNodePos(id) {
+  const all = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT, ...MOB_PROJECTS];
+  return all.find((n) => n.id === id);
+}
+
 function getPos(n, isMobile) {
   if (!n) return n;
   if (!isMobile) return n;
@@ -478,9 +540,18 @@ function DemoLabel({ visible }) {
 /* ─── Mobile vertical network ─────────────────────────────────────── */
 
 function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tutorialNode, onUserTap }) {
+  const allMobNodes = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT];
+  const rowLabels = [
+    { label: 'INPUT',     y: 80,   color: 'rgba(196,181,253,0.75)' },
+    { label: 'LANGUAGES', y: 280,  color: 'rgba(196,181,253,0.75)' },
+    { label: 'TOOLS',     y: 560,  color: 'rgba(196,181,253,0.75)' },
+    { label: 'OUTPUT',    y: 860,  color: 'rgba(196,181,253,0.75)' },
+    { label: 'PROJECTS',  y: 1060, color: 'rgba(0,212,255,0.75)' },
+  ];
+
   const [tapped, setTapped] = useState(null);
-  
-  const handleNodeClick = useCallback((e, nodeId, isSkill) => {
+
+  const handleNodeTap = useCallback((e, nodeId, isSkill) => {
     e.stopPropagation();
     if (tapped === nodeId) {
       if (isSkill) onSkillClick(nodeId);
@@ -491,27 +562,19 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
     }
   }, [tapped, onSkillClick, onUserTap]);
 
-  const handleProjClick = useCallback((e, nodeId) => {
+  const handleProjTap = useCallback((e, nodeId) => {
     e.stopPropagation();
     onProjectClick(nodeId);
     if (onUserTap) onUserTap();
   }, [onProjectClick, onUserTap]);
 
   const effectiveMobActive = tapped ?? tutorialNode ?? null;
-
-  const allNodeIds = [
-    ...INPUT_NODES.map((n) => n.id),
-    ...skillsData.map((s) => s.id),
-    ...OUTPUT_NODES.map((n) => n.id),
-  ];
-  const allProjectIds = Object.keys(PROJECT_NODES_DATA);
-
-  function edgeState(fromId, toId) {
-    if (!effectiveMobActive) return { active: false, dimmed: false };
-    const connected = getConnectedIds(effectiveMobActive);
-    const active = fromId === effectiveMobActive || toId === effectiveMobActive || (connected.has(fromId) && connected.has(toId));
-    const dimmed = !active && (fromId !== effectiveMobActive && toId !== effectiveMobActive);
-    return { active: fromId === effectiveMobActive || toId === effectiveMobActive, dimmed };
+  const tappedConnected = new Set();
+  if (effectiveMobActive) {
+    MOB_EDGES.forEach(([a, b]) => {
+      if (a === effectiveMobActive) tappedConnected.add(b);
+      if (b === effectiveMobActive) tappedConnected.add(a);
+    });
   }
 
   return (
@@ -520,9 +583,8 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
         TAP NODE · TAP AGAIN TO EXPLORE
       </p>
       <div style={{ width: "100%", overflowX: "hidden" }}>
-        <svg viewBox="0 0 350 1100" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", overflow: "visible", touchAction: 'manipulation' }}>
-          {/* Background capture for clearing selection */}
-          <rect width="350" height="1100" fill="transparent" onClick={() => setTapped(null)} />
+        <svg viewBox="0 0 400 1450" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", overflow: "visible", touchAction: 'manipulation' }}>
+          <rect width="400" height="1450" fill="transparent" onClick={() => setTapped(null)} />
           <defs>
             <radialGradient id="mobNetBg" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="rgba(139,92,246,0.06)" />
@@ -533,52 +595,97 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
               <stop offset="100%" stopColor="rgba(0,0,0,0)" />
             </radialGradient>
           </defs>
-          <ellipse cx={175} cy={500} rx={220} ry={500} fill="url(#mobNetBg)" />
-          <ellipse cx={175} cy={920} rx={180} ry={140} fill="url(#mobProjBg)" />
+          <ellipse cx={200} cy={500} rx={220} ry={500} fill="url(#mobNetBg)" />
+          <ellipse cx={200} cy={1200} rx={180} ry={200} fill="url(#mobProjBg)" />
 
-          {[
-            { label: "INPUT",     y: MOBILE_Y_LEVELS.input,     color: "rgba(196,181,253,0.75)" },
-            { label: "LANGUAGES", y: MOBILE_Y_LEVELS.languages, color: "rgba(196,181,253,0.75)" },
-            { label: "TOOLS",     y: MOBILE_Y_LEVELS.tools,     color: "rgba(196,181,253,0.75)" },
-            { label: "OUTPUT",    y: MOBILE_Y_LEVELS.output,    color: "rgba(196,181,253,0.75)" },
-            { label: "PROJECTS",  y: MOBILE_Y_LEVELS.projects,  color: "rgba(0,212,255,0.75)"   },
-          ].map(({ label, y, color }) => (
+          {rowLabels.map(({ label, y, color }) => (
              <text key={label} x={18} y={y + 10} transform={`rotate(-90 18 ${y+10})`} textAnchor="middle" fontSize="10" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
                {label}
              </text>
           ))}
 
           <g>
-            {ALL_EDGES.map(([a, b], i) => {
-              const { active, dimmed } = edgeState(a, b);
-              return <Edge key={i} fromId={a} toId={b} active={active} dimmed={dimmed} isMobile={true} />;
+            {MOB_EDGES.map(([a, b], i) => {
+              const nodeA = getMobNodePos(a);
+              const nodeB = getMobNodePos(b);
+              if (!nodeA || !nodeB) return null;
+              const isActive = (a === effectiveMobActive || b === effectiveMobActive);
+              const isDimmed = effectiveMobActive && !isActive;
+              return (
+                <line
+                  key={i} x1={nodeA.x} y1={nodeA.y} x2={nodeB.x} y2={nodeB.y}
+                  stroke={isActive ? '#8B5CF6' : 'rgba(139,92,246,0.15)'}
+                  strokeWidth={isActive ? 1.5 : 0.8}
+                  style={{ opacity: isDimmed ? 0.3 : 1, transition: 'stroke 0.3s, opacity 0.3s' }}
+                />
+              );
             })}
           </g>
+
           <g>
-            {allNodeIds.map((id) => (
-              <Node
-                key={id}
-                nodeId={id}
-                hovered={effectiveMobActive}
-                onHover={() => {}}
-                onLeave={() => {}}
-                onClick={(e, isSkill, id) => handleNodeClick(e, id, !!isSkill)}
-                isMobile={true}
-              />
-            ))}
+            {allMobNodes.map((node) => {
+              const isSkill = !!skillsData.find((s) => s.id === node.id);
+              const isTapped = effectiveMobActive === node.id;
+              const isLinked = tappedConnected.has(node.id);
+              const isDimmed = effectiveMobActive && !isTapped && !isLinked;
+              const r = isSkill ? 16 : 10;
+              const lines = node.label.split('\n');
+
+              return (
+                <g
+                  key={node.id}
+                  style={{ cursor: isSkill ? 'pointer' : 'default', opacity: isDimmed ? 0.3 : 1, transition: 'opacity 0.3s' }}
+                  onClick={(e) => handleNodeTap(e, node.id, isSkill)}
+                >
+                  <circle cx={node.x} cy={node.y} r={r + 12} fill="transparent" />
+                  <circle
+                    cx={node.x} cy={node.y} r={isTapped ? r + 4 : r}
+                    fill={isTapped ? 'rgba(139,92,246,0.4)' : isLinked ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.1)'}
+                    stroke={isTapped ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.3)'}
+                    strokeWidth={isTapped ? 2 : 1}
+                  />
+                  {lines.map((text, li) => (
+                    <text
+                      key={li}
+                      x={node.x} y={node.y + r + 15 + (li * 12)}
+                      textAnchor="middle" fontSize={isSkill ? 10 : 9}
+                      fontFamily="var(--font-jetbrains), monospace"
+                      fill={isTapped ? '#F9FAFB' : isLinked ? '#C4B5FD' : 'rgba(156,163,175,0.8)'}
+                      fontWeight={isTapped ? '700' : '400'}
+                    >
+                      {text}
+                    </text>
+                  ))}
+                </g>
+              );
+            })}
           </g>
+
           <g>
-            {allProjectIds.map((id) => (
-              <ProjectNode
-                key={id}
-                nodeId={id}
-                hovered={effectiveMobActive}
-                onHover={() => {}}
-                onLeave={() => {}}
-                onClick={(e, id) => handleProjClick(e, id)}
-                isMobile={true}
-              />
-            ))}
+            {MOB_PROJECTS.map((node) => {
+              const isLinked = tappedConnected.has(node.id);
+              const color = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
+              return (
+                <g
+                  key={node.id}
+                  style={{ cursor: 'pointer' }}
+                  onClick={(e) => handleProjTap(e, node.id)}
+                >
+                  <rect
+                    x={node.x - 70} y={node.y - 26} width={140} height={52} rx={8}
+                    fill="rgba(8,14,28,0.92)"
+                    stroke={isLinked ? color : 'rgba(255,255,255,0.1)'}
+                    strokeWidth={isLinked ? 1.5 : 1}
+                  />
+                  <text x={node.x} y={node.y - 6} textAnchor="middle" fontSize={8} fontFamily="var(--font-jetbrains), monospace" fill={`${color}cc`}>
+                    {node.category.toUpperCase()}
+                  </text>
+                  <text x={node.x} y={node.y + 11} textAnchor="middle" fontSize={10} fontFamily="var(--font-jetbrains), monospace" fill="#F9FAFB">
+                    {node.label}
+                  </text>
+                </g>
+              );
+            })}
           </g>
         </svg>
       </div>
