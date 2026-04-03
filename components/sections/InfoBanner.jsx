@@ -26,11 +26,11 @@ export default function InfoBanner() {
               key={i}
               href={item.href}
               className="inline-flex items-center text-xs font-mono uppercase tracking-[0.2em] mx-8"
-              style={{ textDecoration: 'none', color: '#8B5CF6' }}
+              style={{ textDecoration: 'none', color: '#00D4FF' }}
             >
               <span
-                className="w-1 h-1 rounded-full mr-4 flex-shrink-0"
-                style={{ backgroundColor: '#8B5CF6' }}
+                className="w-1.5 h-1.5 rounded-full mr-5 flex-shrink-0"
+                style={{ backgroundColor: '#00D4FF', boxShadow: '0 0 8px #00D4FFaa' }}
               />
               {item.label}
             </Link>
@@ -40,8 +40,8 @@ export default function InfoBanner() {
               className="inline-flex items-center text-xs font-mono uppercase tracking-[0.2em] text-foreground/80 mx-8"
             >
               <span
-                className="w-1 h-1 rounded-full mr-4 flex-shrink-0"
-                style={{ backgroundColor: 'rgba(139,92,246,0.35)' }}
+                className="w-1.5 h-1.5 rounded-full mr-5 flex-shrink-0"
+                style={{ backgroundColor: 'rgba(0,212,255,0.6)', boxShadow: '0 0 6px rgba(0,212,255,0.3)' }}
               />
               {item.label}
             </span>

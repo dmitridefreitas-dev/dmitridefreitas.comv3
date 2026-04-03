@@ -55,19 +55,19 @@ const skillBadgeCategories = [
 
 /* ── Constellation data ────────────────────────────────────────────────────── */
 const CONSTELLATION_NODES = [
-  { id: 'washu',    type: 'edu',      x: 110, y: 120, size: 7,   col: '#8B5CF6',
+  { id: 'washu',    type: 'edu',      x: 110, y: 120, size: 7,   col: '#AD8BFF',
     label: 'WashU',            sub: 'BS Data Science & Fin. Eng.', date: '2024–2026', highlight: true },
-  { id: 'drew',     type: 'edu',      x: 75,  y: 245, size: 5,   col: '#8B5CF6',
+  { id: 'drew',     type: 'edu',      x: 75,  y: 245, size: 5,   col: '#AD8BFF',
     label: 'Drew University',  sub: 'BA Mathematics',               date: '2021–2023' },
-  { id: 'harrison', type: 'edu',      x: 130, y: 365, size: 4,   col: '#8B5CF6',
+  { id: 'harrison', type: 'edu',      x: 130, y: 365, size: 4,   col: '#AD8BFF',
     label: 'Harrison College', sub: 'Cambridge A-Levels',           date: '2015–2021' },
   { id: 'amphora',  type: 'work',     x: 330, y: 160, size: 5,   col: '#00D4FF',
     label: 'Amphora',          sub: 'Data Scientist Intern',         date: '2024' },
-  { id: 'pead',     type: 'research', x: 510, y: 105, size: 5.5, col: '#00E5A0',
+  { id: 'pead',     type: 'research', x: 510, y: 105, size: 5.5, col: '#00FFB2',
     label: 'PEAD Research',    sub: 'Market Efficiency',             date: '2024–Present' },
-  { id: 'quant',    type: 'research', x: 555, y: 245, size: 5,   col: '#00E5A0',
+  { id: 'quant',    type: 'research', x: 555, y: 245, size: 5,   col: '#00FFB2',
     label: 'Quant Trading',    sub: 'Algorithmic Strategies',        date: '2023–Present' },
-  { id: 'duke',     type: 'research', x: 450, y: 350, size: 3.5, col: '#00E5A0',
+  { id: 'duke',     type: 'research', x: 450, y: 350, size: 3.5, col: '#00FFB2',
     label: 'Duke of Edinburgh',sub: 'Expedition Research',           date: '2019–2021' },
 ];
 
@@ -144,42 +144,43 @@ function InterestCard({ interest, index }) {
     >
       <motion.div
         className="absolute top-0 left-0 right-0 h-px origin-left z-20"
-        style={{ background: 'linear-gradient(90deg, transparent, #00D4FF, #8B5CF6, transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, #00D4FF, #AD8BFF, transparent)' }}
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1.2, delay: index * 0.12 + 0.3, ease: [0.22, 1, 0.36, 1] }}
       />
       <div
-        className="interest-card-inner relative border border-[rgba(0_212_255_/_0.08)] bg-[#080E1C]/65 p-7 rounded-xl overflow-hidden transition-colors duration-500 group-hover:border-[rgba(0_212_255_/_0.25)] flex gap-5 items-start"
+        className="interest-card-inner relative border border-white/10 bg-[#0A1229]/80 p-7 rounded-xl overflow-hidden transition-all duration-500 group-hover:border-[rgba(0_212_255_/_0.5)] flex gap-5 items-start"
         style={{
           transform: 'perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))',
           transition: 'transform 0.12s ease',
           transformStyle: 'preserve-3d',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
         }}
       >
         <div
           className="absolute inset-0 pointer-events-none rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{ background: 'radial-gradient(220px circle at var(--sx,50%) var(--sy,50%), rgba(0,212,255,0.08) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(220px circle at var(--sx,50%) var(--sy,50%), rgba(0,212,255,0.12) 0%, transparent 70%)' }}
           aria-hidden="true"
         />
         <motion.div
           className="absolute inset-0 pointer-events-none rounded-xl"
-          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.05) 0%, transparent 70%)' }}
-          animate={{ opacity: [0.4, 1, 0.4] }}
+          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%)' }}
+          animate={{ opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 4 + index * 0.9, repeat: Infinity, ease: 'easeInOut', delay: index * 0.7 }}
           aria-hidden="true"
         />
         <div className="flex-shrink-0 relative">
           <motion.div
             className="absolute inset-0 rounded-lg"
-            style={{ background: 'rgba(0,212,255,0.2)', willChange: 'transform, opacity' }}
-            animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
+            style={{ background: 'rgba(0,212,255,0.3)', willChange: 'transform, opacity' }}
+            animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
             transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.8 }}
             aria-hidden="true"
           />
-          <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center relative z-10 group-hover:bg-accent/20 transition-colors">
-            <Icon className="h-5 w-5 text-accent" strokeWidth={1.5} />
+          <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center relative z-10 group-hover:bg-accent/30 transition-colors border border-white/10">
+            <Icon className="h-5 w-5 text-accent" strokeWidth={2} style={{ filter: 'drop-shadow(0 0 8px #00D4FF)' }} />
           </div>
         </div>
         <div className="relative z-10">
@@ -197,29 +198,29 @@ function InterestCard({ interest, index }) {
 
 /* ── Hex Grid Tech Stack ──────────────────────────────────────────── */
 const HEX_CELLS = [
-  { id: 'python',      label: 'Python',      cat: 'Languages',   col: '#8B5CF6' },
-  { id: 'r',           label: 'R',           cat: 'Languages',   col: '#8B5CF6' },
-  { id: 'sql',         label: 'SQL',         cat: 'Languages',   col: '#8B5CF6' },
-  { id: 'matlab',      label: 'MATLAB',      cat: 'Languages',   col: '#8B5CF6' },
-  { id: 'vba',         label: 'VBA',         cat: 'Languages',   col: '#8B5CF6' },
+  { id: 'python',      label: 'Python',      cat: 'Languages',   col: '#AD8BFF' },
+  { id: 'r',           label: 'R',           cat: 'Languages',   col: '#AD8BFF' },
+  { id: 'sql',         label: 'SQL',         cat: 'Languages',   col: '#AD8BFF' },
+  { id: 'matlab',      label: 'MATLAB',      cat: 'Languages',   col: '#AD8BFF' },
+  { id: 'vba',         label: 'VBA',         cat: 'Languages',   col: '#AD8BFF' },
   { id: 'sklearn',     label: 'sklearn',     cat: 'ML & Stats',  col: '#00D4FF' },
   { id: 'xgboost',     label: 'XGBoost',     cat: 'ML & Stats',  col: '#00D4FF' },
   { id: 'statsmodels', label: 'statsmodels', cat: 'ML & Stats',  col: '#00D4FF' },
   { id: 'arima',       label: 'ARIMA',       cat: 'ML & Stats',  col: '#00D4FF' },
   { id: 'ols',         label: 'OLS',         cat: 'ML & Stats',  col: '#00D4FF' },
-  { id: 'matplotlib',  label: 'Matplotlib',  cat: 'Viz',         col: '#00E5A0' },
-  { id: 'seaborn',     label: 'Seaborn',     cat: 'Viz',         col: '#00E5A0' },
-  { id: 'powerbi',     label: 'Power BI',    cat: 'Viz',         col: '#00E5A0' },
-  { id: 'tableau',     label: 'Tableau',     cat: 'Viz',         col: '#00E5A0' },
+  { id: 'matplotlib',  label: 'Matplotlib',  cat: 'Viz',         col: '#00FFB2' },
+  { id: 'seaborn',     label: 'Seaborn',     cat: 'Viz',         col: '#00FFB2' },
+  { id: 'powerbi',     label: 'Power BI',    cat: 'Viz',         col: '#00FFB2' },
+  { id: 'tableau',     label: 'Tableau',     cat: 'Viz',         col: '#00FFB2' },
   { id: 'bloomberg',   label: 'Bloomberg',   cat: 'Finance',     col: '#F59E0B' },
   { id: 'quantlib',    label: 'QuantLib',    cat: 'Finance',     col: '#F59E0B' },
   { id: 'fredapi',     label: 'FRED API',    cat: 'Finance',     col: '#F59E0B' },
 ];
 
 const HEX_LEGEND = [
-  { cat: 'Languages', col: '#8B5CF6' },
+  { cat: 'Languages', col: '#AD8BFF' },
   { cat: 'ML & Stats', col: '#00D4FF' },
-  { cat: 'Viz', col: '#00E5A0' },
+  { cat: 'Viz', col: '#00FFB2' },
   { cat: 'Finance', col: '#F59E0B' },
 ];
 
@@ -266,7 +267,7 @@ function HexGrid() {
       <motion.p
         {...fadeUp(0.05)}
         className="font-mono text-[9px] uppercase tracking-[0.3em] mb-5"
-        style={{ color: 'rgba(0,212,255,0.35)' }}
+        style={{ color: 'rgba(0,212,255,0.7)' }}
       >
         HEX.GRID.v1 · {HEX_CELLS.length} NODES
       </motion.p>
@@ -430,16 +431,16 @@ function ConstellationBlueprint({ onSelectExperience }) {
         {/* Legend */}
         <div className="flex flex-wrap gap-5 mb-8">
           {[
-            { label: 'Education', col: '#8B5CF6' },
+            { label: 'Education', col: '#AD8BFF' },
             { label: 'Professional', col: '#00D4FF' },
-            { label: 'Research', col: '#00E5A0' },
+            { label: 'Research', col: '#00FFB2' },
           ].map(({ label, col }) => (
             <div key={label} className="flex items-center gap-2">
               <svg width="14" height="14" viewBox="0 0 14 14">
-                <circle cx="7" cy="7" r="4" fill={col} opacity={0.8} />
-                <circle cx="7" cy="7" r="6" fill="none" stroke={col} strokeWidth="0.8" opacity={0.4} />
+                <circle cx="7" cy="7" r="4" fill={col} opacity={0.9} />
+                <circle cx="7" cy="7" r="6" fill="none" stroke={col} strokeWidth="1" opacity={0.6} />
               </svg>
-              <span className="font-mono text-[9px] uppercase tracking-[0.15em]" style={{ color: `${col}99` }}>{label}</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.15em]" style={{ color: col, textShadow: `0 0 8px ${col}40` }}>{label}</span>
             </div>
           ))}
         </div>
@@ -454,14 +455,14 @@ function ConstellationBlueprint({ onSelectExperience }) {
             >
               <defs>
                 <filter id="starGlow" x="-150%" y="-150%" width="400%" height="400%">
-                  <feGaussianBlur stdDeviation="4" result="b" in="SourceGraphic" />
+                  <feGaussianBlur stdDeviation="5" result="b" in="SourceGraphic" />
                   <feMerge>
                     <feMergeNode in="b" />
                     <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
                 <filter id="starGlowBig" x="-200%" y="-200%" width="500%" height="500%">
-                  <feGaussianBlur stdDeviation="7" result="b" in="SourceGraphic" />
+                  <feGaussianBlur stdDeviation="9" result="b" in="SourceGraphic" />
                   <feMerge>
                     <feMergeNode in="b" />
                     <feMergeNode in="SourceGraphic" />
@@ -469,11 +470,11 @@ function ConstellationBlueprint({ onSelectExperience }) {
                 </filter>
                 {/* Background star field */}
                 <pattern id="starfield" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <circle cx="10" cy="15" r="0.5" fill="rgba(255,255,255,0.04)" />
-                  <circle cx="35" cy="8" r="0.4" fill="rgba(139,92,246,0.06)" />
-                  <circle cx="50" cy="40" r="0.5" fill="rgba(0,212,255,0.05)" />
-                  <circle cx="20" cy="50" r="0.3" fill="rgba(255,255,255,0.03)" />
-                  <circle cx="45" cy="25" r="0.4" fill="rgba(0,229,160,0.04)" />
+                  <circle cx="10" cy="15" r="0.6" fill="rgba(255,255,255,0.08)" />
+                  <circle cx="35" cy="8" r="0.5" fill="rgba(139,92,246,0.1)" />
+                  <circle cx="50" cy="40" r="0.6" fill="rgba(0,212,255,0.09)" />
+                  <circle cx="20" cy="50" r="0.4" fill="rgba(255,255,255,0.06)" />
+                  <circle cx="45" cy="25" r="0.5" fill="rgba(0,229,160,0.07)" />
                 </pattern>
               </defs>
 
@@ -509,7 +510,7 @@ function ConstellationBlueprint({ onSelectExperience }) {
                 // Determine color based on node types
                 const isEduEdge = from.type === 'edu' && to.type === 'edu';
                 const isResEdge = to.type === 'research';
-                const strokeCol = isEduEdge ? 'rgba(139,92,246,0.25)' : isResEdge ? 'rgba(0,229,160,0.2)' : 'rgba(0,212,255,0.2)';
+                const strokeCol = isEduEdge ? 'rgba(173,139,255,0.3)' : isResEdge ? 'rgba(0,255,178,0.25)' : 'rgba(0,212,255,0.25)';
 
                 return (
                   <line
@@ -642,8 +643,8 @@ function ConstellationBlueprint({ onSelectExperience }) {
                     <div className="absolute left-[-26px] top-7 w-2 h-2">
                       <div className="absolute inset-0 rounded-full bg-[#00E5A0]/50 border border-background" />
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#00E5A0] mb-1">{exp.date}</p>
-                    <h3 className="font-sans font-bold text-sm text-foreground mb-0.5 group-hover:text-[#00E5A0] transition-colors">{exp.title}</h3>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#00FFB2] mb-1">{exp.date}</p>
+                    <h3 className="font-sans font-bold text-sm text-foreground mb-0.5 group-hover:text-[#00FFB2] transition-colors">{exp.title}</h3>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{exp.organization}</p>
                   </motion.article>
                 ))}
@@ -661,7 +662,7 @@ function ConstellationBlueprint({ onSelectExperience }) {
 function ResearchMatrix() {
   const [hovered, setHovered] = useState(null);
 
-  const ROW_COLORS = ['#8B5CF6', '#00D4FF', '#00E5A0'];
+  const ROW_COLORS = ['#AD8BFF', '#00D4FF', '#00FFB2'];
 
   return (
     <section className="px-6 lg:px-16 py-12" aria-label="Research Focus Areas">

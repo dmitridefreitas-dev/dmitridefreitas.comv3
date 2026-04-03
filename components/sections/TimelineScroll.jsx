@@ -6,9 +6,9 @@ import { experiences } from '@/data/experiences';
 
 const TYPE_COLORS = {
   finance:   '#00D4FF',
-  research:  '#00E5A0',
-  education: '#8B5CF6',
-  activity:  'rgba(139,92,246,0.55)',
+  research:  '#00FFB2',
+  education: '#AD8BFF',
+  activity:  'rgba(173,139,255,0.7)',
 };
 
 const TYPE_LABELS = {
@@ -175,10 +175,10 @@ export default function TimelineScroll() {
           <motion.div
             className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 origin-top"
             style={{
-              width: '1px',
-              background: 'linear-gradient(to bottom, #8B5CF6 0%, #00D4FF 55%, #00E5A0 100%)',
+              width: '2px',
+              background: 'linear-gradient(to bottom, #AD8BFF 0%, #00D4FF 55%, #00FFB2 100%)',
               scaleY: lineScaleY,
-              boxShadow: '0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(0,212,255,0.2)',
+              boxShadow: '0 0 15px rgba(173,139,255,0.8), 0 0 30px rgba(0,212,255,0.4)',
             }}
           />
 
@@ -260,92 +260,87 @@ export default function TimelineScroll() {
             const desc = Array.isArray(exp.description) ? exp.description[0] : exp.shortDescription;
             
             // Calculate scroll ranges for this specific milestone
-            // Total 8 items + spacers. 0.0 to 1.0.
-            const start = i * (1 / experiences.length) * 0.8;
-            const end   = (i + 1) * (1 / experiences.length) * 0.8;
-            
+            const step = 1 / experiences.length;
+            const start = i * step;
+            const end = (i + 1) * step;
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            const itemScale = useTransform(scrollYProgress, [start, end], [0.8, 1]);
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const lineScale = useTransform(scrollYProgress, [end - 0.05, end + 0.05], [0, 1]);
+            const itemScale = useTransform(scrollYProgress, [start, end], [0.85, 1]);
+            const itemOpacity = useTransform(scrollYProgress, [start, start + step * 0.2], [0.4, 1]);
 
             return (
               <div key={`stepping-mob-${i}`} className="flex flex-col items-center w-full">
                 
                 {/* Visual Connector Dot (Stepping Stone) */}
                 <div className="relative flex items-center justify-center">
-                  {/* Pulse Ring (Mobile version of desktop pulse) */}
+                  {/* Pulse Ring */}
                   <motion.div 
                     initial={{ scale: 0.5, opacity: 0 }}
-                    whileInView={{ scale: [1, 1.4], opacity: [0.5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    whileInView={{ scale: [1, 2.2], opacity: [0.6, 0] }}
+                    transition={{ duration: 2.2, repeat: Infinity }}
                     className="absolute w-8 h-8 rounded-full border border-current"
                     style={{ color: color }}
                   />
                   <div 
-                    className="w-3.5 h-3.5 rounded-full z-10 border-2 border-[#02030A]" 
-                    style={{ background: color, boxShadow: `0 0 12px ${color}80` }} 
+                    className="w-4 h-4 rounded-full z-10 border-2 border-[#02030A]" 
+                    style={{ background: color, boxShadow: `0 0 20px ${color}` }} 
                   />
                 </div>
                 
                 {/* Content Card: Diamond "Stepping Stone" */}
                 <motion.div 
-                  style={{ scale: itemScale }}
-                  className="w-full mt-6 mb-6 flex justify-center relative min-h-[160px]"
+                  style={{ scale: itemScale, opacity: itemOpacity }}
+                  className="w-full mt-7 mb-7 flex justify-center relative min-h-[160px]"
                 >
                   {/* SVG Stone Background */}
                   <svg 
-                    className="absolute inset-0 w-full h-full drop-shadow-[0_0_25px_rgba(0,0,0,0.4)]" 
+                    className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]" 
                     viewBox="0 0 400 200" 
                     preserveAspectRatio="none"
                     fill="none"
                   >
-                    <defs>
-                      <filter id={`stoneGlow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="8" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
                     <path 
-                      d="M 60,10 L 340,10 L 390,100 L 340,190 L 60,190 L 10,100 Z" 
+                      d="M 65,10 L 335,10 L 390,100 L 335,190 L 65,190 L 10,100 Z" 
                       fill="#0A1229" 
-                      fillOpacity="0.95"
+                      fillOpacity="0.96"
                       stroke={color}
-                      strokeWidth="2"
-                      style={{ filter: `drop-shadow(0 0 12px ${color}40)` }}
+                      strokeWidth="2.5"
+                      style={{ filter: `drop-shadow(0 0 18px ${color}80)` }}
                     />
                   </svg>
 
                   {/* Content Overlay */}
-                  <div className="relative z-10 w-full max-w-[280px] py-8 px-4 flex flex-col items-center justify-center text-center">
-                    <div className="flex flex-col items-center gap-1.5 mb-3.5">
-                      <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-white/40">{exp.date}</span>
+                  <div className="relative z-10 w-full max-w-[280px] py-10 px-4 flex flex-col items-center justify-center text-center">
+                    <div className="flex flex-col items-center gap-1.5 mb-4">
+                      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/50">{exp.date}</span>
                       <span 
-                        style={{ color: color, background: `${color}15` }} 
-                        className="text-[8px] font-mono uppercase tracking-widest px-3 py-0.5 rounded-full border border-white/5"
+                        style={{ color: '#FFFFFF', background: color, boxShadow: `0 0 15px ${color}60` }} 
+                        className="text-[8px] font-mono uppercase tracking-widest px-3 py-0.5 rounded-full"
                       >
                         {TYPE_LABELS[exp.type]}
                       </span>
                     </div>
 
-                    <h3 className="text-[16px] font-bold text-white mb-1 leading-tight tracking-tight px-2">{exp.title}</h3>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-accent/50 mb-4">{exp.organization}</p>
+                    <h3 className="text-[17px] font-bold text-white mb-1.5 leading-tight tracking-tight px-2">{exp.title}</h3>
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-accent mb-5 opacity-90">{exp.organization}</p>
                     
-                    <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2 max-w-[220px]">
+                    <p className="text-[11px] text-white/60 leading-relaxed line-clamp-2 max-w-[230px]">
                       {desc}
                     </p>
                   </div>
                 </motion.div>
 
-                {/* Animated Connector Line (The "Growing Line") */}
+                {/* Robust Growing Line (whileInView) */}
                 {i < experiences.length - 1 && (
-                  <div className="relative w-[3px] h-20 bg-white/[0.08] mb-6 rounded-full overflow-hidden">
+                  <div className="relative w-[4px] h-20 bg-white/[0.04] mb-7 rounded-full overflow-hidden">
                     <motion.div 
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ amount: 0.5, once: false }}
+                      transition={{ duration: 1.0, ease: "easeOut" }}
                       style={{ 
-                        scaleY: lineScale, 
                         originY: 0,
                         background: `linear-gradient(to bottom, ${color}, ${TYPE_COLORS[experiences[i+1].type] || color})`,
-                        boxShadow: `0 0 10px ${color}80` 
+                        boxShadow: `0 0 25px ${color}` 
                       }}
                       className="absolute inset-0 rounded-full"
                     />

@@ -211,11 +211,11 @@ function Edge({ fromId, toId, active, dimmed, isMobile }) {
   if (!from || !to) return null;
 
   const isProjectEdge = !!(PROJECT_NODES_DATA[fromId] || PROJECT_NODES_DATA[toId]);
-  const opacity = active ? 0.75 : dimmed ? 0.04 : 0.12;
-  const strokeW = active ? 1.4 : 0.7;
+  const opacity = active ? 0.9 : dimmed ? 0.05 : 0.2;
+  const strokeW = active ? 1.8 : 0.9;
   const color   = active
-    ? (isProjectEdge ? '#00D4FF' : '#8B5CF6')
-    : (isProjectEdge ? 'rgba(0,212,255,0.9)' : 'rgba(139,92,246,0.9)');
+    ? (isProjectEdge ? '#00D4FF' : '#AD8BFF')
+    : (isProjectEdge ? '#00D4FFcc' : '#AD8BFFcc');
 
   const mx = isMobile ? (from.x + to.x) / 2 - 18 : (from.x + to.x) / 2;
   const my = isMobile ? (from.y + to.y) / 2 : (from.y + to.y) / 2 - 18;
@@ -228,9 +228,10 @@ function Edge({ fromId, toId, active, dimmed, isMobile }) {
       stroke={color}
       strokeWidth={strokeW}
       strokeLinecap="round"
-      opacity={0.12}
+      opacity={0.15}
       animate={{ opacity, strokeWidth: strokeW }}
       transition={{ duration: 0.25 }}
+      style={{ filter: active ? `drop-shadow(0 0 8px ${color}60)` : 'none' }}
     />
   );
 }
@@ -250,10 +251,10 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
   const glowR   = r + 14;
   const lines   = node.label.split('\n');
 
-  const nodeFill   = isHovered ? 'rgba(139,92,246,0.35)' : isLinked ? 'rgba(139,92,246,0.18)' : isDimmed ? 'rgba(8,8,16,0.8)' : 'rgba(139,92,246,0.12)';
-  const nodeStroke = isHovered ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : isDimmed ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.4)';
-  const textFill   = isHovered ? '#C4B5FD' : isLinked ? 'rgba(196,181,253,0.85)' : isDimmed ? 'rgba(156,163,175,0.2)' : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)';
-  const dotFill    = isHovered ? '#C4B5FD' : isDimmed ? 'rgba(139,92,246,0.1)' : 'rgba(139,92,246,0.6)';
+  const nodeFill   = isHovered ? 'rgba(173,139,255,0.45)' : isLinked ? 'rgba(173,139,255,0.25)' : isDimmed ? 'rgba(8,8,16,0.9)' : 'rgba(173,139,255,0.15)';
+  const nodeStroke = isHovered ? '#AD8BFF' : isLinked ? 'rgba(173,139,255,0.7)' : isDimmed ? 'rgba(173,139,255,0.1)' : 'rgba(173,139,255,0.5)';
+  const textFill   = isHovered ? '#FFFFFF' : isLinked ? 'rgba(255,255,255,0.9)' : isDimmed ? 'rgba(156,163,175,0.25)' : isSkill ? '#FFFFFF' : 'rgba(196,181,253,0.95)';
+  const dotFill    = isHovered ? '#FFFFFF' : isDimmed ? 'rgba(173,139,255,0.1)' : 'rgba(173,139,255,0.7)';
   const trans      = 'fill 0.2s, stroke 0.2s, opacity 0.2s';
 
   return (
@@ -264,19 +265,19 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
       onClick={(e) => onClick && onClick(e, isSkill ? node.skill : undefined, nodeId)}
     >
       <circle
-        cx={node.x} cy={node.y} r={isHovered ? glowR + 4 : glowR}
+        cx={node.x} cy={node.y} r={isHovered ? glowR + 6 : glowR}
         fill="transparent"
-        stroke="rgba(139,92,246,0.18)"
-        strokeWidth="1"
-        style={{ opacity: isHovered ? 1 : isDimmed ? 0 : 0.5, transition: trans }}
+        stroke="rgba(173,139,255,0.25)"
+        strokeWidth="1.5"
+        style={{ opacity: isHovered ? 1 : isDimmed ? 0 : 0.6, transition: trans }}
       />
 
       {!isDimmed && (
         <circle
-          cx={node.x} cy={node.y} r={r + 4}
+          cx={node.x} cy={node.y} r={r + 5}
           fill="none"
-          stroke="rgba(139,92,246,0.25)"
-          strokeWidth="0.8"
+          stroke="rgba(173,139,255,0.3)"
+          strokeWidth="1"
           className="animate-pulse-ring"
           style={{ transformOrigin: `${node.x}px ${node.y}px` }}
         />
@@ -286,9 +287,9 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
         cx={node.x} cy={node.y} r={r}
         fill={nodeFill}
         stroke={nodeStroke}
-        strokeWidth={isHovered ? 2 : 1}
+        strokeWidth={isHovered ? 2.5 : 1}
         style={{
-          filter: isHovered ? 'drop-shadow(0 0 8px rgba(139,92,246,0.7))' : 'none',
+          filter: isHovered ? 'drop-shadow(0 0 16px rgba(173,139,255,0.9))' : 'none',
           transition: trans,
         }}
       />
@@ -342,14 +343,14 @@ function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
   const isLinked   = hovered && connected.has(hovered);
   const isDimmed   = hovered && !isHovered && !isLinked;
 
-  const color       = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
-  const fillColor   = isHovered ? 'rgba(0,212,255,0.10)' : isDimmed ? 'rgba(8,14,28,0.5)' : 'rgba(8,14,28,0.88)';
-  const strokeColor = isHovered ? color : isDimmed ? 'rgba(0,212,255,0.04)' : isLinked ? 'rgba(0,212,255,0.38)' : 'rgba(0,212,255,0.18)';
-  const textPrimary = isHovered ? '#F9FAFB' : isDimmed ? 'rgba(249,250,251,0.12)' : 'rgba(249,250,251,0.85)';
-  const textSec     = isHovered ? color : isDimmed ? 'rgba(0,212,255,0.08)' : 'rgba(0,212,255,0.45)';
+  const color       = node.category === 'Quant Finance' ? '#00D4FF' : '#AD8BFF';
+  const fillColor   = isHovered ? 'rgba(10,18,41,0.95)' : isDimmed ? 'rgba(8,14,28,0.5)' : 'rgba(10,18,41,0.9)';
+  const strokeColor = isHovered ? color : isDimmed ? 'rgba(255,255,255,0.05)' : isLinked ? `${color}dd` : `${color}66`;
+  const textPrimary = isHovered ? '#FFFFFF' : isDimmed ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.95)';
+  const textSec     = isHovered ? color : isDimmed ? `${color}33` : `${color}aa`;
   const glow        = isHovered
-    ? `drop-shadow(0 0 16px ${color}60)`
-    : isLinked ? `drop-shadow(0 0 6px ${color}28)` : 'none';
+    ? `drop-shadow(0 0 20px ${color}80)`
+    : isLinked ? `drop-shadow(0 0 10px ${color}40)` : 'none';
 
   return (
     <g style={{ cursor: 'pointer' }} onMouseEnter={() => onHover && onHover(nodeId)} onMouseLeave={() => onLeave && onLeave()} onClick={(e) => onClick && onClick(e, nodeId)}>
@@ -579,7 +580,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
 
   return (
     <div className="md:hidden">
-      <p style={{ textAlign: "center", fontFamily: "var(--font-jetbrains), monospace", fontSize: "10px", letterSpacing: "0.25em", color: "rgba(139,92,246,0.6)", marginBottom: "16px" }}>
+      <p style={{ textAlign: "center", fontFamily: "var(--font-jetbrains), monospace", fontSize: "10px", letterSpacing: "0.25em", color: "rgba(173,139,255,0.75)", marginBottom: "16px" }}>
         TAP NODE · TAP AGAIN TO EXPLORE
       </p>
       <div style={{ width: "100%", overflowX: "hidden" }}>
@@ -614,9 +615,13 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
               return (
                 <line
                   key={i} x1={nodeA.x} y1={nodeA.y} x2={nodeB.x} y2={nodeB.y}
-                  stroke={isActive ? '#8B5CF6' : 'rgba(139,92,246,0.15)'}
-                  strokeWidth={isActive ? 1.5 : 0.8}
-                  style={{ opacity: isDimmed ? 0.3 : 1, transition: 'stroke 0.3s, opacity 0.3s' }}
+                  stroke={isActive ? '#AD8BFF' : 'rgba(255,255,255,0.1)'}
+                  strokeWidth={isActive ? 2.5 : 1}
+                  style={{ 
+                    opacity: isDimmed ? 0.3 : 1, 
+                    transition: 'stroke 0.3s, opacity 0.3s',
+                    filter: isActive ? 'drop-shadow(0 0 10px #AD8BFF80)' : 'none'
+                  }}
                 />
               );
             })}
@@ -639,10 +644,11 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
                 >
                   <circle cx={node.x} cy={node.y} r={r + 12} fill="transparent" />
                   <circle
-                    cx={node.x} cy={node.y} r={isTapped ? r + 4 : r}
-                    fill={isTapped ? 'rgba(139,92,246,0.4)' : isLinked ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.1)'}
-                    stroke={isTapped ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.3)'}
-                    strokeWidth={isTapped ? 2 : 1}
+                    cx={node.x} cy={node.y} r={isTapped ? r + 5 : r}
+                    fill={isTapped ? 'rgba(173,139,255,0.5)' : isLinked ? 'rgba(173,139,255,0.3)' : 'rgba(173,139,255,0.15)'}
+                    stroke={isTapped ? '#AD8BFF' : isLinked ? 'rgba(173,139,255,0.8)' : 'rgba(173,139,255,0.4)'}
+                    strokeWidth={isTapped ? 3.5 : 2}
+                    style={{ filter: isTapped ? 'drop-shadow(0 0 15px #AD8BFF90)' : 'none' }}
                   />
                   {lines.map((text, li) => (
                     <text
