@@ -816,23 +816,12 @@ export default function SkillsNetwork() {
 
   return (
     <section ref={sectionRef} className="py-16 px-6 lg:px-12 overflow-hidden" aria-label="Skills Network">
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-accent text-center mb-3"
-      >
+      <p className="font-mono text-xs uppercase tracking-[0.4em] text-accent text-center mb-3">
         Tools &amp; Languages
-      </motion.p>
+      </p>
 
       {/* Bobbing hover hint — desktop only */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.5 }}
-        className="hidden md:flex items-center justify-center gap-2 mb-8"
-      >
+      <div className="hidden md:flex items-center justify-center gap-2 mb-8">
         <motion.span
           animate={{ y: [0, -5, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
@@ -847,7 +836,7 @@ export default function SkillsNetwork() {
         >
           ↑
         </motion.span>
-      </motion.div>
+      </div>
 
       <div className="hidden md:block">
         {showRobot && <RobotHelper onDismiss={dismissRobot} active={isSceneActive} />}
@@ -857,12 +846,7 @@ export default function SkillsNetwork() {
       <div className="max-w-7xl mx-auto">
         {/* ── Desktop SVG ── */}
         <div className="hidden md:block">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <div>
             <svg
               viewBox={`0 0 ${VB_W} ${VB_H}`}
               preserveAspectRatio="xMidYMid meet"
@@ -933,20 +917,14 @@ export default function SkillsNetwork() {
                 ))}
               </g>
             </svg>
-          </motion.div>
+          </div>
         </div>
 
         {/* ── Mobile SVG (vertical layout) ── */}
         <MobileSkillsNetwork onSkillClick={setSelected} onProjectClick={handleProjectClick} />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.4 }}
-        className="flex justify-center gap-6 md:gap-12 mt-8 flex-wrap"
-      >
+      <div className="flex justify-center gap-6 md:gap-12 mt-8 flex-wrap">
         {[
           { label: 'Languages', value: '6' },
           { label: 'Libraries & Viz', value: '6' },
@@ -958,7 +936,7 @@ export default function SkillsNetwork() {
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted/60 mt-1">{label}</p>
           </div>
         ))}
-      </motion.div>
+      </div>
 
       <AnimatePresence>
         {selected && (

@@ -174,25 +174,18 @@ export default function SkillsReveal() {
       aria-label="Technical Skills Circuit Board"
     >
       {/* ── Section header ── */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
+      <p
         className="font-mono text-xs uppercase tracking-[0.4em] text-center mb-2"
         style={{ color: 'rgba(139,92,246,0.7)' }}
       >
         Tools &amp; Languages
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0, y: 8 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.1 }}
+      </p>
+      <p
         className="font-mono text-[9px] uppercase tracking-[0.3em] text-center mb-10"
         style={{ color: 'rgba(0,212,255,0.35)' }}
       >
         {'CIRCUIT \u00B7 12 NODES \u00B7 49 CONNECTIONS'}
-      </motion.p>
+      </p>
 
       {/* ── Legend ── */}
       <div className="flex justify-center gap-6 mb-8 flex-wrap">
@@ -315,7 +308,9 @@ export default function SkillsReveal() {
             </filter>
           </defs>
 
-          {/* Background dot grid */}
+          {/* Dark background */}
+          <rect width={VB_W} height={VB_H} fill="#02030A" />
+          {/* Dot grid overlay */}
           <rect width={VB_W} height={VB_H} fill="url(#pcb-dots)" />
 
           {/* ═══ TRACES ═══ */}
@@ -428,26 +423,8 @@ export default function SkillsReveal() {
                   strokeDasharray="3 5"
                 />
 
-                <AnimatePresence>
-                  {on && (
-                    <motion.g
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      {/* Burst ring on appear */}
-                      <motion.rect
-                        x={rx - 5} y={ry - 5}
-                        width={CHIP_W + 10} height={CHIP_H + 10}
-                        rx={4}
-                        fill="none"
-                        stroke={c.hex}
-                        strokeWidth={1.5}
-                        initial={{ opacity: 0.7 }}
-                        animate={{ opacity: 0 }}
-                        transition={{ duration: 0.7, ease: 'easeOut' }}
-                        style={{ transformOrigin: `${node.cx}px ${node.cy}px` }}
-                      />
+                {on && (
+                    <g>
 
                       {/* Chip body */}
                       <rect
@@ -571,9 +548,8 @@ export default function SkillsReveal() {
                           </motion.g>
                         )}
                       </AnimatePresence>
-                    </motion.g>
+                    </g>
                   )}
-                </AnimatePresence>
               </g>
             );
           })}

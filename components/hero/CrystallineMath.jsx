@@ -2,18 +2,17 @@
 
 import { useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
 import * as THREE from 'three';
 
 /* ── shared mouse state ─────────────────────────────── */
 const mouse = { x: 0, y: 0 };
 
 /* ── Corner Particles ───────────────────────────────── */
-const PARTICLES_PER_CORNER = 80;
+const PARTICLES_PER_CORNER = 18;
 const CORNER_COUNT = 4;
 const TOTAL_PARTICLES = PARTICLES_PER_CORNER * CORNER_COUNT;
-const CONNECTION_DIST = 1.0;
-const MAX_CONNECTIONS = 400;
+const CONNECTION_DIST = 0.9;
+const MAX_CONNECTIONS = 60;
 
 // corners in world‑space (camera at z=5, fov 55 → ~±4.5 x, ~±2.8 y)
 const CORNERS = [
@@ -147,14 +146,12 @@ function GlassIcosahedron() {
   return (
     <mesh ref={ref}>
       <icosahedronGeometry args={[1.4, 0]} />
-      <meshPhysicalMaterial
+      <meshStandardMaterial
         color="#9988ff"
-        transmission={0.9}
-        roughness={0.05}
-        metalness={0}
-        thickness={0.5}
         transparent
-        opacity={0.3}
+        opacity={0.18}
+        roughness={0.1}
+        metalness={0.2}
       />
     </mesh>
   );
@@ -194,10 +191,7 @@ function OrbitingOrb({ radius, speed, offset, yOffset, color }) {
 const ORBS = [
   { radius: 2.2, speed: 0.4,  offset: 0,   yOffset: 0,    color: '#c084fc' },
   { radius: 2.5, speed: 0.3,  offset: 1.0, yOffset: 0.5,  color: '#00ffff' },
-  { radius: 2.0, speed: 0.5,  offset: 2.1, yOffset: -0.4, color: '#c084fc' },
-  { radius: 2.7, speed: 0.25, offset: 3.2, yOffset: 0.3,  color: '#7c3aed' },
-  { radius: 2.3, speed: 0.45, offset: 4.3, yOffset: -0.6, color: '#00ffff' },
-  { radius: 2.6, speed: 0.35, offset: 5.4, yOffset: 0.7,  color: '#c084fc' },
+  { radius: 2.0, speed: 0.5,  offset: 2.1, yOffset: -0.4, color: '#7c3aed' },
 ];
 
 function RimLight() {
@@ -249,11 +243,9 @@ export default function CrystallineMath() {
 
       <MouseTracker />
 
-      <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.5}>
-        <GlassIcosahedron />
-        <IcosahedronWireframe />
-        <GlowingCore />
-      </Float>
+      <GlassIcosahedron />
+      <IcosahedronWireframe />
+      <GlowingCore />
 
       {ORBS.map((orb, i) => <OrbitingOrb key={i} {...orb} />)}
 
