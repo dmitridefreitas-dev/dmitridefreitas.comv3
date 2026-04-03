@@ -34,11 +34,11 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: isRight ? 32 : -32 }}
+      initial={{ opacity: 0, x: rowIdx === -1 ? 0 : (isRight ? 32 : -32) }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-8%' }}
       transition={{ duration: 0.65, delay: rowIdx * 0.04, ease: [0.22, 1, 0.36, 1] }}
-      className={`flex flex-col gap-1.5 ${rowIdx === -1 ? 'items-center text-center mx-auto' : (isRight ? 'items-start text-left' : 'items-end text-right')}`}
+      className={`flex flex-col gap-1.5 ${rowIdx === -1 ? 'items-center text-center mx-auto scale-[0.95]' : (isRight ? 'items-start text-left' : 'items-end text-right')}`}
     >
       <div
         style={{
@@ -48,7 +48,7 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
           borderRight: (rowIdx !== -1 && !isRight) ? `2px solid ${color}` : undefined,
           borderRadius: '10px',
           padding: '14px 16px',
-          maxWidth: '270px',
+          maxWidth: rowIdx === -1 ? '260px' : '270px',
           backdropFilter: 'blur(12px)',
           boxShadow: `0 4px 28px rgba(0,0,0,0.45), 0 0 18px ${color}0c`,
         }}
@@ -86,7 +86,7 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
         <h3 style={{
           fontFamily: 'var(--font-sans, sans-serif)',
           fontWeight: 700,
-          fontSize: '15px',
+          fontSize: rowIdx === -1 ? '12px' : '15px',
           lineHeight: '1.3',
           color: '#F9FAFB',
           marginBottom: '4px',
@@ -97,7 +97,7 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
         {entry.organization && (
           <p style={{
             fontFamily: 'var(--font-jetbrains), monospace',
-            fontSize: '10px',
+            fontSize: rowIdx === -1 ? '8px' : '10px',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
             color: 'rgba(156,163,175,0.45)',
@@ -108,7 +108,7 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
         )}
 
         <p style={{
-          fontSize: '12px',
+          fontSize: rowIdx === -1 ? '9.5px' : '12px',
           color: 'rgba(156,163,175,0.65)',
           lineHeight: '1.65',
           display: '-webkit-box',
@@ -247,7 +247,7 @@ export default function TimelineScroll() {
       </div>
 
       {/* MOBILE LAYOUT: Single Column, Stacked & Centered */}
-      <div className="md:hidden mt-8 flex flex-col max-w-[320px] mx-auto relative overflow-visible">
+      <div className="md:hidden mt-8 flex flex-col max-w-[320px] mx-auto relative overflow-visible px-4">
         
         {/* Absolute Centered Track Line */}
         <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px" style={{ background: 'linear-gradient(to bottom, #00D4FF 0%, #8B5CF6 100%)', opacity: 0.25 }} />
@@ -257,7 +257,7 @@ export default function TimelineScroll() {
           <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-12 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20 relative z-20">
             Career Experience
           </h3>
-          <div className="flex flex-col gap-12 items-center">
+          <div className="flex flex-col gap-20 items-center">
             {right.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#00D4FF';
               return (
@@ -280,7 +280,7 @@ export default function TimelineScroll() {
           <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-12 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20 relative z-20 shadow-[0_0_10px_rgba(139,92,246,0.15)]">
             Education
           </h3>
-          <div className="flex flex-col gap-12 items-center">
+          <div className="flex flex-col gap-20 items-center">
             {left.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
               return (
