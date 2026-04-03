@@ -246,64 +246,92 @@ export default function TimelineScroll() {
         </div>
       </div>
 
-      {/* MOBILE LAYOUT: Strictly Sequential & Segmented */}
-      <div className="md:hidden mt-8 flex flex-col max-w-[340px] mx-auto relative overflow-visible px-4 gap-24">
+      {/* MOBILE LAYOUT: Pure Vertical, Strictly Centered */}
+      <div className="md:hidden mt-8 flex flex-col items-center w-full max-w-sm mx-auto">
         
-        {/* Career Path Section */}
-        <div className="relative">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-12 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20 relative z-20">
-            Career Experience
-          </h3>
-          
-          {/* Section Track Line */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px bg-gradient-to-b from-[#00D4FF] to-transparent opacity-20" />
-
-          <div className="flex flex-col gap-20 items-center relative">
-            {right.map((entry, idx) => {
-              const dotColor = TYPE_COLORS[entry.type] || '#00D4FF';
-              return (
-                <div key={`exp-${idx}`} className="flex flex-col items-center relative w-full">
-                  <div className="absolute -top-6 z-20">
-                    <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
-                  </div>
-                  <div className="flex-grow w-full relative z-10 mx-auto">
-                    <Entry entry={entry} align="right" rowIdx={-1} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          {/* Visual path end dot */}
-          <div className="w-1.5 h-1.5 rounded-full bg-[#00D4FF]/20 absolute left-1/2 -translate-x-1/2 -bottom-2" />
+        {/* Career Section Header */}
+        <div className="mb-12 w-full text-center">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#00D4FF]/40 mb-2">Section 01</h3>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Career Path</h2>
         </div>
 
-        {/* Education Path Section */}
-        <div className="relative">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-12 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20 relative z-20 shadow-[0_0_10px_rgba(139,92,246,0.15)]">
-            Education
-          </h3>
-
-          {/* Section Track Line */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px bg-gradient-to-b from-[#8B5CF6] to-transparent opacity-20" />
-
-          <div className="flex flex-col gap-20 items-center relative">
-            {left.map((entry, idx) => {
-              const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
-              return (
-                <div key={`edu-${idx}`} className="flex flex-col items-center relative w-full">
-                  <div className="absolute -top-6 z-20">
-                    <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
-                  </div>
-                  <div className="flex-grow w-full relative z-10 mx-auto">
-                    <Entry entry={entry} align="right" rowIdx={-1} />
+        <div className="flex flex-col items-center w-full">
+          {experiences.map((exp, i) => {
+            const color = TYPE_COLORS[exp.type] || '#00D4FF';
+            const desc = Array.isArray(exp.description) ? exp.description[0] : exp.shortDescription;
+            
+            return (
+              <div key={`mob-exp-${i}`} className="flex flex-col items-center w-full">
+                {/* Dot */}
+                <div className="w-3 h-3 rounded-full mb-6 z-10" style={{ background: color, boxShadow: `0 0 10px ${color}80` }} />
+                
+                {/* Centered Card */}
+                <div className="w-full px-4 mb-6">
+                  <div className="p-5 rounded-2xl bg-[#080E1C]/85 border border-white/5 backdrop-blur-xl text-center shadow-xl">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <span style={{ color: color, background: `${color}10`, border: `1px solid ${color}30` }} className="text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded">
+                        {TYPE_LABELS[exp.type]}
+                      </span>
+                      <span className="text-[10px] font-mono text-white/30 tracking-tight">{exp.date}</span>
+                    </div>
+                    <h3 className="text-[15px] font-bold text-white mb-1 leading-tight">{exp.title}</h3>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-white/40 mb-4">{exp.organization}</p>
+                    <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2">{desc}</p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-          {/* Visual path end dot */}
-          <div className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]/20 absolute left-1/2 -translate-x-1/2 -bottom-2" />
+
+                {/* Connector Line (except last) */}
+                {i < experiences.length - 1 && (
+                  <div className="w-px h-16 bg-gradient-to-b from-white/10 to-white/5 mb-6" />
+                )}
+              </div>
+            );
+          })}
         </div>
+
+        {/* Big Segment Break */}
+        <div className="w-px h-24 bg-gradient-to-b from-white/5 to-white/20 border-t border-white/10 my-12" />
+
+        {/* Education Section Header */}
+        <div className="mb-12 w-full text-center">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#8B5CF6]/40 mb-2">Section 02</h3>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Education</h2>
+        </div>
+
+        <div className="flex flex-col items-center w-full">
+          {left.map((edu, i) => {
+            const color = TYPE_COLORS[edu.type] || '#8B5CF6';
+            
+            return (
+              <div key={`mob-edu-${i}`} className="flex flex-col items-center w-full">
+                {/* Dot */}
+                <div className="w-3 h-3 rounded-full mb-6 z-10" style={{ background: color, boxShadow: `0 0 10px ${color}80` }} />
+                
+                {/* Centered Card */}
+                <div className="w-full px-4 mb-6">
+                  <div className="p-5 rounded-2xl bg-[#080E1C]/85 border border-white/5 backdrop-blur-xl text-center shadow-xl">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <span style={{ color: color, background: `${color}10`, border: `1px solid ${color}30` }} className="text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded">
+                        Education
+                      </span>
+                      <span className="text-[10px] font-mono text-white/30 tracking-tight">{edu.year}</span>
+                    </div>
+                    <h3 className="text-[15px] font-bold text-white mb-1 leading-tight">{edu.title}</h3>
+                    <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2">{edu.description}</p>
+                  </div>
+                </div>
+
+                {/* Connector Line (except last) */}
+                {i < left.length - 1 && (
+                  <div className="w-px h-16 bg-gradient-to-b from-white/10 to-white/5 mb-6" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* End Mark */}
+        <div className="w-2 h-2 rounded-full bg-white/20 mt-12" />
 
       </div>
     </section>
