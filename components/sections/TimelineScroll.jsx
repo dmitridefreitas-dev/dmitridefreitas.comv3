@@ -246,18 +246,19 @@ export default function TimelineScroll() {
         </div>
       </div>
 
-      {/* MOBILE LAYOUT: Single Column, Stacked & Centered */}
-      <div className="md:hidden mt-8 flex flex-col max-w-[320px] mx-auto relative overflow-visible px-4">
+      {/* MOBILE LAYOUT: Strictly Sequential & Segmented */}
+      <div className="md:hidden mt-8 flex flex-col max-w-[340px] mx-auto relative overflow-visible px-4 gap-24">
         
-        {/* Absolute Centered Track Line */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px" style={{ background: 'linear-gradient(to bottom, #00D4FF 0%, #8B5CF6 100%)', opacity: 0.25 }} />
-
         {/* Career Path Section */}
-        <div className="relative mb-20">
+        <div className="relative">
           <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-12 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20 relative z-20">
             Career Experience
           </h3>
-          <div className="flex flex-col gap-20 items-center">
+          
+          {/* Section Track Line */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px bg-gradient-to-b from-[#00D4FF] to-transparent opacity-20" />
+
+          <div className="flex flex-col gap-20 items-center relative">
             {right.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#00D4FF';
               return (
@@ -266,13 +267,14 @@ export default function TimelineScroll() {
                     <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
                   </div>
                   <div className="flex-grow w-full relative z-10 mx-auto">
-                    {/* Pass rowIdx=-1 to trigger centered style for mobile entries */}
                     <Entry entry={entry} align="right" rowIdx={-1} />
                   </div>
                 </div>
               );
             })}
           </div>
+          {/* Visual path end dot */}
+          <div className="w-1.5 h-1.5 rounded-full bg-[#00D4FF]/20 absolute left-1/2 -translate-x-1/2 -bottom-2" />
         </div>
 
         {/* Education Path Section */}
@@ -280,7 +282,11 @@ export default function TimelineScroll() {
           <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-12 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20 relative z-20 shadow-[0_0_10px_rgba(139,92,246,0.15)]">
             Education
           </h3>
-          <div className="flex flex-col gap-20 items-center">
+
+          {/* Section Track Line */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px bg-gradient-to-b from-[#8B5CF6] to-transparent opacity-20" />
+
+          <div className="flex flex-col gap-20 items-center relative">
             {left.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
               return (
@@ -295,6 +301,8 @@ export default function TimelineScroll() {
               );
             })}
           </div>
+          {/* Visual path end dot */}
+          <div className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]/20 absolute left-1/2 -translate-x-1/2 -bottom-2" />
         </div>
 
       </div>
