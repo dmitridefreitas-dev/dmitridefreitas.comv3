@@ -288,26 +288,50 @@ export default function TimelineScroll() {
                   />
                 </div>
                 
-                {/* Content Card */}
+                {/* Content Card: Diamond "Stepping Stone" */}
                 <motion.div 
                   style={{ scale: itemScale }}
-                  className="w-full mt-6 mb-6 flex justify-center"
+                  className="w-full mt-6 mb-6 flex justify-center relative min-h-[160px]"
                 >
-                  <div className="w-full max-w-[290px] p-6 rounded-[22px] bg-[#0A1229]/95 border border-white/10 backdrop-blur-3xl text-center shadow-xl">
-                    <div className="flex flex-col items-center gap-1.5 mb-4">
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-white/25">{exp.date}</span>
+                  {/* SVG Stone Background */}
+                  <svg 
+                    className="absolute inset-0 w-full h-full drop-shadow-[0_0_25px_rgba(0,0,0,0.4)]" 
+                    viewBox="0 0 400 200" 
+                    preserveAspectRatio="none"
+                    fill="none"
+                  >
+                    <defs>
+                      <filter id={`stoneGlow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+                    <path 
+                      d="M 60,10 L 340,10 L 390,100 L 340,190 L 60,190 L 10,100 Z" 
+                      fill="#0A1229" 
+                      fillOpacity="0.95"
+                      stroke={color}
+                      strokeWidth="2"
+                      style={{ filter: `drop-shadow(0 0 12px ${color}40)` }}
+                    />
+                  </svg>
+
+                  {/* Content Overlay */}
+                  <div className="relative z-10 w-full max-w-[280px] py-8 px-4 flex flex-col items-center justify-center text-center">
+                    <div className="flex flex-col items-center gap-1.5 mb-3.5">
+                      <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-white/40">{exp.date}</span>
                       <span 
-                        style={{ color: color, background: `${color}12`, border: `1px solid ${color}25` }} 
-                        className="text-[8px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full"
+                        style={{ color: color, background: `${color}15` }} 
+                        className="text-[8px] font-mono uppercase tracking-widest px-3 py-0.5 rounded-full border border-white/5"
                       >
                         {TYPE_LABELS[exp.type]}
                       </span>
                     </div>
 
-                    <h3 className="text-[15px] font-bold text-white mb-1 leading-tight">{exp.title}</h3>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-accent/50 mb-4">{exp.organization}</p>
+                    <h3 className="text-[16px] font-bold text-white mb-1 leading-tight tracking-tight px-2">{exp.title}</h3>
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-accent/50 mb-4">{exp.organization}</p>
                     
-                    <p className="text-[11px] text-white/45 leading-relaxed line-clamp-2">
+                    <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2 max-w-[220px]">
                       {desc}
                     </p>
                   </div>
@@ -315,7 +339,7 @@ export default function TimelineScroll() {
 
                 {/* Animated Connector Line (The "Growing Line") */}
                 {i < experiences.length - 1 && (
-                  <div className="relative w-px h-20 bg-white/5 mb-6 overflow-hidden">
+                  <div className="relative w-px h-16 bg-white/5 mb-6 overflow-hidden">
                     <motion.div 
                       style={{ scaleY: lineScale, originY: 0 }}
                       className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"
