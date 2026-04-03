@@ -263,67 +263,26 @@ export default function TimelineScroll() {
             return (
               <div key={`mob-exp-${i}`} className="flex flex-col items-center w-full">
                 {/* Dot */}
-                <div className="w-3 h-3 rounded-full mb-6 z-10" style={{ background: color, boxShadow: `0 0 10px ${color}80` }} />
+                <div className="w-3.5 h-3.5 rounded-full mb-8 z-10" style={{ background: color, boxShadow: `0 0 14px ${color}80` }} />
                 
                 {/* Centered Card */}
-                <div className="w-full px-4 mb-6">
-                  <div className="p-5 rounded-2xl bg-[#080E1C]/85 border border-white/5 backdrop-blur-xl text-center shadow-xl">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <span style={{ color: color, background: `${color}10`, border: `1px solid ${color}30` }} className="text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded">
+                <div className="w-full px-4 mb-8">
+                  <div className="p-6 rounded-2xl bg-[#080E1C]/90 border border-white/5 backdrop-blur-2xl text-center shadow-2xl">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                      <span style={{ color: color, background: `${color}12`, border: `1px solid ${color}35` }} className="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-1 rounded-md">
                         {TYPE_LABELS[exp.type]}
                       </span>
-                      <span className="text-[10px] font-mono text-white/30 tracking-tight">{exp.date}</span>
+                      <span className="text-[11px] font-mono text-white/40 tracking-tight">{exp.date}</span>
                     </div>
-                    <h3 className="text-[15px] font-bold text-white mb-1 leading-tight">{exp.title}</h3>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-white/40 mb-4">{exp.organization}</p>
-                    <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2">{desc}</p>
+                    <h3 className="text-[16px] font-bold text-white mb-1.5 leading-tight">{exp.title}</h3>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-white/50 mb-5">{exp.organization}</p>
+                    <p className="text-[12px] text-white/60 leading-relaxed max-w-[280px] mx-auto">{desc}</p>
                   </div>
                 </div>
 
                 {/* Connector Line (except last) */}
                 {i < experiences.length - 1 && (
-                  <div className="w-px h-16 bg-gradient-to-b from-white/10 to-white/5 mb-6" />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Big Segment Break */}
-        <div className="w-px h-24 bg-gradient-to-b from-white/5 to-white/20 border-t border-white/10 my-12" />
-
-        {/* Education Section Header */}
-        <div className="mb-12 w-full text-center">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#8B5CF6]/40 mb-2">Section 02</h3>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Education</h2>
-        </div>
-
-        <div className="flex flex-col items-center w-full">
-          {left.map((edu, i) => {
-            const color = TYPE_COLORS[edu.type] || '#8B5CF6';
-            
-            return (
-              <div key={`mob-edu-${i}`} className="flex flex-col items-center w-full">
-                {/* Dot */}
-                <div className="w-3 h-3 rounded-full mb-6 z-10" style={{ background: color, boxShadow: `0 0 10px ${color}80` }} />
-                
-                {/* Centered Card */}
-                <div className="w-full px-4 mb-6">
-                  <div className="p-5 rounded-2xl bg-[#080E1C]/85 border border-white/5 backdrop-blur-xl text-center shadow-xl">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <span style={{ color: color, background: `${color}10`, border: `1px solid ${color}30` }} className="text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded">
-                        Education
-                      </span>
-                      <span className="text-[10px] font-mono text-white/30 tracking-tight">{edu.year}</span>
-                    </div>
-                    <h3 className="text-[15px] font-bold text-white mb-1 leading-tight">{edu.title}</h3>
-                    <p className="text-[11px] text-white/50 leading-relaxed line-clamp-2">{edu.description}</p>
-                  </div>
-                </div>
-
-                {/* Connector Line (except last) */}
-                {i < left.length - 1 && (
-                  <div className="w-px h-16 bg-gradient-to-b from-white/10 to-white/5 mb-6" />
+                  <div className="w-px h-28 bg-gradient-to-b from-white/15 to-transparent mb-8" />
                 )}
               </div>
             );
@@ -331,7 +290,7 @@ export default function TimelineScroll() {
         </div>
 
         {/* End Mark */}
-        <div className="w-2 h-2 rounded-full bg-white/20 mt-12" />
+        <div className="w-2.5 h-2.5 rounded-full bg-white/20 mt-16 mb-20" />
 
       </div>
     </section>
