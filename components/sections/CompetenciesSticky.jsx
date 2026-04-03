@@ -124,6 +124,10 @@ export default function CompetenciesSticky() {
   const [eduVisible, setEduVisible] = useState(() => new Array(EDUCATION.length).fill(false));
   const [careerVisible, setCareerVisible] = useState(() => new Array(CAREER.length).fill(false));
 
+  // Mobile step-by-step stagger (separate from desktop path-drawing timings)
+  const [mobEduVisible, setMobEduVisible]       = useState(() => new Array(EDUCATION.length).fill(false));
+  const [mobCareerVisible, setMobCareerVisible] = useState(() => new Array(CAREER.length).fill(false));
+
   const eduPathD = buildPath(EDU_POSITIONS);
   const careerPathD = buildPath(CAREER_POSITIONS);
 
@@ -164,6 +168,24 @@ export default function CompetenciesSticky() {
     return () => timers.forEach(clearTimeout);
   }, [autoProgress, isSceneActive]);
 
+  // Mobile: fast staggered reveal driven by the same scene-active signal
+  useEffect(() => {
+    if (!isSceneActive) return;
+    const STAGGER = 350;
+    const timers = [];
+    EDUCATION.forEach((_, i) => {
+      timers.push(setTimeout(() => {
+        setMobEduVisible(prev => { const next = [...prev]; next[i] = true; return next; });
+      }, 400 + i * STAGGER));
+    });
+    CAREER.forEach((_, i) => {
+      timers.push(setTimeout(() => {
+        setMobCareerVisible(prev => { const next = [...prev]; next[i] = true; return next; });
+      }, 500 + i * STAGGER));
+    });
+    return () => timers.forEach(clearTimeout);
+  }, [isSceneActive]);
+
   return (
     <section
       ref={sectionRef}
@@ -188,7 +210,7 @@ export default function CompetenciesSticky() {
         <div className="mb-10">
           <p
             className="font-mono text-[10px] uppercase tracking-[0.3em] mb-4"
-            style={{ color: 'rgba(0,212,255,0.6)' }}
+            style={{ color: 'rgba(0,212,255,0.6)', opacity: isSceneActive ? 1 : 0, transition: 'opacity 0.4s ease' }}
           >
             Education
           </p>
@@ -196,72 +218,62 @@ export default function CompetenciesSticky() {
             {EDUCATION.map((item, i) => {
               const colors = TYPE_COLORS[item.type];
               const isLast = i === EDUCATION.length - 1;
+              const vis = mobEduVisible[i];
+              const nextVis = !isLast && mobEduVisible[i + 1];
               return (
-                <motion.div
+                <div
                   key={`mob-edu-${i}`}
-                  initial={{ opacity: 0, x: -12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
                   className="flex"
+                  style={{
+                    opacity: vis ? 1 : 0,
+                    transform: vis ? 'translateX(0)' : 'translateX(-18px)',
+                    transition: 'opacity 0.45s ease, transform 0.45s ease',
+                  }}
                 >
                   {/* Left accent line + dot */}
                   <div className="flex flex-col items-center mr-3" style={{ width: '16px' }}>
                     <div
                       style={{
-                        width: '8px',
-                        height: '8px',
+                        width: '8px', height: '8px',
                         borderRadius: '50%',
                         background: colors.stroke,
                         boxShadow: `0 0 8px ${colors.glow}`,
-                        flexShrink: 0,
-                        marginTop: '4px',
+                        flexShrink: 0, marginTop: '4px',
+                        transform: vis ? 'scale(1)' : 'scale(0)',
+                        transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       }}
                     />
                     {!isLast && (
                       <div
                         style={{
-                          width: '1px',
-                          flex: 1,
+                          width: '1px', flex: 1,
                           background: `linear-gradient(to bottom, ${colors.stroke}, transparent)`,
                           marginTop: '4px',
+                          transformOrigin: 'top',
+                          transform: nextVis ? 'scaleY(1)' : 'scaleY(0)',
+                          transition: 'transform 0.5s ease 0.15s',
                         }}
                       />
                     )}
                   </div>
                   {/* Content */}
                   <div className="pb-6">
-                    <p
-                      className="font-mono"
-                      style={{ fontSize: '11px', color: 'rgba(139,92,246,0.7)', lineHeight: 1.2, marginBottom: '2px' }}
-                    >
+                    <p className="font-mono" style={{ fontSize: '11px', color: 'rgba(139,92,246,0.7)', lineHeight: 1.2, marginBottom: '2px' }}>
                       {item.year}
                     </p>
-                    <p
-                      className="font-serif"
-                      style={{ fontWeight: 700, color: 'var(--foreground, #e5e5e5)', fontSize: '14px', lineHeight: 1.35 }}
-                    >
+                    <p className="font-serif" style={{ fontWeight: 700, color: 'var(--foreground, #e5e5e5)', fontSize: '14px', lineHeight: 1.35 }}>
                       {item.title}
                     </p>
-                    <span
-                      className="font-mono"
-                      style={{
-                        display: 'inline-block',
-                        marginTop: '4px',
-                        fontSize: '9px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        padding: '1px 6px',
-                        borderRadius: '9999px',
-                        background: colors.badge_bg,
-                        color: colors.badge_text,
-                        border: `1px solid ${colors.badge_border}`,
-                      }}
-                    >
+                    <span className="font-mono" style={{
+                      display: 'inline-block', marginTop: '4px',
+                      fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em',
+                      padding: '1px 6px', borderRadius: '9999px',
+                      background: colors.badge_bg, color: colors.badge_text, border: `1px solid ${colors.badge_border}`,
+                    }}>
                       {item.type}
                     </span>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -271,7 +283,7 @@ export default function CompetenciesSticky() {
         <div>
           <p
             className="font-mono text-[10px] uppercase tracking-[0.3em] mb-4"
-            style={{ color: 'rgba(139,92,246,0.6)' }}
+            style={{ color: 'rgba(139,92,246,0.6)', opacity: isSceneActive ? 1 : 0, transition: 'opacity 0.4s ease 0.2s' }}
           >
             Career
           </p>
@@ -279,80 +291,67 @@ export default function CompetenciesSticky() {
             {CAREER.map((item, i) => {
               const colors = TYPE_COLORS[item.type];
               const isLast = i === CAREER.length - 1;
+              const vis = mobCareerVisible[i];
+              const nextVis = !isLast && mobCareerVisible[i + 1];
               return (
-                <motion.div
+                <div
                   key={`mob-career-${i}`}
-                  initial={{ opacity: 0, x: -12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
                   className="flex"
+                  style={{
+                    opacity: vis ? 1 : 0,
+                    transform: vis ? 'translateX(0)' : 'translateX(-18px)',
+                    transition: 'opacity 0.45s ease, transform 0.45s ease',
+                  }}
                 >
                   {/* Left accent line + dot */}
                   <div className="flex flex-col items-center mr-3" style={{ width: '16px' }}>
                     <div
                       style={{
-                        width: '8px',
-                        height: '8px',
+                        width: '8px', height: '8px',
                         borderRadius: '50%',
                         background: colors.stroke,
                         boxShadow: `0 0 8px ${colors.glow}`,
-                        flexShrink: 0,
-                        marginTop: '4px',
+                        flexShrink: 0, marginTop: '4px',
+                        transform: vis ? 'scale(1)' : 'scale(0)',
+                        transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       }}
                     />
                     {!isLast && (
                       <div
                         style={{
-                          width: '1px',
-                          flex: 1,
+                          width: '1px', flex: 1,
                           background: `linear-gradient(to bottom, ${colors.stroke}, transparent)`,
                           marginTop: '4px',
+                          transformOrigin: 'top',
+                          transform: nextVis ? 'scaleY(1)' : 'scaleY(0)',
+                          transition: 'transform 0.5s ease 0.15s',
                         }}
                       />
                     )}
                   </div>
                   {/* Content */}
                   <div className="pb-5">
-                    <p
-                      className="font-mono"
-                      style={{ fontSize: '11px', color: 'rgba(139,92,246,0.7)', lineHeight: 1.2, marginBottom: '2px' }}
-                    >
+                    <p className="font-mono" style={{ fontSize: '11px', color: 'rgba(139,92,246,0.7)', lineHeight: 1.2, marginBottom: '2px' }}>
                       {item.year}
                     </p>
-                    <p
-                      className="font-serif"
-                      style={{ fontWeight: 700, color: 'var(--foreground, #e5e5e5)', fontSize: '14px', lineHeight: 1.35 }}
-                    >
+                    <p className="font-serif" style={{ fontWeight: 700, color: 'var(--foreground, #e5e5e5)', fontSize: '14px', lineHeight: 1.35 }}>
                       {item.title}
                     </p>
                     {item.org && (
-                      <p
-                        className="font-mono"
-                        style={{ fontSize: '10px', color: 'rgba(160,160,160,0.5)', marginTop: '1px', lineHeight: 1.2 }}
-                      >
+                      <p className="font-mono" style={{ fontSize: '10px', color: 'rgba(160,160,160,0.5)', marginTop: '1px', lineHeight: 1.2 }}>
                         {item.org}
                       </p>
                     )}
-                    <span
-                      className="font-mono"
-                      style={{
-                        display: 'inline-block',
-                        marginTop: '4px',
-                        fontSize: '9px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        padding: '1px 6px',
-                        borderRadius: '9999px',
-                        background: colors.badge_bg,
-                        color: colors.badge_text,
-                        border: `1px solid ${colors.badge_border}`,
-                      }}
-                    >
+                    <span className="font-mono" style={{
+                      display: 'inline-block', marginTop: '4px',
+                      fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em',
+                      padding: '1px 6px', borderRadius: '9999px',
+                      background: colors.badge_bg, color: colors.badge_text, border: `1px solid ${colors.badge_border}`,
+                    }}>
                       {item.type}
                     </span>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>

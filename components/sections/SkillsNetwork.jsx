@@ -513,7 +513,7 @@ function getMobNodePos(id) {
   return all.find((n) => n.id === id);
 }
 
-function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
+function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
   const allMobNodes = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT];
   const rowLabels = [
     { label: 'INPUT',     y: 80,   color: 'rgba(196,181,253,0.75)' },
@@ -560,10 +560,36 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
   // Compute connected ids for highlight
   const tappedConnected = useMemo(() => tapped ? getConnectedIds(tapped) : new Set(), [tapped]);
 
+  // Row-by-row reveal: 1=INPUT 2=LANGS 3=TOOLS 4=OUTPUT 5=PROJECTS
+  const [visRows, setVisRows] = useState(0);
+  useEffect(() => {
+    if (!isSceneActive) return;
+    const DELAYS = [300, 900, 1500, 2100, 2700];
+    const timers = DELAYS.map((ms, i) => setTimeout(() => setVisRows(i + 1), ms));
+    return () => timers.forEach(clearTimeout);
+  }, [isSceneActive]);
+
+  function getRowForId(id) {
+    if (MOB_INPUT.find(n => n.id === id)) return 1;
+    if (MOB_LANGS.find(n => n.id === id)) return 2;
+    if (MOB_TOOLS.find(n => n.id === id)) return 3;
+    if (MOB_OUTPUT.find(n => n.id === id)) return 4;
+    if (MOB_PROJECTS.find(n => n.id === id)) return 5;
+    return 1;
+  }
+
+  function nodeVisible(row) { return visRows >= row; }
+  function edgeVisible(a, b) { return visRows >= Math.max(getRowForId(a), getRowForId(b)); }
+  function rowIndexOf(id, arr) { return arr.findIndex(n => n.id === id); }
+
   return (
     <div className="md:hidden">
-      {/* Mobile tap hint */}
-      <p style={{ textAlign: 'center', fontFamily: 'var(--font-jetbrains), monospace', fontSize: '10px', letterSpacing: '0.25em', color: 'rgba(139,92,246,0.6)', marginBottom: '8px' }}>
+      {/* Mobile tap hint — fades in with first row */}
+      <p style={{
+        textAlign: 'center', fontFamily: 'var(--font-jetbrains), monospace',
+        fontSize: '10px', letterSpacing: '0.25em', color: 'rgba(139,92,246,0.6)', marginBottom: '8px',
+        opacity: visRows >= 1 ? 1 : 0, transition: 'opacity 0.5s ease',
+      }}>
         TAP NODE · TAP AGAIN TO EXPLORE
       </p>
       <div style={{ width: '100%', overflowX: 'hidden' }}>
@@ -596,7 +622,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
             </text>
           ))}
 
-          {/* Edges — highlight connected ones when a node is tapped */}
+          {/* Edges — fade in row by row, highlight connected ones when a node is tapped */}
           <g>
             {MOB_EDGES.map(([a, b], i) => {
               const from = getMobNodePos(a);
@@ -608,6 +634,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
               const d = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
               const isActive = tapped && (a === tapped || b === tapped);
               const isDimmed = tapped && !isActive;
+              const revealed = edgeVisible(a, b);
               const stroke = isProj ? (isActive ? '#00D4FF' : 'rgba(0,212,255,0.12)') : (isActive ? '#8B5CF6' : 'rgba(139,92,246,0.12)');
               return (
                 <path
@@ -617,14 +644,14 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
                   stroke={stroke}
                   strokeWidth={isActive ? 1.4 : 0.7}
                   strokeLinecap="round"
-                  opacity={isDimmed ? 0.04 : 1}
-                  style={{ transition: 'stroke 0.2s, opacity 0.2s, stroke-width 0.2s' }}
+                  opacity={!revealed ? 0 : isDimmed ? 0.04 : 1}
+                  style={{ transition: 'opacity 0.5s ease, stroke 0.2s, stroke-width 0.2s' }}
                 />
               );
             })}
           </g>
 
-          {/* Skill & category nodes */}
+          {/* Skill & category nodes — pop in row by row with per-node stagger */}
           <g>
             {allMobNodes.map((node) => {
               const isSkill = !!skillsData.find((s) => s.id === node.id);
@@ -636,70 +663,65 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
               const nodeFill = isNodeTapped ? 'rgba(139,92,246,0.35)' : isLinked ? 'rgba(139,92,246,0.18)' : 'rgba(139,92,246,0.12)';
               const nodeStroke = isNodeTapped ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.4)';
               const textColor = isNodeTapped ? '#C4B5FD' : isDimmedNode ? 'rgba(156,163,175,0.2)' : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)';
+
+              // Per-node stagger within row
+              const nodeRow = getRowForId(node.id);
+              const rowArr = nodeRow === 1 ? MOB_INPUT : nodeRow === 2 ? MOB_LANGS : nodeRow === 3 ? MOB_TOOLS : MOB_OUTPUT;
+              const idxInRow = rowIndexOf(node.id, rowArr);
+              const nodeDelay = `${idxInRow * 80}ms`;
+              const revealed = nodeVisible(nodeRow);
+
               return (
                 <g
                   key={node.id}
-                  style={{ cursor: isSkill ? 'pointer' : 'default' }}
+                  style={{
+                    cursor: isSkill ? 'pointer' : 'default',
+                    opacity: revealed ? (isDimmedNode ? 0.25 : 1) : 0,
+                    transform: revealed ? 'scale(1)' : 'scale(0.5)',
+                    transformOrigin: `${node.x}px ${node.y}px`,
+                    transition: `opacity 0.4s ease ${nodeDelay}, transform 0.4s cubic-bezier(0.34,1.56,0.64,1) ${nodeDelay}`,
+                  }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchEnd={makeTouchEnd(node, isSkill)}
                 >
-                  {/* Larger invisible hit area for easier tapping */}
+                  {/* Larger invisible hit area */}
                   <circle cx={node.x} cy={node.y} r={r + 14} fill="transparent" />
                   {/* Outer glow ring */}
                   <circle
                     cx={node.x} cy={node.y} r={r + 10}
-                    fill="transparent"
-                    stroke="rgba(139,92,246,0.12)"
-                    strokeWidth="0.8"
+                    fill="transparent" stroke="rgba(139,92,246,0.12)" strokeWidth="0.8"
                     opacity={isNodeTapped ? 1 : 0.5}
                     style={{ transition: 'opacity 0.2s' }}
                   />
                   {/* Main circle */}
                   <circle
                     cx={node.x} cy={node.y} r={isNodeTapped ? r + 2 : r}
-                    fill={nodeFill}
-                    stroke={nodeStroke}
-                    strokeWidth={isNodeTapped ? 2 : 1}
+                    fill={nodeFill} stroke={nodeStroke} strokeWidth={isNodeTapped ? 2 : 1}
                     style={{
                       filter: isNodeTapped ? 'drop-shadow(0 0 8px rgba(139,92,246,0.7))' : 'none',
-                      transition: 'fill 0.2s, stroke 0.2s, r 0.2s',
-                      opacity: isDimmedNode ? 0.25 : 1,
+                      transition: 'fill 0.2s, stroke 0.2s',
                     }}
                   />
-                  {/* Center dot for skills */}
                   {isSkill && (
-                    <circle cx={node.x} cy={node.y} r={3.5} fill={isNodeTapped ? '#C4B5FD' : 'rgba(139,92,246,0.6)'}
+                    <circle cx={node.x} cy={node.y} r={3.5}
+                      fill={isNodeTapped ? '#C4B5FD' : 'rgba(139,92,246,0.6)'}
                       style={{ transition: 'fill 0.2s' }} />
                   )}
-                  {/* Tap-to-explore badge */}
                   {isNodeTapped && (
-                    <text
-                      x={node.x} y={node.y - r - 8}
-                      textAnchor="middle" fontSize={8}
-                      fontFamily="var(--font-jetbrains), monospace"
-                      letterSpacing="0.1em"
-                      fill="rgba(196,181,253,0.8)"
-                    >
+                    <text x={node.x} y={node.y - r - 8} textAnchor="middle" fontSize={8}
+                      fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.1em"
+                      fill="rgba(196,181,253,0.8)">
                       TAP AGAIN →
                     </text>
                   )}
-                  {/* Label */}
                   {lines.map((line, li) => {
                     const baseY = node.y + r + 14;
                     const lineY = lines.length === 1 ? baseY : baseY + (li - (lines.length - 1) / 2) * 12;
                     return (
-                      <text
-                        key={li}
-                        x={node.x}
-                        y={lineY}
-                        textAnchor="middle"
-                        fontSize={isSkill ? 10 : 9}
-                        fontFamily="var(--font-jetbrains), monospace"
-                        letterSpacing="0.05em"
-                        fill={textColor}
-                        fontWeight={isNodeTapped ? '700' : '400'}
-                        style={{ transition: 'fill 0.2s' }}
-                      >
+                      <text key={li} x={node.x} y={lineY} textAnchor="middle"
+                        fontSize={isSkill ? 10 : 9} fontFamily="var(--font-jetbrains), monospace"
+                        letterSpacing="0.05em" fill={textColor} fontWeight={isNodeTapped ? '700' : '400'}
+                        style={{ transition: 'fill 0.2s' }}>
                         {line}
                       </text>
                     );
@@ -709,17 +731,25 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
             })}
           </g>
 
-          {/* Project nodes */}
+          {/* Project nodes — appear in row 5 with per-node stagger */}
           <g>
-            {MOB_PROJECTS.map((node) => {
+            {MOB_PROJECTS.map((node, ni) => {
               const pw = 140;
               const ph = 52;
               const color = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
               const isLinkedProj = tapped && tappedConnected.has(node.id);
+              const projDelay = `${ni * 100}ms`;
+              const revealedProj = nodeVisible(5);
               return (
                 <g
                   key={node.id}
-                  style={{ cursor: 'pointer' }}
+                  style={{
+                    cursor: 'pointer',
+                    opacity: revealedProj ? 1 : 0,
+                    transform: revealedProj ? 'scale(1)' : 'scale(0.7)',
+                    transformOrigin: `${node.x}px ${node.y}px`,
+                    transition: `opacity 0.4s ease ${projDelay}, transform 0.45s cubic-bezier(0.34,1.56,0.64,1) ${projDelay}`,
+                  }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchEnd={makeProjectTouchEnd(node.id)}
                 >
@@ -961,7 +991,7 @@ export default function SkillsNetwork() {
         </div>
 
         {/* ── Mobile SVG (vertical layout) ── */}
-        <MobileSkillsNetwork onSkillClick={setSelected} onProjectClick={handleProjectClick} />
+        <MobileSkillsNetwork onSkillClick={setSelected} onProjectClick={handleProjectClick} isSceneActive={isSceneActive} />
       </div>
 
       <div className="flex justify-center gap-6 md:gap-12 mt-8 flex-wrap">
