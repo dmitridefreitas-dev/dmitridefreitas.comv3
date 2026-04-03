@@ -339,10 +339,15 @@ export default function TimelineScroll() {
 
                 {/* Animated Connector Line (The "Growing Line") */}
                 {i < experiences.length - 1 && (
-                  <div className="relative w-px h-16 bg-white/5 mb-6 overflow-hidden">
+                  <div className="relative w-[3px] h-20 bg-white/[0.08] mb-6 rounded-full overflow-hidden">
                     <motion.div 
-                      style={{ scaleY: lineScale, originY: 0 }}
-                      className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"
+                      style={{ 
+                        scaleY: lineScale, 
+                        originY: 0,
+                        background: `linear-gradient(to bottom, ${color}, ${TYPE_COLORS[experiences[i+1].type] || color})`,
+                        boxShadow: `0 0 10px ${color}80` 
+                      }}
+                      className="absolute inset-0 rounded-full"
                     />
                   </div>
                 )}
