@@ -778,7 +778,7 @@ export default function SkillsNetwork() {
       cancelled = true;
       timeouts.forEach(clearTimeout);
     };
-  }, [showRobot, isInView]);
+  }, [showRobot, isSceneActive]);
 
   const handleProjectClick = useCallback((projectId) => {
     const project = allProjects.find((p) => p.id === projectId);
