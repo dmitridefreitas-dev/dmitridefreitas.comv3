@@ -259,39 +259,68 @@ export default function TimelineScroll() {
             const color = TYPE_COLORS[exp.type] || '#00D4FF';
             const desc = Array.isArray(exp.description) ? exp.description[0] : exp.shortDescription;
             
+            // Calculate scroll ranges for this specific milestone
+            // Total 8 items + spacers. 0.0 to 1.0.
+            const start = i * (1 / experiences.length) * 0.8;
+            const end   = (i + 1) * (1 / experiences.length) * 0.8;
+            
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const itemScale = useTransform(scrollYProgress, [start, end], [0.8, 1]);
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const lineScale = useTransform(scrollYProgress, [end - 0.05, end + 0.05], [0, 1]);
+
             return (
-              <div key={`new-mob-${i}`} className="flex flex-col items-center w-full">
-                {/* Visual Connector Dot */}
-                <div 
-                  className="w-4 h-4 rounded-full z-10 border-2 border-[#02030A]" 
-                  style={{ background: color, boxShadow: `0 0 15px ${color}` }} 
-                />
+              <div key={`stepping-mob-${i}`} className="flex flex-col items-center w-full">
                 
-                {/* Content Card (Isolated from Desktop Styles) */}
-                <div className="w-full mt-8 mb-8 flex justify-center">
-                  <div className="w-full max-w-[300px] p-7 rounded-[24px] bg-[#0A1229]/95 border border-white/10 backdrop-blur-3xl text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                    <div className="flex flex-col items-center gap-2 mb-5">
-                      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">{exp.date}</span>
+                {/* Visual Connector Dot (Stepping Stone) */}
+                <div className="relative flex items-center justify-center">
+                  {/* Pulse Ring (Mobile version of desktop pulse) */}
+                  <motion.div 
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    whileInView={{ scale: [1, 1.4], opacity: [0.5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute w-8 h-8 rounded-full border border-current"
+                    style={{ color: color }}
+                  />
+                  <div 
+                    className="w-3.5 h-3.5 rounded-full z-10 border-2 border-[#02030A]" 
+                    style={{ background: color, boxShadow: `0 0 12px ${color}80` }} 
+                  />
+                </div>
+                
+                {/* Content Card */}
+                <motion.div 
+                  style={{ scale: itemScale }}
+                  className="w-full mt-6 mb-6 flex justify-center"
+                >
+                  <div className="w-full max-w-[290px] p-6 rounded-[22px] bg-[#0A1229]/95 border border-white/10 backdrop-blur-3xl text-center shadow-xl">
+                    <div className="flex flex-col items-center gap-1.5 mb-4">
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-white/25">{exp.date}</span>
                       <span 
-                        style={{ color: color, background: `${color}15`, border: `1px solid ${color}30` }} 
-                        className="text-[9px] font-mono uppercase tracking-widest px-3 py-1 rounded-full"
+                        style={{ color: color, background: `${color}12`, border: `1px solid ${color}25` }} 
+                        className="text-[8px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full"
                       >
                         {TYPE_LABELS[exp.type]}
                       </span>
                     </div>
 
-                    <h3 className="text-[17px] font-bold text-white mb-1.5 leading-snug">{exp.title}</h3>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-accent/60 mb-5">{exp.organization}</p>
+                    <h3 className="text-[15px] font-bold text-white mb-1 leading-tight">{exp.title}</h3>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-accent/50 mb-4">{exp.organization}</p>
                     
-                    <p className="text-[12px] text-white/50 leading-relaxed line-clamp-3">
+                    <p className="text-[11px] text-white/45 leading-relaxed line-clamp-2">
                       {desc}
                     </p>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Vertical Connector Path */}
+                {/* Animated Connector Line (The "Growing Line") */}
                 {i < experiences.length - 1 && (
-                  <div className="w-px h-32 bg-gradient-to-b from-white/20 via-white/10 to-transparent" />
+                  <div className="relative w-px h-20 bg-white/5 mb-6 overflow-hidden">
+                    <motion.div 
+                      style={{ scaleY: lineScale, originY: 0 }}
+                      className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"
+                    />
+                  </div>
                 )}
               </div>
             );
@@ -299,9 +328,9 @@ export default function TimelineScroll() {
         </div>
 
         {/* Closing Mark */}
-        <div className="mt-12 flex flex-col items-center gap-4">
-          <div className="w-2 h-2 rounded-full bg-white/10" />
-          <span className="text-[9px] font-mono uppercase tracking-[0.4em] text-white/20">End of Path</span>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+          <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-white/10">End of Path</span>
         </div>
 
       </div>
