@@ -3,7 +3,6 @@
 import { useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
 /* ── shared mouse state ─────────────────────────────── */
@@ -235,7 +234,14 @@ export default function CrystallineMath() {
     <Canvas
       camera={{ position: [0, 0.5, 5], fov: 55 }}
       style={{ background: '#050008' }}
-      gl={{ antialias: false, powerPreference: 'high-performance' }}
+      gl={{
+        antialias: false,
+        powerPreference: 'high-performance',
+        depth: false,
+        stencil: false,
+        alpha: false,
+      }}
+      dpr={[1, 1.5]}
     >
       <ambientLight intensity={0.15} />
       <pointLight position={[0, 0, 0]} color="#00ffff" intensity={1} distance={5} />
@@ -252,10 +258,6 @@ export default function CrystallineMath() {
       {ORBS.map((orb, i) => <OrbitingOrb key={i} {...orb} />)}
 
       <CornerParticles />
-
-      <EffectComposer>
-        <Bloom intensity={1.2} luminanceThreshold={0.1} luminanceSmoothing={0.9} radius={0.8} />
-      </EffectComposer>
     </Canvas>
   );
 }
