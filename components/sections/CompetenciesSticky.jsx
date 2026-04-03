@@ -127,6 +127,7 @@ export default function CompetenciesSticky() {
   // Mobile step-by-step stagger (separate from desktop path-drawing timings)
   const [mobEduVisible, setMobEduVisible]       = useState(() => new Array(EDUCATION.length).fill(false));
   const [mobCareerVisible, setMobCareerVisible] = useState(() => new Array(CAREER.length).fill(false));
+  const mobAnimStarted = useRef(false);   // guard: run once even if isSceneActive flips rapidly
 
   const eduPathD = buildPath(EDU_POSITIONS);
   const careerPathD = buildPath(CAREER_POSITIONS);
@@ -168,9 +169,10 @@ export default function CompetenciesSticky() {
     return () => timers.forEach(clearTimeout);
   }, [autoProgress, isSceneActive]);
 
-  // Mobile: fast staggered reveal driven by the same scene-active signal
+  // Mobile: fast staggered reveal — starts once when scene first becomes active
   useEffect(() => {
-    if (!isSceneActive) return;
+    if (!isSceneActive || mobAnimStarted.current) return;
+    mobAnimStarted.current = true;
     const STAGGER = 350;
     const timers = [];
     EDUCATION.forEach((_, i) => {
@@ -183,7 +185,7 @@ export default function CompetenciesSticky() {
         setMobCareerVisible(prev => { const next = [...prev]; next[i] = true; return next; });
       }, 500 + i * STAGGER));
     });
-    return () => timers.forEach(clearTimeout);
+    // No cleanup — once started, let it run to completion
   }, [isSceneActive]);
 
   return (

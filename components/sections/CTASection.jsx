@@ -1,6 +1,7 @@
 'use client';
+import { useContext } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { NavigateContext } from '@/components/layout/ZWormhole';
 
 /* ── Stagger variants ───────────────────────────────────────────── */
 
@@ -19,6 +20,8 @@ const itemVariants = {
 /* ── Component ──────────────────────────────────────────────────── */
 
 export default function CTASection() {
+  const navigateTo = useContext(NavigateContext);
+  // Scene indices: 5 = Projects, 6 = Contact
   return (
     <section
       className="relative py-32 md:py-40 px-6 overflow-hidden"
@@ -166,48 +169,46 @@ export default function CTASection() {
           variants={itemVariants}
           className="flex flex-wrap justify-center gap-5"
         >
-          {/* Primary: Get in Touch */}
-          <Link href="/contact" className="group relative">
+          {/* Primary: Get in Touch — navigates to Contact scene (6) */}
+          <button onClick={() => navigateTo(6)} className="group relative" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
             <span
               className="relative z-10 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.15em] px-8 py-3.5 transition-all duration-300"
               style={{
                 background: 'rgba(139,92,246,0.12)',
                 border: '1px solid rgba(139,92,246,0.45)',
                 color: '#A78BFA',
-                boxShadow:
-                  '0 0 20px rgba(139,92,246,0.12), inset 0 0 20px rgba(139,92,246,0.04)',
+                boxShadow: '0 0 20px rgba(139,92,246,0.12), inset 0 0 20px rgba(139,92,246,0.04)',
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(139,92,246,0.22)';
-                e.currentTarget.style.boxShadow =
-                  '0 0 40px rgba(139,92,246,0.25), inset 0 0 30px rgba(139,92,246,0.08)';
+                e.currentTarget.style.boxShadow = '0 0 40px rgba(139,92,246,0.25), inset 0 0 30px rgba(139,92,246,0.08)';
                 e.currentTarget.style.borderColor = 'rgba(139,92,246,0.7)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'rgba(139,92,246,0.12)';
-                e.currentTarget.style.boxShadow =
-                  '0 0 20px rgba(139,92,246,0.12), inset 0 0 20px rgba(139,92,246,0.04)';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(139,92,246,0.12), inset 0 0 20px rgba(139,92,246,0.04)';
                 e.currentTarget.style.borderColor = 'rgba(139,92,246,0.45)';
               }}
             >
               Get in Touch
               <span style={{ color: 'rgba(139,92,246,0.5)' }}>&rarr;</span>
             </span>
-          </Link>
+          </button>
 
-          {/* Secondary: View Projects */}
-          <Link href="/projects" className="group relative">
+          {/* Secondary: View Projects — navigates to Projects scene (5) */}
+          <button onClick={() => navigateTo(5)} className="group relative" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
             <span
               className="relative z-10 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.15em] px-8 py-3.5 transition-all duration-300"
               style={{
                 background: 'transparent',
                 border: '1px solid rgba(0,212,255,0.25)',
                 color: 'rgba(0,212,255,0.6)',
+                display: 'inline-flex', alignItems: 'center',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(0,212,255,0.06)';
-                e.currentTarget.style.boxShadow =
-                  '0 0 30px rgba(0,212,255,0.12)';
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0,212,255,0.12)';
                 e.currentTarget.style.borderColor = 'rgba(0,212,255,0.5)';
                 e.currentTarget.style.color = 'rgba(0,212,255,0.85)';
               }}
@@ -220,7 +221,7 @@ export default function CTASection() {
             >
               View Projects
             </span>
-          </Link>
+          </button>
         </motion.div>
 
         {/* Terminal footer */}

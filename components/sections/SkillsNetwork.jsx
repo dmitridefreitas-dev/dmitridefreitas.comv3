@@ -527,8 +527,12 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
   const [tapped, setTapped] = useState(null);
   const touchOrigin = useRef({ y: 0, t: 0 });
 
-  const onTouchStart = useCallback((e) => {
-    touchOrigin.current = { y: e.touches[0].clientY, t: Date.now() };
+  // Record touch origin — called directly on each node <g>, not at SVG level,
+  // because the SVG-level handler never fires when stopPropagation was used on <g>.
+  const recordTouch = useCallback((e) => {
+    if (e.touches && e.touches[0]) {
+      touchOrigin.current = { y: e.touches[0].clientY, t: Date.now() };
+    }
   }, []);
 
   const makeTouchEnd = useCallback((node, isSkill) => (e) => {
@@ -562,11 +566,13 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
 
   // Row-by-row reveal: 1=INPUT 2=LANGS 3=TOOLS 4=OUTPUT 5=PROJECTS
   const [visRows, setVisRows] = useState(0);
+  const rowAnimStarted = useRef(false); // guard: run once even if isSceneActive flips rapidly
   useEffect(() => {
-    if (!isSceneActive) return;
+    if (!isSceneActive || rowAnimStarted.current) return;
+    rowAnimStarted.current = true;
     const DELAYS = [300, 900, 1500, 2100, 2700];
-    const timers = DELAYS.map((ms, i) => setTimeout(() => setVisRows(i + 1), ms));
-    return () => timers.forEach(clearTimeout);
+    // No cleanup — let the timers run to completion once started
+    DELAYS.forEach((ms, i) => setTimeout(() => setVisRows(i + 1), ms));
   }, [isSceneActive]);
 
   function getRowForId(id) {
@@ -598,7 +604,6 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
           preserveAspectRatio="xMidYMid meet"
           style={{ width: '100%', height: 'auto', overflow: 'visible', touchAction: 'pan-y' }}
           aria-label="Skills network graph (mobile)"
-          onTouchStart={onTouchStart}
           onClick={() => setTapped(null)}
         >
           <defs>
@@ -681,7 +686,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
                     transformOrigin: `${node.x}px ${node.y}px`,
                     transition: `opacity 0.4s ease ${nodeDelay}, transform 0.4s cubic-bezier(0.34,1.56,0.64,1) ${nodeDelay}`,
                   }}
-                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchStart={recordTouch}
                   onTouchEnd={makeTouchEnd(node, isSkill)}
                 >
                   {/* Larger invisible hit area */}
@@ -750,7 +755,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
                     transformOrigin: `${node.x}px ${node.y}px`,
                     transition: `opacity 0.4s ease ${projDelay}, transform 0.45s cubic-bezier(0.34,1.56,0.64,1) ${projDelay}`,
                   }}
-                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchStart={recordTouch}
                   onTouchEnd={makeProjectTouchEnd(node.id)}
                 >
                   <rect

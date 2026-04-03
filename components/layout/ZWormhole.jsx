@@ -5,6 +5,7 @@ import { Observer } from 'gsap/Observer';
 import dynamic from 'next/dynamic';
 
 export const ActiveSceneContext = createContext(false);
+export const NavigateContext    = createContext(() => {});
 
 /* ── lazy-load all real section content ─────────────────────────────────── */
 const HeroToggler       = dynamic(() => import('@/components/hero/HeroToggler'),             { ssr: false });
@@ -196,45 +197,47 @@ export default function ZWormhole() {
       perspective: '1200px', perspectiveOrigin: '50% 50%',
       zIndex: 10,
     }}>
-      {/* 3D world */}
-      <div ref={worldRef} style={{
-        position: 'absolute', inset: 0,
-        transformStyle: 'preserve-3d',
-        willChange: 'transform',
-        transform: 'translateZ(0px)',
-      }}>
-        {SCENES.map((SceneComp, i) => (
-          <div
-            key={i}
-            ref={(el) => { shellRefs.current[i] = el; }}
-            style={{
-              position: 'absolute', top: 0, left: 0,
-              width: '100vw', height: '100vh',
-              transform: `translateZ(${-i * SCENE_DEPTH}px)`,
-              backfaceVisibility: 'hidden',
-              willChange: 'opacity',
-              opacity: i === 0 ? 1 : 0,
-              visibility: i === 0 ? 'visible' : 'hidden',
-            }}
-          >
-            {/* inner scroll container */}
+      {/* 3D world — NavigateContext lets any scene call navigateTo */}
+      <NavigateContext.Provider value={navigateTo}>
+        <div ref={worldRef} style={{
+          position: 'absolute', inset: 0,
+          transformStyle: 'preserve-3d',
+          willChange: 'transform',
+          transform: 'translateZ(0px)',
+        }}>
+          {SCENES.map((SceneComp, i) => (
             <div
-              ref={(el) => { scrollRefs.current[i] = el; }}
+              key={i}
+              ref={(el) => { shellRefs.current[i] = el; }}
               style={{
-                width: '100%', height: '100%',
-                overflowY: 'auto', overflowX: 'hidden',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                transform: 'translateZ(0)',
+                position: 'absolute', top: 0, left: 0,
+                width: '100vw', height: '100vh',
+                transform: `translateZ(${-i * SCENE_DEPTH}px)`,
+                backfaceVisibility: 'hidden',
+                willChange: 'opacity',
+                opacity: i === 0 ? 1 : 0,
+                visibility: i === 0 ? 'visible' : 'hidden',
               }}
             >
-              <ActiveSceneContext.Provider value={activeScene === i}>
-                <SceneComp />
-              </ActiveSceneContext.Provider>
+              {/* inner scroll container */}
+              <div
+                ref={(el) => { scrollRefs.current[i] = el; }}
+                style={{
+                  width: '100%', height: '100%',
+                  overflowY: 'auto', overflowX: 'hidden',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  transform: 'translateZ(0)',
+                }}
+              >
+                <ActiveSceneContext.Provider value={activeScene === i}>
+                  <SceneComp />
+                </ActiveSceneContext.Provider>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </NavigateContext.Provider>
 
       {/* Speed vignette — driven by ref, not React state */}
       <div ref={vignetteRef} style={{
