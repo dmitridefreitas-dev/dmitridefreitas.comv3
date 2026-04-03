@@ -109,25 +109,36 @@ function getConnectedIds(nodeId) {
   return connected;
 }
 
-const MOBILE_POS_MAP = {
-  "priceData": { "x": 88, "y": 190 }, "fundamentals": { "x": 263, "y": 190 },
-  "mlFeatures": { "x": 88, "y": 260 }, "altData": { "x": 263, "y": 260 },
-  "python": { "x": 58, "y": 390 }, "r": { "x": 175, "y": 390 }, "sql": { "x": 292, "y": 390 },
-  "matlab": { "x": 58, "y": 460 }, "vba": { "x": 175, "y": 460 }, "git": { "x": 292, "y": 460 },
-  "matplotlib": { "x": 58, "y": 590 }, "powerbi": { "x": 175, "y": 590 }, "tableau": { "x": 292, "y": 590 },
-  "quantlib": { "x": 58, "y": 660 }, "bloomberg": { "x": 175, "y": 660 }, "fred": { "x": 292, "y": 660 },
-  "alphaSignals": { "x": 88, "y": 790 }, "riskMetrics": { "x": 263, "y": 790 },
-  "execLogic": { "x": 88, "y": 860 }, "dashboards": { "x": 263, "y": 860 },
-  "marketMaking": { "x": 175, "y": 990 }, "statArb": { "x": 175, "y": 1060 },
-  "orderBook": { "x": 175, "y": 1130 }, "yieldAggr": { "x": 175, "y": 1200 }
+const MOBILE_Y_LEVELS = {
+  input: 80,
+  languages: 240,
+  tools: 460,
+  output: 680,
+  projects: 920
 };
 
 function getPos(n, isMobile) {
   if (!n) return n;
-  if (isMobile && MOBILE_POS_MAP[n.id]) {
-    return { ...n, x: MOBILE_POS_MAP[n.id].x, y: MOBILE_POS_MAP[n.id].y };
-  }
-  return n;
+  if (!isMobile) return n;
+
+  // Dynamic mobile positioning
+  let category = 'tools';
+  if (n.id.match(/priceData|fundamentals|mlFeatures|altData/)) category = 'input';
+  else if (skillsData.find(s => s.id === n.id && s.category === 'Programming')) category = 'languages';
+  else if (n.id.match(/alphaSignals|riskMetrics|execLogic|dashboards/)) category = 'output';
+  else if (PROJECT_NODES_DATA[n.id]) category = 'projects';
+
+  const nodesInCat = category === 'input' ? ['priceData', 'fundamentals', 'mlFeatures', 'altData']
+                   : category === 'languages' ? skillsData.filter(s => s.category === 'Programming').map(s => s.id)
+                   : category === 'output' ? ['alphaSignals', 'riskMetrics', 'execLogic', 'dashboards']
+                   : category === 'projects' ? Object.keys(PROJECT_NODES_DATA)
+                   : skillsData.filter(s => s.category !== 'Programming').map(s => s.id);
+
+  const idx = nodesInCat.indexOf(n.id);
+  const x = (350 / (nodesInCat.length + 1)) * (idx + 1);
+  const y = MOBILE_Y_LEVELS[category] || 500;
+
+  return { ...n, x, y };
 }
 
 function Edge({ fromId, toId, active, dimmed, isMobile }) {
@@ -188,7 +199,7 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
       style={{ cursor: isSkill ? 'pointer' : 'default' }}
       onMouseEnter={() => onHover && onHover(nodeId)}
       onMouseLeave={() => onLeave && onLeave()}
-      onClick={() => onClick && onClick(isSkill ? node.skill : undefined, nodeId)}
+      onClick={(e) => onClick && onClick(e, isSkill ? node.skill : undefined, nodeId)}
     >
       <circle
         cx={node.x} cy={node.y} r={isHovered ? glowR + 4 : glowR}
@@ -259,10 +270,10 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
 /* ─── Project node (right column) ──────────────────────────────────── */
 function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
   const PW = 162;
-  const PH = 60;
+  const PH = 54;
   const rawNode = PROJECT_NODES_DATA[nodeId];
   if (!rawNode) return null;
-  const node = isMobile ? { ...rawNode, x: rawNode.y * 0.65 + 30, y: rawNode.x * 0.8 + 40 } : rawNode;
+  const node = getPos({ ...rawNode, id: nodeId }, isMobile);
 
   const connected  = getConnectedIds(nodeId);
   const isHovered  = hovered === nodeId;
@@ -279,7 +290,7 @@ function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
     : isLinked ? `drop-shadow(0 0 6px ${color}28)` : 'none';
 
   return (
-    <g style={{ cursor: 'pointer' }} onMouseEnter={() => onHover && onHover(nodeId)} onMouseLeave={() => onLeave && onLeave()} onClick={() => onClick && onClick(nodeId)}>
+    <g style={{ cursor: 'pointer' }} onMouseEnter={() => onHover && onHover(nodeId)} onMouseLeave={() => onLeave && onLeave()} onClick={(e) => onClick && onClick(e, nodeId)}>
       <rect
         x={node.x - PW / 2} y={node.y - PH / 2}
         width={PW} height={PH} rx={10}
@@ -469,7 +480,8 @@ function DemoLabel({ visible }) {
 function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tutorialNode, onUserTap }) {
   const [tapped, setTapped] = useState(null);
   
-  const handleNodeClick = useCallback((nodeId, isSkill) => {
+  const handleNodeClick = useCallback((e, nodeId, isSkill) => {
+    e.stopPropagation();
     if (tapped === nodeId) {
       if (isSkill) onSkillClick(nodeId);
       setTapped(null);
@@ -479,7 +491,8 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
     }
   }, [tapped, onSkillClick, onUserTap]);
 
-  const handleProjClick = useCallback((nodeId) => {
+  const handleProjClick = useCallback((e, nodeId) => {
+    e.stopPropagation();
     onProjectClick(nodeId);
     if (onUserTap) onUserTap();
   }, [onProjectClick, onUserTap]);
@@ -507,7 +520,9 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
         TAP NODE · TAP AGAIN TO EXPLORE
       </p>
       <div style={{ width: "100%", overflowX: "hidden" }}>
-        <svg viewBox="0 0 350 1200" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", overflow: "visible" }} onClick={() => setTapped(null)}>
+        <svg viewBox="0 0 350 1100" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", overflow: "visible", touchAction: 'manipulation' }}>
+          {/* Background capture for clearing selection */}
+          <rect width="350" height="1100" fill="transparent" onClick={() => setTapped(null)} />
           <defs>
             <radialGradient id="mobNetBg" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="rgba(139,92,246,0.06)" />
@@ -518,15 +533,15 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
               <stop offset="100%" stopColor="rgba(0,0,0,0)" />
             </radialGradient>
           </defs>
-          <ellipse cx={200} cy={600} rx={240} ry={600} fill="url(#mobNetBg)" />
-          <ellipse cx={200} cy={1100} rx={180} ry={140} fill="url(#mobProjBg)" />
+          <ellipse cx={175} cy={500} rx={220} ry={500} fill="url(#mobNetBg)" />
+          <ellipse cx={175} cy={920} rx={180} ry={140} fill="url(#mobProjBg)" />
 
           {[
-            { label: "INPUT",     y: 225, color: "rgba(196,181,253,0.75)" },
-            { label: "LANGUAGES", y: 425, color: "rgba(196,181,253,0.75)" },
-            { label: "TOOLS",     y: 625, color: "rgba(196,181,253,0.75)" },
-            { label: "OUTPUT",    y: 825, color: "rgba(196,181,253,0.75)" },
-            { label: "PROJECTS",  y: 1095, color: "rgba(0,212,255,0.75)"   },
+            { label: "INPUT",     y: MOBILE_Y_LEVELS.input,     color: "rgba(196,181,253,0.75)" },
+            { label: "LANGUAGES", y: MOBILE_Y_LEVELS.languages, color: "rgba(196,181,253,0.75)" },
+            { label: "TOOLS",     y: MOBILE_Y_LEVELS.tools,     color: "rgba(196,181,253,0.75)" },
+            { label: "OUTPUT",    y: MOBILE_Y_LEVELS.output,    color: "rgba(196,181,253,0.75)" },
+            { label: "PROJECTS",  y: MOBILE_Y_LEVELS.projects,  color: "rgba(0,212,255,0.75)"   },
           ].map(({ label, y, color }) => (
              <text key={label} x={18} y={y + 10} transform={`rotate(-90 18 ${y+10})`} textAnchor="middle" fontSize="10" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
                {label}
@@ -547,7 +562,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
                 hovered={effectiveMobActive}
                 onHover={() => {}}
                 onLeave={() => {}}
-                onClick={(skill, tappedId) => handleNodeClick(tappedId, !!skill)}
+                onClick={(e, isSkill, id) => handleNodeClick(e, id, !!isSkill)}
                 isMobile={true}
               />
             ))}
@@ -560,7 +575,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
                 hovered={effectiveMobActive}
                 onHover={() => {}}
                 onLeave={() => {}}
-                onClick={(tappedId) => handleProjClick(tappedId)}
+                onClick={(e, id) => handleProjClick(e, id)}
                 isMobile={true}
               />
             ))}

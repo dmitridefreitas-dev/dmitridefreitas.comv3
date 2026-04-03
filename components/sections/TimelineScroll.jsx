@@ -38,14 +38,14 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-8%' }}
       transition={{ duration: 0.65, delay: rowIdx * 0.04, ease: [0.22, 1, 0.36, 1] }}
-      className={`flex flex-col gap-1.5 ${isRight ? 'items-start text-left' : 'items-end text-right'}`}
+      className={`flex flex-col gap-1.5 ${rowIdx === -1 ? 'items-center text-center mx-auto' : (isRight ? 'items-start text-left' : 'items-end text-right')}`}
     >
       <div
         style={{
           background: 'rgba(8,14,28,0.72)',
           border: '1px solid rgba(255,255,255,0.05)',
-          borderLeft:  isRight  ? `2px solid ${color}` : undefined,
-          borderRight: !isRight ? `2px solid ${color}` : undefined,
+          borderLeft:  (rowIdx === -1 || isRight)  ? `2px solid ${color}` : undefined,
+          borderRight: (rowIdx !== -1 && !isRight) ? `2px solid ${color}` : undefined,
           borderRadius: '10px',
           padding: '14px 16px',
           maxWidth: '270px',
@@ -54,7 +54,7 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
         }}
       >
         {/* Badge row */}
-        <div className={`flex items-center gap-2 mb-2.5 ${isRight ? '' : 'flex-row-reverse justify-end'}`}>
+        <div className={`flex items-center gap-2 mb-2.5 ${(rowIdx === -1 || isRight) ? '' : 'flex-row-reverse justify-end'}`}>
           <span
             style={{
               fontFamily: 'var(--font-jetbrains), monospace',
@@ -246,18 +246,18 @@ export default function TimelineScroll() {
         </div>
       </div>
 
-      {/* MOBILE LAYOUT: Single Column, Centered Over Path */}
-      <div className="md:hidden mt-8 flex flex-col gap-16 max-w-[320px] mx-auto relative overflow-visible">
+      {/* MOBILE LAYOUT: Single Column, Stacked & Centered */}
+      <div className="md:hidden mt-8 flex flex-col max-w-[320px] mx-auto relative overflow-visible">
         
         {/* Absolute Centered Track Line */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px" style={{ background: 'linear-gradient(to bottom, #00D4FF 0%, #8B5CF6 100%)', opacity: 0.35 }} />
+        <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px" style={{ background: 'linear-gradient(to bottom, #00D4FF 0%, #8B5CF6 100%)', opacity: 0.25 }} />
 
         {/* Career Path Section */}
-        <div className="relative">
+        <div className="relative mb-20">
           <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-12 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20 relative z-20">
             Career Experience
           </h3>
-          <div className="flex flex-col gap-14 items-center">
+          <div className="flex flex-col gap-12 items-center">
             {right.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#00D4FF';
               return (
@@ -265,8 +265,9 @@ export default function TimelineScroll() {
                   <div className="absolute -top-6 z-20">
                     <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
                   </div>
-                  <div className="flex-grow w-full relative z-10 mx-auto transform translate-x-[4px]">
-                    <Entry entry={entry} align="right" rowIdx={idx} />
+                  <div className="flex-grow w-full relative z-10 mx-auto">
+                    {/* Pass rowIdx=-1 to trigger centered style for mobile entries */}
+                    <Entry entry={entry} align="right" rowIdx={-1} />
                   </div>
                 </div>
               );
@@ -275,11 +276,11 @@ export default function TimelineScroll() {
         </div>
 
         {/* Education Path Section */}
-        <div className="relative mt-8">
+        <div className="relative">
           <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-12 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20 relative z-20 shadow-[0_0_10px_rgba(139,92,246,0.15)]">
             Education
           </h3>
-          <div className="flex flex-col gap-14 items-center">
+          <div className="flex flex-col gap-12 items-center">
             {left.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
               return (
@@ -287,8 +288,8 @@ export default function TimelineScroll() {
                   <div className="absolute -top-6 z-20">
                     <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
                   </div>
-                  <div className="flex-grow w-full relative z-10 mx-auto transform translate-x-[4px]">
-                    <Entry entry={entry} align="right" rowIdx={idx} />
+                  <div className="flex-grow w-full relative z-10 mx-auto">
+                    <Entry entry={entry} align="right" rowIdx={-1} />
                   </div>
                 </div>
               );
