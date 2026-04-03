@@ -223,7 +223,7 @@ export default function ZWormhole() {
           >
             {/* inner scroll container */}
             <div
-              ref={(el) => { scrollRefs.current[i] = el; sceneRefs[i].current = el; }}
+              ref={(el) => { scrollRefs.current[i] = el; }}
               style={{
                 width: '100%', height: '100%',
                 overflowY: 'auto', overflowX: 'hidden',
