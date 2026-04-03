@@ -246,51 +246,63 @@ export default function TimelineScroll() {
         </div>
       </div>
 
-      {/* MOBILE LAYOUT: Pure Vertical, Strictly Centered */}
-      <div className="md:hidden mt-8 flex flex-col items-center w-full max-w-sm mx-auto">
+      {/* MOBILE CONTENT: Total Scratch Rebuild */}
+      <div className="md:hidden mt-12 mb-32 flex flex-col items-center w-full px-6">
         
-        {/* Career Section Header */}
-        <div className="mb-12 w-full text-center">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#00D4FF]/40 mb-2">Section 01</h3>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Career Path</h2>
+        <div className="mb-20 text-center">
+          <h2 className="text-3xl font-bold text-white tracking-tight mb-3">Career History</h2>
+          <div className="h-1 w-12 bg-accent mx-auto rounded-full" />
         </div>
 
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full gap-0">
           {experiences.map((exp, i) => {
             const color = TYPE_COLORS[exp.type] || '#00D4FF';
             const desc = Array.isArray(exp.description) ? exp.description[0] : exp.shortDescription;
             
             return (
-              <div key={`mob-exp-${i}`} className="flex flex-col items-center w-full">
-                {/* Dot */}
-                <div className="w-3.5 h-3.5 rounded-full mb-8 z-10" style={{ background: color, boxShadow: `0 0 14px ${color}80` }} />
+              <div key={`new-mob-${i}`} className="flex flex-col items-center w-full">
+                {/* Visual Connector Dot */}
+                <div 
+                  className="w-4 h-4 rounded-full z-10 border-2 border-[#02030A]" 
+                  style={{ background: color, boxShadow: `0 0 15px ${color}` }} 
+                />
                 
-                {/* Centered Card */}
-                <div className="w-full px-4 mb-8">
-                  <div className="p-6 rounded-2xl bg-[#080E1C]/90 border border-white/5 backdrop-blur-2xl text-center shadow-2xl">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                      <span style={{ color: color, background: `${color}12`, border: `1px solid ${color}35` }} className="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-1 rounded-md">
+                {/* Content Card (Isolated from Desktop Styles) */}
+                <div className="w-full mt-8 mb-8 flex justify-center">
+                  <div className="w-full max-w-[300px] p-7 rounded-[24px] bg-[#0A1229]/95 border border-white/10 backdrop-blur-3xl text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                    <div className="flex flex-col items-center gap-2 mb-5">
+                      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">{exp.date}</span>
+                      <span 
+                        style={{ color: color, background: `${color}15`, border: `1px solid ${color}30` }} 
+                        className="text-[9px] font-mono uppercase tracking-widest px-3 py-1 rounded-full"
+                      >
                         {TYPE_LABELS[exp.type]}
                       </span>
-                      <span className="text-[11px] font-mono text-white/40 tracking-tight">{exp.date}</span>
                     </div>
-                    <h3 className="text-[16px] font-bold text-white mb-1.5 leading-tight">{exp.title}</h3>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-white/50 mb-5">{exp.organization}</p>
-                    <p className="text-[12px] text-white/60 leading-relaxed max-w-[280px] mx-auto">{desc}</p>
+
+                    <h3 className="text-[17px] font-bold text-white mb-1.5 leading-snug">{exp.title}</h3>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-accent/60 mb-5">{exp.organization}</p>
+                    
+                    <p className="text-[12px] text-white/50 leading-relaxed line-clamp-3">
+                      {desc}
+                    </p>
                   </div>
                 </div>
 
-                {/* Connector Line (except last) */}
+                {/* Vertical Connector Path */}
                 {i < experiences.length - 1 && (
-                  <div className="w-px h-28 bg-gradient-to-b from-white/15 to-transparent mb-8" />
+                  <div className="w-px h-32 bg-gradient-to-b from-white/20 via-white/10 to-transparent" />
                 )}
               </div>
             );
           })}
         </div>
 
-        {/* End Mark */}
-        <div className="w-2.5 h-2.5 rounded-full bg-white/20 mt-16 mb-20" />
+        {/* Closing Mark */}
+        <div className="mt-12 flex flex-col items-center gap-4">
+          <div className="w-2 h-2 rounded-full bg-white/10" />
+          <span className="text-[9px] font-mono uppercase tracking-[0.4em] text-white/20">End of Path</span>
+        </div>
 
       </div>
     </section>

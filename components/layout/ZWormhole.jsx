@@ -12,7 +12,7 @@ const HeroToggler       = dynamic(() => import('@/components/hero/HeroToggler'),
 const InfoBanner        = dynamic(() => import('@/components/sections/InfoBanner'),           { ssr: false });
 const AcademicTicker    = dynamic(() => import('@/components/sections/FinanceTicker'),        { ssr: false });
 const SkillsNetwork     = dynamic(() => import('@/components/sections/SkillsNetwork'),        { ssr: false });
-const CompetenciesSticky= dynamic(() => import('@/components/sections/CompetenciesSticky'),   { ssr: false });
+const TimelineScroll    = dynamic(() => import('@/components/sections/TimelineScroll'),      { ssr: false });
 const AboutContent      = dynamic(() => import('@/components/sections/AboutContent'),         { ssr: false });
 const ProjectsContent   = dynamic(() => import('@/components/sections/ProjectsContent'),      { ssr: false });
 const ContactPage       = dynamic(() => import('@/components/sections/ContactContent'),       { ssr: false });
@@ -38,7 +38,7 @@ function HomeScene() {
   );
 }
 function NetworkScene()  { return <SkillsNetwork />; }
-function CareerScene()   { return <CompetenciesSticky />; }
+function CareerScene()   { return <TimelineScroll />; }
 function AboutScene()    { return <AboutContent />; }
 function ProjectsScene() { return <ProjectsContent />; }
 function ContactScene()  { return <ContactPage />; }
