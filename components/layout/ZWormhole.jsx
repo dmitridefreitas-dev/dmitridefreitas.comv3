@@ -14,7 +14,6 @@ const SkillsNetwork     = dynamic(() => import('@/components/sections/SkillsNetw
 const CompetenciesSticky= dynamic(() => import('@/components/sections/CompetenciesSticky'),   { ssr: false });
 const SkillsReveal      = dynamic(() => import('@/components/sections/SkillsReveal'),         { ssr: false });
 const CTASection        = dynamic(() => import('@/components/sections/CTASection'),           { ssr: false });
-const SectionAtmosphere = dynamic(() => import('@/components/effects/SectionAtmosphere'),     { ssr: false });
 const AboutContent      = dynamic(() => import('@/components/sections/AboutContent'),         { ssr: false });
 const ProjectsContent   = dynamic(() => import('@/components/sections/ProjectsContent'),      { ssr: false });
 const ContactPage       = dynamic(() => import('@/components/sections/ContactContent'),       { ssr: false });
@@ -39,16 +38,9 @@ function HomeScene() {
     </>
   );
 }
-function NetworkScene()  { return <SectionAtmosphere atmosphere="skills"><SkillsNetwork /></SectionAtmosphere>; }
-function CareerScene()   { return <SectionAtmosphere atmosphere="skills"><CompetenciesSticky /></SectionAtmosphere>; }
-function CircuitScene()  { 
-  return (
-    <>
-      <SectionAtmosphere atmosphere="skills"><SkillsReveal /></SectionAtmosphere>
-      <SectionAtmosphere atmosphere="cta"><CTASection /></SectionAtmosphere>
-    </>
-  ); 
-}
+function NetworkScene()  { return <SkillsNetwork />; }
+function CareerScene()   { return <CompetenciesSticky />; }
+function CircuitScene()  { return <><SkillsReveal /><CTASection /></>; }
 function AboutScene()    { return <AboutContent />; }
 function ProjectsScene() { return <ProjectsContent />; }
 function ContactScene()  { return <ContactPage />; }
@@ -217,7 +209,6 @@ export default function ZWormhole() {
               width: '100vw', height: '100vh',
               transform: `translateZ(${-i * SCENE_DEPTH}px)`,
               backfaceVisibility: 'hidden',
-              contain: 'layout paint style',
               willChange: 'opacity',
             }}
           >
@@ -233,7 +224,7 @@ export default function ZWormhole() {
               }}
             >
               <ActiveSceneContext.Provider value={activeScene === i}>
-                <SceneComp />
+                {Math.abs(activeScene - i) <= 1 && <SceneComp />}
               </ActiveSceneContext.Provider>
             </div>
           </div>

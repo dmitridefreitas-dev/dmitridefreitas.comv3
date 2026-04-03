@@ -3,8 +3,6 @@ import {
   motion,
   AnimatePresence,
   useTransform,
-  useSpring,
-  useMotionValueEvent,
   useMotionValue,
   animate
 } from 'framer-motion';
@@ -134,56 +132,37 @@ export default function CompetenciesSticky() {
   const autoProgress = useMotionValue(0);
 
   useEffect(() => {
-    if (!isSceneActive) return;
-    const startTimeout = setTimeout(() => {
-      animate(autoProgress, 1, {
-        duration: 12,
-        ease: "easeOut",
-      });
-    }, 800);
-
-    return () => clearTimeout(startTimeout);
-  }, [autoProgress, isSceneActive]);
-
-  const smoothProgress = useSpring(autoProgress, {
-    stiffness: 40,
-    damping: 20,
-    restDelta: 0.001,
-  });
-
-  useEffect(() => {
     if (eduPathRef.current) setEduPathLength(eduPathRef.current.getTotalLength());
     if (careerPathRef.current) setCareerPathLength(careerPathRef.current.getTotalLength());
   }, []);
 
-  const eduDashoffset = useTransform(smoothProgress, [0, 1], [eduPathLength, 0]);
-  const careerDashoffset = useTransform(smoothProgress, [0, 1], [careerPathLength, 0]);
+  const eduDashoffset    = useTransform(autoProgress, [0, 1], [eduPathLength,    0]);
+  const careerDashoffset = useTransform(autoProgress, [0, 1], [careerPathLength, 0]);
 
+  useEffect(() => {
+    if (!isSceneActive) return;
 
-  useMotionValueEvent(smoothProgress, 'change', (latest) => {
-    setEduVisible((prev) => {
-      let changed = false;
-      const next = [...prev];
-      for (let i = 0; i < EDU_THRESHOLDS.length; i++) {
-        if (!next[i] && latest >= EDU_THRESHOLDS[i]) {
-          next[i] = true;
-          changed = true;
-        }
-      }
-      return changed ? next : prev;
+    const DURATION = 10; // seconds
+
+    const t1 = setTimeout(() => {
+      animate(autoProgress, 1, { duration: DURATION, ease: 'easeInOut' });
+    }, 600);
+
+    // Staggered node reveals using timeouts instead of per-frame state checks
+    const timers = [t1];
+    EDU_THRESHOLDS.forEach((threshold, i) => {
+      timers.push(setTimeout(() => {
+        setEduVisible(prev => { const next = [...prev]; next[i] = true; return next; });
+      }, 600 + threshold * DURATION * 1000));
     });
-    setCareerVisible((prev) => {
-      let changed = false;
-      const next = [...prev];
-      for (let i = 0; i < CAREER_THRESHOLDS.length; i++) {
-        if (!next[i] && latest >= CAREER_THRESHOLDS[i]) {
-          next[i] = true;
-          changed = true;
-        }
-      }
-      return changed ? next : prev;
+    CAREER_THRESHOLDS.forEach((threshold, i) => {
+      timers.push(setTimeout(() => {
+        setCareerVisible(prev => { const next = [...prev]; next[i] = true; return next; });
+      }, 600 + threshold * DURATION * 1000));
     });
-  });
+
+    return () => timers.forEach(clearTimeout);
+  }, [autoProgress, isSceneActive]);
 
   return (
     <section

@@ -153,6 +153,12 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
   const glowR   = r + 14;
   const lines   = node.label.split('\n');
 
+  const nodeFill   = isHovered ? 'rgba(139,92,246,0.35)' : isLinked ? 'rgba(139,92,246,0.18)' : isDimmed ? 'rgba(8,8,16,0.8)' : 'rgba(139,92,246,0.12)';
+  const nodeStroke = isHovered ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : isDimmed ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.4)';
+  const textFill   = isHovered ? '#C4B5FD' : isLinked ? 'rgba(196,181,253,0.85)' : isDimmed ? 'rgba(156,163,175,0.2)' : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)';
+  const dotFill    = isHovered ? '#C4B5FD' : isDimmed ? 'rgba(139,92,246,0.1)' : 'rgba(139,92,246,0.6)';
+  const trans      = 'fill 0.2s, stroke 0.2s, opacity 0.2s';
+
   return (
     <g
       style={{ cursor: isSkill ? 'pointer' : 'default' }}
@@ -160,17 +166,12 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
       onMouseLeave={onLeave}
       onClick={() => isSkill && onClick(node.skill)}
     >
-      <motion.circle
-        cx={node.x} cy={node.y} r={glowR}
+      <circle
+        cx={node.x} cy={node.y} r={isHovered ? glowR + 4 : glowR}
         fill="transparent"
         stroke="rgba(139,92,246,0.18)"
         strokeWidth="1"
-        opacity={0.5}
-        animate={{
-          opacity: isHovered ? 1 : isDimmed ? 0 : 0.5,
-          r: isHovered ? glowR + 4 : glowR,
-        }}
-        transition={{ duration: 0.3 }}
+        style={{ opacity: isHovered ? 1 : isDimmed ? 0 : 0.5, transition: trans }}
       />
 
       {!isDimmed && (
@@ -184,37 +185,22 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
         />
       )}
 
-      <motion.circle
+      <circle
         cx={node.x} cy={node.y} r={r}
-        strokeWidth={1}
-        animate={{
-          fill: isHovered
-            ? 'rgba(139,92,246,0.35)'
-            : isLinked
-            ? 'rgba(139,92,246,0.18)'
-            : isDimmed
-            ? 'rgba(8,8,16,0.8)'
-            : 'rgba(139,92,246,0.12)',
-          stroke: isHovered
-            ? '#8B5CF6'
-            : isLinked
-            ? 'rgba(139,92,246,0.6)'
-            : isDimmed
-            ? 'rgba(139,92,246,0.08)'
-            : 'rgba(139,92,246,0.4)',
-          strokeWidth: isHovered ? 2 : 1,
-          filter: isHovered ? 'drop-shadow(0 0 10px rgba(139,92,246,0.8))' : 'none',
+        fill={nodeFill}
+        stroke={nodeStroke}
+        strokeWidth={isHovered ? 2 : 1}
+        style={{
+          filter: isHovered ? 'drop-shadow(0 0 8px rgba(139,92,246,0.7))' : 'none',
+          transition: trans,
         }}
-        transition={{ duration: 0.25 }}
       />
 
       {isSkill && (
-        <motion.circle
+        <circle
           cx={node.x} cy={node.y} r={4}
-          animate={{
-            fill: isHovered ? '#C4B5FD' : isDimmed ? 'rgba(139,92,246,0.1)' : 'rgba(139,92,246,0.6)',
-          }}
-          transition={{ duration: 0.25 }}
+          fill={dotFill}
+          style={{ transition: trans }}
         />
       )}
 
@@ -226,7 +212,7 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
           : baseY + (li - (totalLines - 1) / 2) * 14;
 
         return (
-          <motion.text
+          <text
             key={li}
             x={node.x}
             y={lineY}
@@ -234,20 +220,12 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
             fontSize={isSkill ? 12 : 11}
             fontFamily="var(--font-jetbrains), monospace"
             letterSpacing="0.06em"
-            animate={{
-              fill: isHovered
-                ? '#C4B5FD'
-                : isLinked
-                ? 'rgba(196,181,253,0.85)'
-                : isDimmed
-                ? 'rgba(156,163,175,0.2)'
-                : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)',
-              fontWeight: isHovered ? '700' : '400',
-            }}
-            transition={{ duration: 0.2 }}
+            fontWeight={isHovered ? '700' : '400'}
+            fill={textFill}
+            style={{ transition: trans }}
           >
             {line}
-          </motion.text>
+          </text>
         );
       })}
     </g>

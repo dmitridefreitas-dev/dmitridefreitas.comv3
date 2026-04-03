@@ -273,39 +273,9 @@ export default function SkillsReveal() {
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
-            {/* Dot grid pattern */}
             <pattern id="pcb-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
               <circle cx="10" cy="10" r="0.8" fill="rgba(139,92,246,0.08)" />
             </pattern>
-
-            {/* Trace glow */}
-            <filter id="tGlow" x="-200%" y="-200%" width="500%" height="500%">
-              <feGaussianBlur stdDeviation="3" result="b" in="SourceGraphic" />
-              <feMerge>
-                <feMergeNode in="b" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-
-            {/* Chip hover glow */}
-            <filter id="chipHover" x="-80%" y="-80%" width="260%" height="260%">
-              <feGaussianBlur stdDeviation="6" result="b" in="SourceGraphic" />
-              <feMerge>
-                <feMergeNode in="b" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-
-            {/* Rail glow */}
-            <filter id="railGlow" x="-100%" y="-300%" width="300%" height="700%">
-              <feGaussianBlur stdDeviation="4" result="b" in="SourceGraphic" />
-              <feFlood floodColor="#00D4FF" floodOpacity="0.3" result="c" />
-              <feComposite in="c" in2="b" operator="in" result="g" />
-              <feMerge>
-                <feMergeNode in="g" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
           </defs>
 
           {/* Dark background */}
@@ -351,7 +321,6 @@ export default function SkillsReveal() {
                     strokeWidth={isRail ? 2.5 : 1.5}
                     fill="none"
                     strokeLinecap="square"
-                    filter={isRail ? 'url(#railGlow)' : 'url(#tGlow)'}
                     strokeDasharray={len}
                     strokeDashoffset={len * (1 - tp)}
                     style={{ transition: 'stroke-dashoffset 0.12s linear' }}
@@ -434,7 +403,6 @@ export default function SkillsReveal() {
                         fill="rgba(2,3,10,0.92)"
                         stroke={hov ? c.bright : `${c.hex}55`}
                         strokeWidth={hov ? 2 : 1}
-                        filter={hov ? 'url(#chipHover)' : undefined}
                         style={{ cursor: 'pointer', transition: 'stroke 0.2s, stroke-width 0.2s' }}
                         onMouseEnter={() => setHoveredNode(node.id)}
                         onMouseLeave={() => setHoveredNode(null)}
@@ -566,13 +534,8 @@ export default function SkillsReveal() {
                 strokeWidth={0.5}
                 strokeDasharray="3 5"
               />
-              <AnimatePresence>
-                {activeOutputs[i] && (
-                  <motion.g
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  >
+              {activeOutputs[i] && (
+                  <g>
                     <rect
                       x={out.cx - 48} y={out.cy - 12}
                       width={96} height={24}
@@ -581,13 +544,7 @@ export default function SkillsReveal() {
                       stroke="rgba(0,212,255,0.22)"
                       strokeWidth={1}
                     />
-                    <motion.circle
-                      cx={out.cx - 38} cy={out.cy}
-                      r={2}
-                      fill="#00D4FF"
-                      animate={{ opacity: [1, 0.2, 1] }}
-                      transition={{ duration: 1.4, repeat: Infinity }}
-                    />
+                    <circle cx={out.cx - 38} cy={out.cy} r={2} fill="#00D4FF" />
                     <text
                       x={out.cx - 30} y={out.cy + 4}
                       textAnchor="start" fontSize={8.5}
@@ -599,30 +556,16 @@ export default function SkillsReveal() {
                     >
                       {out.label.toUpperCase()}
                     </text>
-                  </motion.g>
+                  </g>
                 )}
-              </AnimatePresence>
             </g>
           ))}
 
-          {/* Ambient scan line */}
-          <motion.line
-            x1={0} y1={0} x2={VB_W} y2={0}
-            stroke="rgba(0,212,255,0.03)"
-            strokeWidth={1}
-            animate={{ y: [0, VB_H, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-          />
         </svg>
       </div>
 
       {/* ── Stats bar ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="flex justify-center gap-12 mt-10 max-w-4xl mx-auto pt-8 flex-wrap"
+      <div className="flex justify-center gap-12 mt-10 max-w-4xl mx-auto pt-8 flex-wrap"
         style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
       >
         {[
@@ -636,29 +579,18 @@ export default function SkillsReveal() {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/25 mt-1">{label}</p>
           </div>
         ))}
-      </motion.div>
+      </div>
 
       {/* Status indicator */}
-      <motion.div
-        className="max-w-4xl mx-auto mt-4 flex items-center justify-center gap-3"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.4 }}
-      >
+      <div className="max-w-4xl mx-auto mt-4 flex items-center justify-center gap-3">
         <span className="font-mono text-[9px] tracking-wider" style={{ color: 'rgba(0,212,255,0.28)' }}>
-          SYS.STATUS: {activeNodes.size === NODES.length ? 'ALL NODES ONLINE' : `${activeNodes.size}/${NODES.length} NODES ACTIVE`}
+          SYS.STATUS: ALL NODES ONLINE
         </span>
-        <motion.span
+        <span
           className="inline-block w-1.5 h-1.5"
-          style={{
-            background: activeNodes.size === NODES.length ? '#00E5A0' : '#00D4FF',
-            boxShadow: `0 0 4px ${activeNodes.size === NODES.length ? 'rgba(0,229,160,0.6)' : 'rgba(0,212,255,0.6)'}`,
-          }}
-          animate={{ opacity: [1, 0.3, 1] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
+          style={{ background: '#00E5A0', boxShadow: '0 0 4px rgba(0,229,160,0.6)' }}
         />
-      </motion.div>
+      </div>
 
       {/* ── Skill Detail Modal ── */}
       <AnimatePresence>
