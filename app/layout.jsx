@@ -2,6 +2,7 @@ import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import dynamic from 'next/dynamic';
 const AtmosphericBlobs = dynamic(() => import('@/components/effects/AtmosphericBlobs'), { ssr: false });
 import ClientShell from '@/components/layout/ClientShell';
+import SmoothScroll from '@/components/layout/SmoothScroll';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
@@ -153,11 +154,13 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-sans antialiased bg-background text-foreground">
-        <AtmosphericBlobs />
-        <ClientShell>
-          {children}
-          <Toaster />
-        </ClientShell>
+        <SmoothScroll>
+          <AtmosphericBlobs />
+          <ClientShell>
+            {children}
+            <Toaster />
+          </ClientShell>
+        </SmoothScroll>
       </body>
     </html>
   );

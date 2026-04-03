@@ -109,9 +109,12 @@ function getConnectedIds(nodeId) {
   return connected;
 }
 
-function Edge({ fromId, toId, active, dimmed }) {
-  const from = getNode(fromId);
-  const to   = getNode(toId);
+function Edge({ fromId, toId, active, dimmed, isMobile }) {
+  const rawFrom = getNode(fromId);
+  const rawTo   = getNode(toId);
+  const transpose = (n) => isMobile && n ? { ...n, x: n.y * 0.65 + 30, y: n.x * 0.8 + 40 } : n;
+  const from = transpose(rawFrom);
+  const to   = transpose(rawTo);
   if (!from || !to) return null;
 
   const isProjectEdge = !!(PROJECT_NODES_DATA[fromId] || PROJECT_NODES_DATA[toId]);
@@ -121,8 +124,8 @@ function Edge({ fromId, toId, active, dimmed }) {
     ? (isProjectEdge ? '#00D4FF' : '#8B5CF6')
     : (isProjectEdge ? 'rgba(0,212,255,0.9)' : 'rgba(139,92,246,0.9)');
 
-  const mx = (from.x + to.x) / 2;
-  const my = (from.y + to.y) / 2 - 18;
+  const mx = isMobile ? (from.x + to.x) / 2 - 18 : (from.x + to.x) / 2;
+  const my = isMobile ? (from.y + to.y) / 2 : (from.y + to.y) / 2 - 18;
   const d  = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
 
   return (
@@ -139,8 +142,9 @@ function Edge({ fromId, toId, active, dimmed }) {
   );
 }
 
-function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
-  const node      = getNode(nodeId);
+function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
+  const rawNode   = getNode(nodeId);
+  const node      = isMobile && rawNode ? { ...rawNode, x: rawNode.y * 0.65 + 30, y: rawNode.x * 0.8 + 40 } : rawNode;
   const connected = getConnectedIds(nodeId);
   const isHovered = hovered === nodeId;
   const isLinked  = hovered && connected.has(hovered);
@@ -162,9 +166,9 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
   return (
     <g
       style={{ cursor: isSkill ? 'pointer' : 'default' }}
-      onMouseEnter={() => onHover(nodeId)}
-      onMouseLeave={onLeave}
-      onClick={() => isSkill && onClick(node.skill)}
+      onMouseEnter={() => onHover && onHover(nodeId)}
+      onMouseLeave={() => onLeave && onLeave()}
+      onClick={() => onClick && onClick(isSkill ? node.skill : undefined, nodeId)}
     >
       <circle
         cx={node.x} cy={node.y} r={isHovered ? glowR + 4 : glowR}
@@ -233,11 +237,12 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
 }
 
 /* ─── Project node (right column) ──────────────────────────────────── */
-function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick }) {
+function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
   const PW = 162;
   const PH = 60;
-  const node = PROJECT_NODES_DATA[nodeId];
-  if (!node) return null;
+  const rawNode = PROJECT_NODES_DATA[nodeId];
+  if (!rawNode) return null;
+  const node = isMobile ? { ...rawNode, x: rawNode.y * 0.65 + 30, y: rawNode.x * 0.8 + 40 } : rawNode;
 
   const connected  = getConnectedIds(nodeId);
   const isHovered  = hovered === nodeId;
@@ -254,7 +259,7 @@ function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick }) {
     : isLinked ? `drop-shadow(0 0 6px ${color}28)` : 'none';
 
   return (
-    <g style={{ cursor: 'pointer' }} onMouseEnter={() => onHover(nodeId)} onMouseLeave={onLeave} onClick={() => onClick(nodeId)}>
+    <g style={{ cursor: 'pointer' }} onMouseEnter={() => onHover && onHover(nodeId)} onMouseLeave={() => onLeave && onLeave()} onClick={() => onClick && onClick(nodeId)}>
       <rect
         x={node.x - PW / 2} y={node.y - PH / 2}
         width={PW} height={PH} rx={10}
@@ -441,357 +446,104 @@ function DemoLabel({ visible }) {
 
 /* ─── Mobile vertical network ─────────────────────────────────────── */
 
-const MOB_W = 400;
-const MOB_H = 1600;
-
-const MOB_INPUT = [
-  { id: 'cat-prog', label: 'Programming\n& Scripting', x: 70,  y: 140 },
-  { id: 'cat-viz',  label: 'Data\nVisualization',      x: 200, y: 140 },
-  { id: 'cat-fin',  label: 'Financial\nTools',          x: 330, y: 140 },
-];
-
-const MOB_LANGS = [
-  { id: 'python', label: 'Python',  x: 50,  y: 340 },
-  { id: 'r',      label: 'R',       x: 130, y: 340 },
-  { id: 'sql',    label: 'SQL',     x: 210, y: 340 },
-  { id: 'matlab', label: 'MATLAB',  x: 290, y: 340 },
-  { id: 'vba',    label: 'VBA',     x: 360, y: 340 },
-  { id: 'git',    label: 'Git',     x: 130, y: 430 },
-];
-
-const MOB_TOOLS = [
-  { id: 'matplotlib', label: 'Matplotlib', x: 70,  y: 620 },
-  { id: 'powerbi',    label: 'Power BI',   x: 200, y: 620 },
-  { id: 'tableau',    label: 'Tableau',    x: 330, y: 620 },
-  { id: 'quantlib',   label: 'QuantLib',   x: 70,  y: 720 },
-  { id: 'bloomberg',  label: 'Bloomberg',  x: 200, y: 720 },
-  { id: 'fred',       label: 'FRED',       x: 330, y: 720 },
-];
-
-const MOB_OUTPUT = [
-  { id: 'out-quant', label: 'Quant\nFinance',   x: 70,  y: 920 },
-  { id: 'out-ml',    label: 'Machine\nLearning', x: 200, y: 920 },
-  { id: 'out-da',    label: 'Data\nEngineering', x: 330, y: 920 },
-];
-
-const MOB_PROJECTS = [
-  { id: 'pead',             label: 'PEAD Research',    category: 'Quant Finance', x: 100, y: 1140 },
-  { id: 'trading-terminal', label: 'Trading Terminal', category: 'Quant Finance', x: 300, y: 1140 },
-  { id: 'housing-price',    label: 'Housing Price ML', category: 'Data Science',  x: 100, y: 1280 },
-  { id: 'nfl-win',          label: 'NFL Win Prob',     category: 'Data Science',  x: 300, y: 1280 },
-];
-
-/* Simplified edges for mobile — category→skills, skills→tools, tools→output, output→projects */
-const MOB_EDGES = [
-  // input → languages
-  ['cat-prog', 'python'], ['cat-prog', 'r'], ['cat-prog', 'sql'],
-  ['cat-prog', 'matlab'], ['cat-prog', 'vba'], ['cat-prog', 'git'],
-  ['cat-viz', 'matplotlib'], ['cat-viz', 'powerbi'], ['cat-viz', 'tableau'],
-  ['cat-fin', 'quantlib'], ['cat-fin', 'bloomberg'], ['cat-fin', 'fred'],
-  // languages → tools (simplified)
-  ['python', 'matplotlib'], ['python', 'quantlib'],
-  ['r', 'tableau'], ['r', 'matplotlib'],
-  ['sql', 'powerbi'], ['sql', 'bloomberg'],
-  ['matlab', 'quantlib'],
-  ['vba', 'powerbi'],
-  ['git', 'tableau'],
-  // tools → output
-  ['matplotlib', 'out-ml'], ['matplotlib', 'out-da'],
-  ['powerbi', 'out-da'],
-  ['tableau', 'out-da'],
-  ['quantlib', 'out-quant'],
-  ['bloomberg', 'out-quant'], ['bloomberg', 'out-da'],
-  ['fred', 'out-quant'], ['fred', 'out-da'],
-  // output → projects
-  ['out-quant', 'pead'], ['out-quant', 'trading-terminal'],
-  ['out-ml', 'housing-price'], ['out-ml', 'nfl-win'],
-  ['out-da', 'trading-terminal'], ['out-da', 'housing-price'],
-];
-
-function getMobNodePos(id) {
-  const all = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT, ...MOB_PROJECTS];
-  return all.find((n) => n.id === id);
-}
-
 function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tutorialNode, onUserTap }) {
-  const allMobNodes = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT];
-  const rowLabels = [
-    { label: 'INPUT',     y: 80,   color: 'rgba(196,181,253,0.75)' },
-    { label: 'LANGUAGES', y: 280,  color: 'rgba(196,181,253,0.75)' },
-    { label: 'TOOLS',     y: 560,  color: 'rgba(196,181,253,0.75)' },
-    { label: 'OUTPUT',    y: 860,  color: 'rgba(196,181,253,0.75)' },
-    { label: 'PROJECTS',  y: 1060, color: 'rgba(0,212,255,0.75)' },
-  ];
-
-  // Tapped node id for mobile highlight animation
   const [tapped, setTapped] = useState(null);
-  const touchOrigin = useRef({ y: 0, t: 0 });
-
-  // Record touch origin — called directly on each node <g>, not at SVG level,
-  // because the SVG-level handler never fires when stopPropagation was used on <g>.
-  const recordTouch = useCallback((e) => {
-    if (e.touches && e.touches[0]) {
-      touchOrigin.current = { y: e.touches[0].clientY, t: Date.now() };
-    }
-  }, []);
-
-  const makeTouchEnd = useCallback((node, isSkill) => (e) => {
-    const dy = Math.abs(e.changedTouches[0].clientY - touchOrigin.current.y);
-    const dt = Date.now() - touchOrigin.current.t;
-    if (dy > 12 || dt > 350) return; // swipe, not tap
-    e.stopPropagation();
-    e.preventDefault();
-    if (!isSkill) return;
-    if (tapped === node.id) {
-      // second tap → open modal
-      const skill = skillsData.find((s) => s.id === node.id);
-      if (skill) onSkillClick(skill);
+  
+  const handleNodeClick = useCallback((nodeId, isSkill, skill) => {
+    if (tapped === nodeId) {
+      if (isSkill && skill) onSkillClick(skill);
       setTapped(null);
     } else {
-      setTapped(node.id);
-      onUserTap?.(); // dismiss tutorial on first real tap
+      setTapped(nodeId);
+      if (onUserTap) onUserTap();
     }
   }, [tapped, onSkillClick, onUserTap]);
 
-  const makeProjectTouchEnd = useCallback((nodeId) => (e) => {
-    const dy = Math.abs(e.changedTouches[0].clientY - touchOrigin.current.y);
-    const dt = Date.now() - touchOrigin.current.t;
-    if (dy > 12 || dt > 350) return;
-    e.stopPropagation();
-    e.preventDefault();
+  const handleProjClick = useCallback((nodeId) => {
     onProjectClick(nodeId);
-    onUserTap?.();
+    if (onUserTap) onUserTap();
   }, [onProjectClick, onUserTap]);
 
-  // Use real tap OR tutorial node for highlight (tutorial drives the demo animation)
   const effectiveMobActive = tapped ?? tutorialNode ?? null;
-  const tappedConnected = useMemo(() => effectiveMobActive ? getConnectedIds(effectiveMobActive) : new Set(), [effectiveMobActive]);
 
-  // Row-by-row reveal: 1=INPUT 2=LANGS 3=TOOLS 4=OUTPUT 5=PROJECTS
-  const [visRows, setVisRows] = useState(0);
-  const rowAnimStarted = useRef(false); // guard: run once even if isSceneActive flips rapidly
-  useEffect(() => {
-    if (!isSceneActive || rowAnimStarted.current) return;
-    rowAnimStarted.current = true;
-    const DELAYS = [300, 900, 1500, 2100, 2700];
-    // No cleanup — let the timers run to completion once started
-    DELAYS.forEach((ms, i) => setTimeout(() => setVisRows(i + 1), ms));
-  }, [isSceneActive]);
+  const allNodeIds = [
+    ...INPUT_NODES.map((n) => n.id),
+    ...skillsData.map((s) => s.id),
+    ...OUTPUT_NODES.map((n) => n.id),
+  ];
+  const allProjectIds = Object.keys(PROJECT_NODES_DATA);
 
-  function getRowForId(id) {
-    if (MOB_INPUT.find(n => n.id === id)) return 1;
-    if (MOB_LANGS.find(n => n.id === id)) return 2;
-    if (MOB_TOOLS.find(n => n.id === id)) return 3;
-    if (MOB_OUTPUT.find(n => n.id === id)) return 4;
-    if (MOB_PROJECTS.find(n => n.id === id)) return 5;
-    return 1;
+  function edgeState(fromId, toId) {
+    if (!effectiveMobActive) return { active: false, dimmed: false };
+    const connected = getConnectedIds(effectiveMobActive);
+    const active = fromId === effectiveMobActive || toId === effectiveMobActive || (connected.has(fromId) && connected.has(toId));
+    const dimmed = !active && (fromId !== effectiveMobActive && toId !== effectiveMobActive);
+    return { active: fromId === effectiveMobActive || toId === effectiveMobActive, dimmed };
   }
-
-  function nodeVisible(row) { return visRows >= row; }
-  function edgeVisible(a, b) { return visRows >= Math.max(getRowForId(a), getRowForId(b)); }
-  function rowIndexOf(id, arr) { return arr.findIndex(n => n.id === id); }
 
   return (
     <div className="md:hidden">
-      {/* Mobile tap hint — fades in with first row */}
-      <p style={{
-        textAlign: 'center', fontFamily: 'var(--font-jetbrains), monospace',
-        fontSize: '10px', letterSpacing: '0.25em', color: 'rgba(139,92,246,0.6)', marginBottom: '8px',
-        opacity: visRows >= 1 ? 1 : 0, transition: 'opacity 0.5s ease',
-      }}>
+      <p style={{ textAlign: "center", fontFamily: "var(--font-jetbrains), monospace", fontSize: "10px", letterSpacing: "0.25em", color: "rgba(139,92,246,0.6)", marginBottom: "16px" }}>
         TAP NODE · TAP AGAIN TO EXPLORE
       </p>
-      <div style={{ width: '100%', overflowX: 'hidden' }}>
-        <svg
-          viewBox={`0 0 ${MOB_W} ${MOB_H}`}
-          preserveAspectRatio="xMidYMid meet"
-          style={{ width: '100%', height: 'auto', overflow: 'visible', touchAction: 'pan-y' }}
-          aria-label="Skills network graph (mobile)"
-          onClick={() => setTapped(null)}
-        >
+      <div style={{ width: "100%", overflowX: "hidden" }}>
+        <svg viewBox="0 0 350 1200" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", overflow: "visible" }} onClick={() => setTapped(null)}>
           <defs>
             <radialGradient id="mobNetBg" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="rgba(139,92,246,0.04)" />
+              <stop offset="0%" stopColor="rgba(139,92,246,0.06)" />
+              <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+            </radialGradient>
+            <radialGradient id="mobProjBg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(0,212,255,0.06)" />
               <stop offset="100%" stopColor="rgba(0,0,0,0)" />
             </radialGradient>
           </defs>
+          <ellipse cx={200} cy={550} rx={240} ry={550} fill="url(#mobNetBg)" />
+          <ellipse cx={200} cy={1100} rx={180} ry={140} fill="url(#mobProjBg)" />
 
-          <rect x="0" y="0" width={MOB_W} height={MOB_H} fill="url(#mobNetBg)" />
-
-          {/* Row separator lines */}
-          {[220, 500, 800, 1020].map((ly) => (
-            <line key={ly} x1="20" y1={ly} x2={MOB_W - 20} y2={ly} stroke="rgba(139,92,246,0.06)" strokeWidth="1" strokeDasharray="4 6" />
+          {[
+            { label: "INPUT",     y: 124, color: "rgba(196,181,253,0.75)" },
+            { label: "LANGUAGES", y: 312, color: "rgba(196,181,253,0.75)" },
+            { label: "TOOLS",     y: 568, color: "rgba(196,181,253,0.75)" },
+            { label: "OUTPUT",    y: 836, color: "rgba(196,181,253,0.75)" },
+            { label: "PROJECTS",  y: 1152, color: "rgba(0,212,255,0.75)"   },
+          ].map(({ label, y, color }) => (
+             <text key={label} x={18} y={y + 10} transform={`rotate(-90 18 ${y+10})`} textAnchor="middle" fontSize="10" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
+               {label}
+             </text>
           ))}
 
-          {/* Row labels */}
-          {rowLabels.map(({ label, y, color }) => (
-            <text key={label} x={MOB_W / 2} y={y} textAnchor="middle" fontSize="10" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.25em" fill={color}>
-              {label}
-            </text>
-          ))}
-
-          {/* Edges — fade in row by row, highlight connected ones when a node is tapped */}
           <g>
-            {MOB_EDGES.map(([a, b], i) => {
-              const from = getMobNodePos(a);
-              const to = getMobNodePos(b);
-              if (!from || !to) return null;
-              const isProj = !!MOB_PROJECTS.find((p) => p.id === a || p.id === b);
-              const mx = (from.x + to.x) / 2;
-              const my = (from.y + to.y) / 2 - 10;
-              const d = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
-              const isActive = effectiveMobActive && (a === effectiveMobActive || b === effectiveMobActive);
-              const isDimmed = effectiveMobActive && !isActive;
-              const revealed = edgeVisible(a, b);
-              const stroke = isProj ? (isActive ? '#00D4FF' : 'rgba(0,212,255,0.12)') : (isActive ? '#8B5CF6' : 'rgba(139,92,246,0.12)');
-              return (
-                <path
-                  key={i}
-                  d={d}
-                  fill="none"
-                  stroke={stroke}
-                  strokeWidth={isActive ? 1.4 : 0.7}
-                  strokeLinecap="round"
-                  opacity={!revealed ? 0 : isDimmed ? 0.04 : 1}
-                  style={{ transition: 'opacity 0.5s ease, stroke 0.2s, stroke-width 0.2s' }}
-                />
-              );
+            {ALL_EDGES.map(([a, b], i) => {
+              const { active, dimmed } = edgeState(a, b);
+              return <Edge key={i} fromId={a} toId={b} active={active} dimmed={dimmed} isMobile={true} />;
             })}
           </g>
-
-          {/* Skill & category nodes — pop in row by row with per-node stagger */}
           <g>
-            {allMobNodes.map((node) => {
-              const isSkill = !!skillsData.find((s) => s.id === node.id);
-              const r = isSkill ? 16 : 10;
-              const lines = node.label.split('\n');
-              const isNodeTapped = effectiveMobActive === node.id;
-              const isUserTapped = tapped === node.id; // only show badge for real taps
-              const isLinked = effectiveMobActive && tappedConnected.has(node.id);
-              const isDimmedNode = effectiveMobActive && !isNodeTapped && !isLinked;
-              const nodeFill = isNodeTapped ? 'rgba(139,92,246,0.35)' : isLinked ? 'rgba(139,92,246,0.18)' : 'rgba(139,92,246,0.12)';
-              const nodeStroke = isNodeTapped ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.4)';
-              const textColor = isNodeTapped ? '#C4B5FD' : isDimmedNode ? 'rgba(156,163,175,0.2)' : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)';
-
-              // Per-node stagger within row
-              const nodeRow = getRowForId(node.id);
-              const rowArr = nodeRow === 1 ? MOB_INPUT : nodeRow === 2 ? MOB_LANGS : nodeRow === 3 ? MOB_TOOLS : MOB_OUTPUT;
-              const idxInRow = rowIndexOf(node.id, rowArr);
-              const nodeDelay = `${idxInRow * 80}ms`;
-              const revealed = nodeVisible(nodeRow);
-
-              return (
-                <g
-                  key={node.id}
-                  style={{
-                    cursor: isSkill ? 'pointer' : 'default',
-                    opacity: revealed ? (isDimmedNode ? 0.25 : 1) : 0,
-                    transform: revealed ? 'scale(1)' : 'scale(0.5)',
-                    transformOrigin: `${node.x}px ${node.y}px`,
-                    transition: `opacity 0.4s ease ${nodeDelay}, transform 0.4s cubic-bezier(0.34,1.56,0.64,1) ${nodeDelay}`,
-                  }}
-                  onTouchStart={recordTouch}
-                  onTouchEnd={makeTouchEnd(node, isSkill)}
-                >
-                  {/* Larger invisible hit area */}
-                  <circle cx={node.x} cy={node.y} r={r + 14} fill="transparent" />
-                  {/* Outer glow ring */}
-                  <circle
-                    cx={node.x} cy={node.y} r={r + 10}
-                    fill="transparent" stroke="rgba(139,92,246,0.12)" strokeWidth="0.8"
-                    opacity={isNodeTapped ? 1 : 0.5}
-                    style={{ transition: 'opacity 0.2s' }}
-                  />
-                  {/* Main circle */}
-                  <circle
-                    cx={node.x} cy={node.y} r={isNodeTapped ? r + 2 : r}
-                    fill={nodeFill} stroke={nodeStroke} strokeWidth={isNodeTapped ? 2 : 1}
-                    style={{
-                      filter: isNodeTapped ? 'drop-shadow(0 0 8px rgba(139,92,246,0.7))' : 'none',
-                      transition: 'fill 0.2s, stroke 0.2s',
-                    }}
-                  />
-                  {isSkill && (
-                    <circle cx={node.x} cy={node.y} r={3.5}
-                      fill={isNodeTapped ? '#C4B5FD' : 'rgba(139,92,246,0.6)'}
-                      style={{ transition: 'fill 0.2s' }} />
-                  )}
-                  {/* Badge only for real user taps, not tutorial demo */}
-                  {isUserTapped && (
-                    <text x={node.x} y={node.y - r - 8} textAnchor="middle" fontSize={8}
-                      fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.1em"
-                      fill="rgba(196,181,253,0.8)">
-                      TAP AGAIN →
-                    </text>
-                  )}
-                  {lines.map((line, li) => {
-                    const baseY = node.y + r + 14;
-                    const lineY = lines.length === 1 ? baseY : baseY + (li - (lines.length - 1) / 2) * 12;
-                    return (
-                      <text key={li} x={node.x} y={lineY} textAnchor="middle"
-                        fontSize={isSkill ? 10 : 9} fontFamily="var(--font-jetbrains), monospace"
-                        letterSpacing="0.05em" fill={textColor} fontWeight={isNodeTapped ? '700' : '400'}
-                        style={{ transition: 'fill 0.2s' }}>
-                        {line}
-                      </text>
-                    );
-                  })}
-                </g>
-              );
-            })}
+            {allNodeIds.map((id) => (
+              <Node
+                key={id}
+                nodeId={id}
+                hovered={effectiveMobActive}
+                onHover={() => {}}
+                onLeave={() => {}}
+                onClick={(skill, tappedId) => handleNodeClick(tappedId, !!skill, skill)}
+                isMobile={true}
+              />
+            ))}
           </g>
-
-          {/* Project nodes — appear in row 5 with per-node stagger */}
           <g>
-            {MOB_PROJECTS.map((node, ni) => {
-              const pw = 140;
-              const ph = 52;
-              const color = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
-              const isLinkedProj = tapped && tappedConnected.has(node.id);
-              const projDelay = `${ni * 100}ms`;
-              const revealedProj = nodeVisible(5);
-              return (
-                <g
-                  key={node.id}
-                  style={{
-                    cursor: 'pointer',
-                    opacity: revealedProj ? 1 : 0,
-                    transform: revealedProj ? 'scale(1)' : 'scale(0.7)',
-                    transformOrigin: `${node.x}px ${node.y}px`,
-                    transition: `opacity 0.4s ease ${projDelay}, transform 0.45s cubic-bezier(0.34,1.56,0.64,1) ${projDelay}`,
-                  }}
-                  onTouchStart={recordTouch}
-                  onTouchEnd={makeProjectTouchEnd(node.id)}
-                >
-                  <rect
-                    x={node.x - pw / 2} y={node.y - ph / 2}
-                    width={pw} height={ph} rx={8}
-                    fill="rgba(8,14,28,0.88)"
-                    stroke={isLinkedProj ? color : 'rgba(0,212,255,0.18)'}
-                    strokeWidth={isLinkedProj ? 1.5 : 1}
-                    style={{ transition: 'stroke 0.2s' }}
-                  />
-                  <text
-                    x={node.x} y={node.y - 7}
-                    textAnchor="middle" fontSize={8}
-                    fontFamily="var(--font-jetbrains), monospace"
-                    letterSpacing="0.15em"
-                    fill={`${color}99`}
-                  >
-                    {node.category.toUpperCase()}
-                  </text>
-                  <text
-                    x={node.x} y={node.y + 10}
-                    textAnchor="middle" fontSize={10}
-                    fontFamily="var(--font-jetbrains), monospace"
-                    fontWeight="500"
-                    fill="rgba(249,250,251,0.85)"
-                  >
-                    {node.label}
-                  </text>
-                </g>
-              );
-            })}
+            {allProjectIds.map((id) => (
+              <ProjectNode
+                key={id}
+                nodeId={id}
+                hovered={effectiveMobActive}
+                onHover={() => {}}
+                onLeave={() => {}}
+                onClick={(tappedId) => handleProjClick(tappedId)}
+                isMobile={true}
+              />
+            ))}
           </g>
         </svg>
       </div>
@@ -940,9 +692,9 @@ export default function SkillsNetwork() {
       )}
 
       <div className="max-w-7xl mx-auto">
-        {/* ── Desktop SVG ── */}
-        <div className="hidden md:block">
-          <div>
+        {/* ── 1-1 SVG Layout ── */}
+        <div className="w-full overflow-x-auto overflow-y-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ minWidth: '1000px', paddingBottom: '20px', paddingLeft: '10px' }}>
             <svg
               viewBox={`0 0 ${VB_W} ${VB_H}`}
               preserveAspectRatio="xMidYMid meet"
@@ -1015,15 +767,6 @@ export default function SkillsNetwork() {
             </svg>
           </div>
         </div>
-
-        {/* ── Mobile SVG (vertical layout) ── */}
-        <MobileSkillsNetwork
-          onSkillClick={setSelected}
-          onProjectClick={handleProjectClick}
-          isSceneActive={isSceneActive}
-          tutorialNode={tutorialNode}
-          onUserTap={handleMobileUserTap}
-        />
       </div>
 
       <div className="flex justify-center gap-6 md:gap-12 mt-8 flex-wrap">
