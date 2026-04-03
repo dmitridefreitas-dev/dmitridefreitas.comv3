@@ -286,7 +286,7 @@ function ProjectNode({ nodeId, hovered, onHover, onLeave, onClick }) {
 }
 
 /* ─── Robot helper popup ───────────────────────────────────────────── */
-function RobotHelper({ onDismiss, active }) {
+function RobotHelper({ onDismiss, active, message }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -396,7 +396,7 @@ function RobotHelper({ onDismiss, active }) {
                 margin: 0,
               }}
             >
-              🤖 Hover a skill node to trace its connections
+              {message ?? '🤖 Hover a skill node to trace its connections'}
             </p>
           </div>
         </motion.div>
@@ -513,7 +513,7 @@ function getMobNodePos(id) {
   return all.find((n) => n.id === id);
 }
 
-function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
+function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tutorialNode, onUserTap }) {
   const allMobNodes = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT];
   const rowLabels = [
     { label: 'INPUT',     y: 80,   color: 'rgba(196,181,253,0.75)' },
@@ -549,8 +549,9 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
       setTapped(null);
     } else {
       setTapped(node.id);
+      onUserTap?.(); // dismiss tutorial on first real tap
     }
-  }, [tapped, onSkillClick]);
+  }, [tapped, onSkillClick, onUserTap]);
 
   const makeProjectTouchEnd = useCallback((nodeId) => (e) => {
     const dy = Math.abs(e.changedTouches[0].clientY - touchOrigin.current.y);
@@ -559,10 +560,12 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
     e.stopPropagation();
     e.preventDefault();
     onProjectClick(nodeId);
-  }, [onProjectClick]);
+    onUserTap?.();
+  }, [onProjectClick, onUserTap]);
 
-  // Compute connected ids for highlight
-  const tappedConnected = useMemo(() => tapped ? getConnectedIds(tapped) : new Set(), [tapped]);
+  // Use real tap OR tutorial node for highlight (tutorial drives the demo animation)
+  const effectiveMobActive = tapped ?? tutorialNode ?? null;
+  const tappedConnected = useMemo(() => effectiveMobActive ? getConnectedIds(effectiveMobActive) : new Set(), [effectiveMobActive]);
 
   // Row-by-row reveal: 1=INPUT 2=LANGS 3=TOOLS 4=OUTPUT 5=PROJECTS
   const [visRows, setVisRows] = useState(0);
@@ -637,8 +640,8 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
               const mx = (from.x + to.x) / 2;
               const my = (from.y + to.y) / 2 - 10;
               const d = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
-              const isActive = tapped && (a === tapped || b === tapped);
-              const isDimmed = tapped && !isActive;
+              const isActive = effectiveMobActive && (a === effectiveMobActive || b === effectiveMobActive);
+              const isDimmed = effectiveMobActive && !isActive;
               const revealed = edgeVisible(a, b);
               const stroke = isProj ? (isActive ? '#00D4FF' : 'rgba(0,212,255,0.12)') : (isActive ? '#8B5CF6' : 'rgba(139,92,246,0.12)');
               return (
@@ -662,9 +665,10 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
               const isSkill = !!skillsData.find((s) => s.id === node.id);
               const r = isSkill ? 16 : 10;
               const lines = node.label.split('\n');
-              const isNodeTapped = tapped === node.id;
-              const isLinked = tapped && tappedConnected.has(node.id);
-              const isDimmedNode = tapped && !isNodeTapped && !isLinked;
+              const isNodeTapped = effectiveMobActive === node.id;
+              const isUserTapped = tapped === node.id; // only show badge for real taps
+              const isLinked = effectiveMobActive && tappedConnected.has(node.id);
+              const isDimmedNode = effectiveMobActive && !isNodeTapped && !isLinked;
               const nodeFill = isNodeTapped ? 'rgba(139,92,246,0.35)' : isLinked ? 'rgba(139,92,246,0.18)' : 'rgba(139,92,246,0.12)';
               const nodeStroke = isNodeTapped ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.4)';
               const textColor = isNodeTapped ? '#C4B5FD' : isDimmedNode ? 'rgba(156,163,175,0.2)' : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)';
@@ -712,7 +716,8 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive }) {
                       fill={isNodeTapped ? '#C4B5FD' : 'rgba(139,92,246,0.6)'}
                       style={{ transition: 'fill 0.2s' }} />
                   )}
-                  {isNodeTapped && (
+                  {/* Badge only for real user taps, not tutorial demo */}
+                  {isUserTapped && (
                     <text x={node.x} y={node.y - r - 8} textAnchor="middle" fontSize={8}
                       fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.1em"
                       fill="rgba(196,181,253,0.8)">
@@ -874,6 +879,15 @@ export default function SkillsNetwork() {
     setTutorialNode(null);
   }, []);
 
+  // Called when mobile user taps any node — stops the tutorial
+  const handleMobileUserTap = useCallback(() => {
+    if (!hasHoveredOnce.current) {
+      hasHoveredOnce.current = true;
+      setTutorialNode(null);
+      setShowRobot(false);
+    }
+  }, []);
+
   const allNodeIds = [
     ...INPUT_NODES.map((n) => n.id),
     ...skillsData.map((s) => s.id),
@@ -895,28 +909,35 @@ export default function SkillsNetwork() {
         Tools &amp; Languages
       </p>
 
-      {/* Bobbing hover hint — desktop only */}
+      {/* Bobbing hint — desktop shows "hover", mobile shows "tap" */}
       <div className="hidden md:flex items-center justify-center gap-2 mb-8">
-        <motion.span
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-          className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted/50"
-        >
-          hover
-        </motion.span>
-        <motion.span
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
-          style={{ color: 'rgba(139,92,246,0.4)', fontSize: '10px' }}
-        >
-          ↑
-        </motion.span>
+        <motion.span animate={{ y: [0,-5,0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted/50">hover</motion.span>
+        <motion.span animate={{ y: [0,-5,0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
+          style={{ color: 'rgba(139,92,246,0.4)', fontSize: '10px' }}>↑</motion.span>
+      </div>
+      <div className="flex md:hidden items-center justify-center gap-2 mb-4">
+        <motion.span animate={{ y: [0,-5,0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted/50">tap</motion.span>
+        <motion.span animate={{ y: [0,-5,0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
+          style={{ color: 'rgba(139,92,246,0.4)', fontSize: '10px' }}>↓</motion.span>
       </div>
 
-      <div className="hidden md:block">
-        {showRobot && <RobotHelper onDismiss={dismissRobot} active={isSceneActive} />}
-        <DemoLabel visible={showRobot && tutorialNode !== null} />
-      </div>
+      {/* Robot helper + demo label — shown on both desktop and mobile */}
+      {showRobot && (
+        <>
+          <div className="hidden md:block">
+            <RobotHelper onDismiss={dismissRobot} active={isSceneActive}
+              message="🤖 Hover a skill node to trace its connections" />
+            <DemoLabel visible={tutorialNode !== null} />
+          </div>
+          <div className="block md:hidden">
+            <RobotHelper onDismiss={dismissRobot} active={isSceneActive}
+              message="🤖 Tap a skill node to trace its connections" />
+            <DemoLabel visible={tutorialNode !== null} />
+          </div>
+        </>
+      )}
 
       <div className="max-w-7xl mx-auto">
         {/* ── Desktop SVG ── */}
@@ -996,7 +1017,13 @@ export default function SkillsNetwork() {
         </div>
 
         {/* ── Mobile SVG (vertical layout) ── */}
-        <MobileSkillsNetwork onSkillClick={setSelected} onProjectClick={handleProjectClick} isSceneActive={isSceneActive} />
+        <MobileSkillsNetwork
+          onSkillClick={setSelected}
+          onProjectClick={handleProjectClick}
+          isSceneActive={isSceneActive}
+          tutorialNode={tutorialNode}
+          onUserTap={handleMobileUserTap}
+        />
       </div>
 
       <div className="flex justify-center gap-6 md:gap-12 mt-8 flex-wrap">
