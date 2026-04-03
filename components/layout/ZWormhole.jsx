@@ -13,15 +13,13 @@ const InfoBanner        = dynamic(() => import('@/components/sections/InfoBanner
 const AcademicTicker    = dynamic(() => import('@/components/sections/FinanceTicker'),        { ssr: false });
 const SkillsNetwork     = dynamic(() => import('@/components/sections/SkillsNetwork'),        { ssr: false });
 const CompetenciesSticky= dynamic(() => import('@/components/sections/CompetenciesSticky'),   { ssr: false });
-const SkillsReveal      = dynamic(() => import('@/components/sections/SkillsReveal'),         { ssr: false });
-const CTASection        = dynamic(() => import('@/components/sections/CTASection'),           { ssr: false });
 const AboutContent      = dynamic(() => import('@/components/sections/AboutContent'),         { ssr: false });
 const ProjectsContent   = dynamic(() => import('@/components/sections/ProjectsContent'),      { ssr: false });
 const ContactPage       = dynamic(() => import('@/components/sections/ContactContent'),       { ssr: false });
 
 /* ── wormhole constants ──────────────────────────────────────────────────── */
 const SCENE_DEPTH      = 2500;
-const SCENE_LABELS     = ['HOME', 'NETWORK', 'CAREER', 'CIRCUIT', 'ABOUT', 'PROJECTS', 'CONTACT'];
+const SCENE_LABELS     = ['HOME', 'NETWORK', 'CAREER', 'ABOUT', 'PROJECTS', 'CONTACT'];
 const SCENE_COUNT      = SCENE_LABELS.length;
 const MAX_Z            = SCENE_DEPTH * (SCENE_COUNT - 1);
 const FRICTION         = 0.87;
@@ -41,12 +39,11 @@ function HomeScene() {
 }
 function NetworkScene()  { return <SkillsNetwork />; }
 function CareerScene()   { return <CompetenciesSticky />; }
-function CircuitScene()  { return <><SkillsReveal /><CTASection /></>; }
 function AboutScene()    { return <AboutContent />; }
 function ProjectsScene() { return <ProjectsContent />; }
 function ContactScene()  { return <ContactPage />; }
 
-const SCENES = [HomeScene, NetworkScene, CareerScene, CircuitScene, AboutScene, ProjectsScene, ContactScene];
+const SCENES = [HomeScene, NetworkScene, CareerScene, AboutScene, ProjectsScene, ContactScene];
 
 /* ── main component ──────────────────────────────────────────────────────── */
 export default function ZWormhole() {

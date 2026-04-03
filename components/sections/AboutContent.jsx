@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import TextReveal from '@/components/effects/TextReveal';
 import MagneticButton from '@/components/effects/MagneticButton';
 import ExperienceModal from '@/components/modals/ExperienceModal';
+import CTASection from '@/components/sections/CTASection';
 import { education } from '@/data/education';
 import { experiences } from '@/data/experiences';
 import { skillCategories, skillsData } from '@/data/skills';
@@ -1365,6 +1366,9 @@ export default function AboutContent() {
           onClose={() => setSelectedExperience(null)}
         />
       )}
+
+      {/* ── Let's Get in Touch (CTA) ─────────────────────────────────────────── */}
+      <CTASection />
     </>
   );
 }

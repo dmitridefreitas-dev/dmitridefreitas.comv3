@@ -691,7 +691,15 @@ export default function SkillsNetwork() {
         </>
       )}
 
-      <div className="max-w-7xl mx-auto">
+      <MobileSkillsNetwork
+        onSkillClick={setSelected}
+        onProjectClick={handleProjectClick}
+        isSceneActive={isSceneActive}
+        tutorialNode={tutorialNode}
+        onUserTap={handleMobileUserTap}
+      />
+
+      <div className="hidden md:block max-w-7xl mx-auto">
         {/* ── 1-1 SVG Layout ── */}
         <div className="w-full overflow-x-auto overflow-y-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div style={{ minWidth: '1000px', paddingBottom: '20px', paddingLeft: '10px' }}>

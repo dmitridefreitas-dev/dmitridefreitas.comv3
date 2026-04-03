@@ -21,7 +21,7 @@ const itemVariants = {
 
 export default function CTASection() {
   const navigateTo = useContext(NavigateContext);
-  // Scene indices: 5 = Projects, 6 = Contact
+  // Scene indices: 4 = Projects, 5 = Contact
   return (
     <section
       className="relative py-32 md:py-40 px-6 overflow-hidden"
@@ -166,11 +166,11 @@ export default function CTASection() {
 
         {/* CTA buttons */}
         <motion.div
-          variants={itemVariants}
-          className="flex flex-wrap justify-center gap-5"
-        >
-          {/* Primary: Get in Touch — navigates to Contact scene (6) */}
-          <button onClick={() => navigateTo(6)} className="group relative" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+  variants={itemVariants}
+  className="flex flex-wrap justify-center gap-5"
+>
+  {/* Primary: Get in Touch — navigates to Contact scene (5) */}
+  <button onClick={() => navigateTo(5)} className="group relative" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
             <span
               className="relative z-10 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.15em] px-8 py-3.5 transition-all duration-300"
               style={{
@@ -196,8 +196,8 @@ export default function CTASection() {
             </span>
           </button>
 
-          {/* Secondary: View Projects — navigates to Projects scene (5) */}
-          <button onClick={() => navigateTo(5)} className="group relative" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+  {/* Secondary: View Projects — navigates to Projects scene (4) */}
+  <button onClick={() => navigateTo(4)} className="group relative" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
             <span
               className="relative z-10 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.15em] px-8 py-3.5 transition-all duration-300"
               style={{

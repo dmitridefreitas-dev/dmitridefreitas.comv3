@@ -155,93 +155,146 @@ export default function TimelineScroll() {
         Education &nbsp;·&nbsp; Experience &nbsp;·&nbsp; Research
       </motion.p>
 
-      {/* Column labels */}
-      <div className="max-w-3xl mx-auto mb-4">
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-8">
-          <p className="text-right font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Education</p>
-          <div className="w-3.5" />
-          <p className="text-left font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Experience</p>
+      <div className="hidden md:block">
+        {/* Column labels */}
+        <div className="max-w-3xl mx-auto mb-4">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-x-8">
+            <p className="text-right font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Education</p>
+            <div className="w-3.5" />
+            <p className="text-left font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Experience</p>
+          </div>
+        </div>
+
+        <div className="relative max-w-3xl mx-auto">
+          {/* Ghost center line */}
+          <div
+            className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
+            style={{ width: '1px', background: 'rgba(139,92,246,0.07)' }}
+          />
+          {/* Animated gradient fill line */}
+          <motion.div
+            className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 origin-top"
+            style={{
+              width: '1px',
+              background: 'linear-gradient(to bottom, #8B5CF6 0%, #00D4FF 55%, #00E5A0 100%)',
+              scaleY: lineScaleY,
+              boxShadow: '0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(0,212,255,0.2)',
+            }}
+          />
+
+          <div className="flex flex-col">
+            {Array.from({ length: rows }).map((_, rowIdx) => {
+              const leftEntry  = left[rowIdx];
+              const rightEntry = right[rowIdx];
+              const activeType = (leftEntry || rightEntry)?.type;
+              const dotColor   = TYPE_COLORS[activeType] || '#8B5CF6';
+
+              return (
+                <div key={rowIdx} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-8 py-8">
+
+                  <div className="flex justify-end">
+                    {leftEntry && <Entry entry={leftEntry} align="right" rowIdx={rowIdx} />}
+                  </div>
+
+                  {/* Multi-layer glowing dot */}
+                  <div className="flex items-center justify-center z-10 flex-shrink-0" style={{ width: '14px' }}>
+                    <motion.div
+                      className="relative flex items-center justify-center"
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: rowIdx * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      {/* Outer pulse ring */}
+                      <motion.div
+                        className="absolute rounded-full"
+                        style={{ width: '38px', height: '38px', border: `1px solid ${dotColor}` }}
+                        animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
+                        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 }}
+                      />
+                      {/* Mid pulse ring */}
+                      <motion.div
+                        className="absolute rounded-full"
+                        style={{ width: '24px', height: '24px', border: `1px solid ${dotColor}70` }}
+                        animate={{ scale: [1, 1.5], opacity: [0.45, 0] }}
+                        transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 + 0.5 }}
+                      />
+                      {/* Solid core */}
+                      <div
+                        style={{
+                          width: '14px',
+                          height: '14px',
+                          borderRadius: '50%',
+                          background: dotColor,
+                          border: '2px solid rgba(2,3,10,0.95)',
+                          boxShadow: `0 0 14px ${dotColor}dd, 0 0 32px ${dotColor}55`,
+                          position: 'relative',
+                          zIndex: 1,
+                          flexShrink: 0,
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+
+                  <div className="flex justify-start">
+                    {rightEntry && <Entry entry={rightEntry} align="left" rowIdx={rowIdx} />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="relative max-w-3xl mx-auto">
-        {/* Ghost center line */}
-        <div
-          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
-          style={{ width: '1px', background: 'rgba(139,92,246,0.07)' }}
-        />
-        {/* Animated gradient fill line */}
-        <motion.div
-          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 origin-top"
-          style={{
-            width: '1px',
-            background: 'linear-gradient(to bottom, #8B5CF6 0%, #00D4FF 55%, #00E5A0 100%)',
-            scaleY: lineScaleY,
-            boxShadow: '0 0 10px rgba(139,92,246,0.6), 0 0 20px rgba(0,212,255,0.2)',
-          }}
-        />
-
-        <div className="flex flex-col">
-          {Array.from({ length: rows }).map((_, rowIdx) => {
-            const leftEntry  = left[rowIdx];
-            const rightEntry = right[rowIdx];
-            const activeType = (leftEntry || rightEntry)?.type;
-            const dotColor   = TYPE_COLORS[activeType] || '#8B5CF6';
-
-            return (
-              <div key={rowIdx} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-8 py-8">
-
-                <div className="flex justify-end">
-                  {leftEntry && <Entry entry={leftEntry} align="right" rowIdx={rowIdx} />}
+      {/* MOBILE LAYOUT: Single Column, Career then Education */}
+      <div className="md:hidden mt-8 flex flex-col gap-16 max-w-sm mx-auto">
+        
+        {/* Career Path Section */}
+        <div className="relative">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-8 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20">
+            Career Experience
+          </h3>
+          <div className="absolute left-[14px] top-[60px] bottom-0 w-px bg-gradient-to-b from-[#00D4FF] to-transparent opacity-30" />
+          <div className="flex flex-col gap-10">
+            {right.map((entry, idx) => {
+              const dotColor = TYPE_COLORS[entry.type] || '#00D4FF';
+              return (
+                <div key={`exp-${idx}`} className="flex gap-6 items-start relative">
+                  <div className="flex-shrink-0 mt-4 relative z-10 w-[28px] flex justify-center">
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 10px ${dotColor}aa` }} />
+                  </div>
+                  <div className="flex-grow">
+                    <Entry entry={entry} align="left" rowIdx={idx} />
+                  </div>
                 </div>
-
-                {/* Multi-layer glowing dot */}
-                <div className="flex items-center justify-center z-10 flex-shrink-0" style={{ width: '14px' }}>
-                  <motion.div
-                    className="relative flex items-center justify-center"
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: rowIdx * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    {/* Outer pulse ring */}
-                    <motion.div
-                      className="absolute rounded-full"
-                      style={{ width: '38px', height: '38px', border: `1px solid ${dotColor}` }}
-                      animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
-                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 }}
-                    />
-                    {/* Mid pulse ring */}
-                    <motion.div
-                      className="absolute rounded-full"
-                      style={{ width: '24px', height: '24px', border: `1px solid ${dotColor}70` }}
-                      animate={{ scale: [1, 1.5], opacity: [0.45, 0] }}
-                      transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 + 0.5 }}
-                    />
-                    {/* Solid core */}
-                    <div
-                      style={{
-                        width: '14px',
-                        height: '14px',
-                        borderRadius: '50%',
-                        background: dotColor,
-                        border: '2px solid rgba(2,3,10,0.95)',
-                        boxShadow: `0 0 14px ${dotColor}dd, 0 0 32px ${dotColor}55`,
-                        position: 'relative',
-                        zIndex: 1,
-                        flexShrink: 0,
-                      }}
-                    />
-                  </motion.div>
-                </div>
-
-                <div className="flex justify-start">
-                  {rightEntry && <Entry entry={rightEntry} align="left" rowIdx={rowIdx} />}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+
+        {/* Education Path Section */}
+        <div className="relative mt-8">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-8 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20">
+            Education
+          </h3>
+          <div className="absolute left-[14px] top-[60px] bottom-0 w-px bg-gradient-to-b from-[#8B5CF6] to-transparent opacity-30" />
+          <div className="flex flex-col gap-10">
+            {left.map((entry, idx) => {
+              const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
+              return (
+                <div key={`edu-${idx}`} className="flex gap-6 items-start relative">
+                  <div className="flex-shrink-0 mt-4 relative z-10 w-[28px] flex justify-center">
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 10px ${dotColor}aa` }} />
+                  </div>
+                  <div className="flex-grow">
+                    <Entry entry={entry} align="left" rowIdx={idx} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     </section>
   );
