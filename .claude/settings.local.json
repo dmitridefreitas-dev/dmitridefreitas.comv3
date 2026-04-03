@@ -19,7 +19,10 @@
       "Bash(xargs -I{} kill -9 {})",
       "Bash(cmd /c \"taskkill /F /PID 21316 && echo KILLED\")",
       "Bash(wmic process:*)",
-      "Bash(node -e \"const fm = require\\(''./node_modules/framer-motion/package.json''\\); console.log\\(fm.version\\)\")"
+      "Bash(node -e \"const fm = require\\(''./node_modules/framer-motion/package.json''\\); console.log\\(fm.version\\)\")",
+      "Bash(npx next:*)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); const files=[''components/sections/ProjectsContent.jsx'',''components/sections/AboutContent.jsx'',''components/sections/SkillsHorizontal.jsx'',''components/sections/CompetenciesSticky.jsx'',''components/sections/ProjectsShowcase.jsx'']; files.forEach\\(f=>{const c=fs.readFileSync\\(f,''utf8''\\);let d=0;for\\(const ch of c\\){if\\(ch===''{''\\)d++;if\\(ch===''}''\\)d--;}console.log\\(f+'': balanced=''+String\\(d===0\\)\\);}\\)\")",
+      "Bash(npx kill-port:*)"
     ]
   }
 }

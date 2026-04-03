@@ -2,12 +2,14 @@
 import {
   motion,
   AnimatePresence,
-  useScroll,
   useTransform,
   useSpring,
   useMotionValueEvent,
+  useMotionValue,
+  animate
 } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useContext } from 'react';
+import { ActiveSceneContext } from '@/components/layout/ZWormhole';
 
 /* ── Data ─────────────────────────────────────────────────────────── */
 
@@ -127,14 +129,25 @@ export default function CompetenciesSticky() {
   const eduPathD = buildPath(EDU_POSITIONS);
   const careerPathD = buildPath(CAREER_POSITIONS);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start 0.9', 'end 0.1'],
-  });
+  const isSceneActive = useContext(ActiveSceneContext);
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 28,
-    damping: 18,
+  const autoProgress = useMotionValue(0);
+
+  useEffect(() => {
+    if (!isSceneActive) return;
+    const startTimeout = setTimeout(() => {
+      animate(autoProgress, 1, {
+        duration: 12,
+        ease: "easeOut",
+      });
+    }, 800);
+
+    return () => clearTimeout(startTimeout);
+  }, [autoProgress, isSceneActive]);
+
+  const smoothProgress = useSpring(autoProgress, {
+    stiffness: 40,
+    damping: 20,
     restDelta: 0.001,
   });
 

@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
-images: {
+  output: 'export',
+  trailingSlash: true,
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
+  images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

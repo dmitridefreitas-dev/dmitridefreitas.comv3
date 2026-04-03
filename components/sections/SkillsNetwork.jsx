@@ -1,10 +1,11 @@
 'use client';
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SkillDetailModal from '@/components/modals/SkillDetailModal';
 import ProjectDetailModal from '@/components/modals/ProjectDetailModal';
 import { skillsData } from '@/data/skills';
 import { allProjects } from '@/data/projects';
+import { ActiveSceneContext } from '@/components/layout/ZWormhole';
 
 /* ─── Network topology ─────────────────────────────────────────────── */
 const INPUT_NODES = [
@@ -131,6 +132,7 @@ function Edge({ fromId, toId, active, dimmed }) {
       stroke={color}
       strokeWidth={strokeW}
       strokeLinecap="round"
+      opacity={0.12}
       animate={{ opacity, strokeWidth: strokeW }}
       transition={{ duration: 0.25 }}
     />
@@ -163,6 +165,7 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
         fill="transparent"
         stroke="rgba(139,92,246,0.18)"
         strokeWidth="1"
+        opacity={0.5}
         animate={{
           opacity: isHovered ? 1 : isDimmed ? 0 : 0.5,
           r: isHovered ? glowR + 4 : glowR,
@@ -171,23 +174,19 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick }) {
       />
 
       {!isDimmed && (
-        <motion.circle
-          cx={node.x} cy={node.y}
+        <circle
+          cx={node.x} cy={node.y} r={r + 4}
           fill="none"
           stroke="rgba(139,92,246,0.25)"
           strokeWidth="0.8"
-          animate={{ r: [r + 4, r + 20], opacity: [0.4, 0] }}
-          transition={{
-            duration: 2.2,
-            repeat: Infinity,
-            ease: 'easeOut',
-            delay: Math.random() * 2,
-          }}
+          className="animate-pulse-ring"
+          style={{ transformOrigin: `${node.x}px ${node.y}px` }}
         />
       )}
 
       <motion.circle
         cx={node.x} cy={node.y} r={r}
+        strokeWidth={1}
         animate={{
           fill: isHovered
             ? 'rgba(139,92,246,0.35)'
@@ -716,7 +715,7 @@ export default function SkillsNetwork() {
   const hasHoveredOnce = useRef(false);
 
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-10%' });
+  const isSceneActive = useContext(ActiveSceneContext);
 
   const effectiveHovered = hovered ?? (flashOn ? tutorialNode : null);
 
@@ -737,7 +736,7 @@ export default function SkillsNetwork() {
 
   /* ─── Tutorial auto-demo loop ─────────────────────────────────────── */
   useEffect(() => {
-    if (!isInView) return;
+    if (!isSceneActive) return;
     if (!showRobot) return;
 
     const DEMO_SEQUENCE = ['python', 'bloomberg', 'tableau'];
@@ -851,7 +850,7 @@ export default function SkillsNetwork() {
       </motion.div>
 
       <div className="hidden md:block">
-        {showRobot && <RobotHelper onDismiss={dismissRobot} active={isInView} />}
+        {showRobot && <RobotHelper onDismiss={dismissRobot} active={isSceneActive} />}
         <DemoLabel visible={showRobot && tutorialNode !== null} />
       </div>
 
@@ -979,6 +978,15 @@ export default function SkillsNetwork() {
           />
         )}
       </AnimatePresence>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes pulse-ring {
+          0% { transform: scale(1); opacity: 0.4; }
+          100% { transform: scale(2.5); opacity: 0; }
+        }
+        .animate-pulse-ring {
+          animation: pulse-ring 2.2s infinite ease-out;
+        }
+      ` }} />
     </section>
   );
 }

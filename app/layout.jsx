@@ -1,7 +1,6 @@
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import AtmosphericBlobs from '@/components/effects/AtmosphericBlobs';
+import dynamic from 'next/dynamic';
+const AtmosphericBlobs = dynamic(() => import('@/components/effects/AtmosphericBlobs'), { ssr: false });
 import ClientShell from '@/components/layout/ClientShell';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
@@ -155,16 +154,9 @@ export default function RootLayout({ children }) {
       </head>
       <body className="font-sans antialiased bg-background text-foreground">
         <AtmosphericBlobs />
-
         <ClientShell>
-          <div className="flex flex-col min-h-screen relative" style={{ zIndex: 10 }}>
-            <Header />
-            <main id="main-content" className="flex-grow">
-              {children}
-            </main>
-            <Footer />
-            <Toaster />
-          </div>
+          {children}
+          <Toaster />
         </ClientShell>
       </body>
     </html>

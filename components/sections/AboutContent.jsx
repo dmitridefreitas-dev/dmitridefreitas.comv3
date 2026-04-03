@@ -1,6 +1,6 @@
 'use client';
-import { useState, useRef, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { motion, useInView } from 'framer-motion';
 import TextReveal from '@/components/effects/TextReveal';
 import MagneticButton from '@/components/effects/MagneticButton';
 import ExperienceModal from '@/components/modals/ExperienceModal';
@@ -50,6 +50,35 @@ const skillBadgeCategories = [
   { label: 'ML & Stats', items: ['scikit-learn', 'XGBoost', 'statsmodels', 'ARIMA', 'OLS'] },
   { label: 'Visualization', items: ['Matplotlib', 'Seaborn', 'Power BI', 'Tableau'] },
   { label: 'Finance', items: ['Bloomberg', 'QuantLib', 'FRED API'] },
+];
+
+/* ── Constellation data ────────────────────────────────────────────────────── */
+const CONSTELLATION_NODES = [
+  { id: 'washu',    type: 'edu',      x: 110, y: 120, size: 7,   col: '#8B5CF6',
+    label: 'WashU',            sub: 'BS Data Science & Fin. Eng.', date: '2024–2026', highlight: true },
+  { id: 'drew',     type: 'edu',      x: 75,  y: 245, size: 5,   col: '#8B5CF6',
+    label: 'Drew University',  sub: 'BA Mathematics',               date: '2021–2023' },
+  { id: 'harrison', type: 'edu',      x: 130, y: 365, size: 4,   col: '#8B5CF6',
+    label: 'Harrison College', sub: 'Cambridge A-Levels',           date: '2015–2021' },
+  { id: 'amphora',  type: 'work',     x: 330, y: 160, size: 5,   col: '#00D4FF',
+    label: 'Amphora',          sub: 'Data Scientist Intern',         date: '2024' },
+  { id: 'pead',     type: 'research', x: 510, y: 105, size: 5.5, col: '#00E5A0',
+    label: 'PEAD Research',    sub: 'Market Efficiency',             date: '2024–Present' },
+  { id: 'quant',    type: 'research', x: 555, y: 245, size: 5,   col: '#00E5A0',
+    label: 'Quant Trading',    sub: 'Algorithmic Strategies',        date: '2023–Present' },
+  { id: 'duke',     type: 'research', x: 450, y: 350, size: 3.5, col: '#00E5A0',
+    label: 'Duke of Edinburgh',sub: 'Expedition Research',           date: '2019–2021' },
+];
+
+const CONSTELLATION_EDGES = [
+  { from: 'harrison', to: 'drew' },
+  { from: 'drew',     to: 'washu' },
+  { from: 'washu',    to: 'amphora' },
+  { from: 'washu',    to: 'pead' },
+  { from: 'amphora',  to: 'quant' },
+  { from: 'pead',     to: 'quant' },
+  { from: 'drew',     to: 'duke' },
+  { from: 'duke',     to: 'quant' },
 ];
 
 /* ── typing cursor hook ───────────────────────────────────────────────────── */
@@ -162,6 +191,571 @@ function InterestCard({ interest, index }) {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+/* ── Hex Grid Tech Stack ──────────────────────────────────────────── */
+const HEX_CELLS = [
+  { id: 'python',      label: 'Python',      cat: 'Languages',   col: '#8B5CF6' },
+  { id: 'r',           label: 'R',           cat: 'Languages',   col: '#8B5CF6' },
+  { id: 'sql',         label: 'SQL',         cat: 'Languages',   col: '#8B5CF6' },
+  { id: 'matlab',      label: 'MATLAB',      cat: 'Languages',   col: '#8B5CF6' },
+  { id: 'vba',         label: 'VBA',         cat: 'Languages',   col: '#8B5CF6' },
+  { id: 'sklearn',     label: 'sklearn',     cat: 'ML & Stats',  col: '#00D4FF' },
+  { id: 'xgboost',     label: 'XGBoost',     cat: 'ML & Stats',  col: '#00D4FF' },
+  { id: 'statsmodels', label: 'statsmodels', cat: 'ML & Stats',  col: '#00D4FF' },
+  { id: 'arima',       label: 'ARIMA',       cat: 'ML & Stats',  col: '#00D4FF' },
+  { id: 'ols',         label: 'OLS',         cat: 'ML & Stats',  col: '#00D4FF' },
+  { id: 'matplotlib',  label: 'Matplotlib',  cat: 'Viz',         col: '#00E5A0' },
+  { id: 'seaborn',     label: 'Seaborn',     cat: 'Viz',         col: '#00E5A0' },
+  { id: 'powerbi',     label: 'Power BI',    cat: 'Viz',         col: '#00E5A0' },
+  { id: 'tableau',     label: 'Tableau',     cat: 'Viz',         col: '#00E5A0' },
+  { id: 'bloomberg',   label: 'Bloomberg',   cat: 'Finance',     col: '#F59E0B' },
+  { id: 'quantlib',    label: 'QuantLib',    cat: 'Finance',     col: '#F59E0B' },
+  { id: 'fredapi',     label: 'FRED API',    cat: 'Finance',     col: '#F59E0B' },
+];
+
+const HEX_LEGEND = [
+  { cat: 'Languages', col: '#8B5CF6' },
+  { cat: 'ML & Stats', col: '#00D4FF' },
+  { cat: 'Viz', col: '#00E5A0' },
+  { cat: 'Finance', col: '#F59E0B' },
+];
+
+function HexGrid() {
+  const [hovered, setHovered] = useState(null);
+
+  // Flat-top hexagon geometry
+  // size = circumradius; w = 2*size; h = sqrt(3)*size
+  const SIZE = 44;
+  const W = SIZE * 2;
+  const H = Math.sqrt(3) * SIZE;
+  const COLS = 5;
+
+  // Arrange cells in offset-column hex grid
+  const cellPositions = HEX_CELLS.map((cell, i) => {
+    const col = i % COLS;
+    const row = Math.floor(i / COLS);
+    const xOffset = col % 2 === 1 ? H / 2 : 0; // odd columns shifted down
+    const x = col * (H * 0.92);
+    const y = row * (SIZE * 1.55) + xOffset;
+    return { ...cell, x, y };
+  });
+
+  const svgW = COLS * H * 0.92 + H * 0.1;
+  const rows = Math.ceil(HEX_CELLS.length / COLS);
+  const svgH = rows * SIZE * 1.55 + SIZE;
+
+  // Flat-top hex points
+  function hexPoints(cx, cy, r) {
+    return Array.from({ length: 6 }, (_, i) => {
+      const angle = (Math.PI / 180) * (60 * i);
+      return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+    }).join(' ');
+  }
+
+  return (
+    <div>
+      <motion.p
+        {...fadeUp(0)}
+        className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-1"
+      >
+        Tech Stack
+      </motion.p>
+      <motion.p
+        {...fadeUp(0.05)}
+        className="font-mono text-[9px] uppercase tracking-[0.3em] mb-5"
+        style={{ color: 'rgba(0,212,255,0.35)' }}
+      >
+        HEX.GRID.v1 · {HEX_CELLS.length} NODES
+      </motion.p>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-4 mb-5">
+        {HEX_LEGEND.map(({ cat, col }) => (
+          <div key={cat} className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-sm" style={{ background: col, boxShadow: `0 0 5px ${col}88` }} />
+            <span className="font-mono text-[9px] uppercase tracking-[0.15em]" style={{ color: `${col}99` }}>{cat}</span>
+          </div>
+        ))}
+      </div>
+
+      <motion.div
+        {...fadeUp(0.1)}
+        style={{ overflowX: 'auto' }}
+      >
+        <svg
+          viewBox={`0 0 ${svgW} ${svgH}`}
+          style={{ width: '100%', maxWidth: `${svgW}px`, height: 'auto', overflow: 'visible' }}
+          fill="none"
+        >
+          <defs>
+            <filter id="hexGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="b" in="SourceGraphic" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {cellPositions.map((cell, i) => {
+            const cx = cell.x + H / 2;
+            const cy = cell.y + SIZE;
+            const isHov = hovered === cell.id;
+            const pts = hexPoints(cx, cy, SIZE - 3);
+
+            return (
+              <motion.g
+                key={cell.id}
+                initial={{ opacity: 0, scale: 0.6 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                style={{ cursor: 'default', transformOrigin: `${cx}px ${cy}px` }}
+                onMouseEnter={() => setHovered(cell.id)}
+                onMouseLeave={() => setHovered(null)}
+              >
+                {/* Hex background */}
+                <polygon
+                  points={pts}
+                  fill={isHov ? `${cell.col}18` : 'rgba(8,14,28,0.85)'}
+                  stroke={isHov ? cell.col : `${cell.col}33`}
+                  strokeWidth={isHov ? 1.5 : 0.8}
+                  filter={isHov ? 'url(#hexGlow)' : undefined}
+                  style={{ transition: 'fill 0.2s, stroke 0.2s, stroke-width 0.2s' }}
+                />
+
+                {/* Corner dots */}
+                {isHov && Array.from({ length: 6 }, (_, vi) => {
+                  const angle = (Math.PI / 180) * (60 * vi);
+                  const dx = cx + (SIZE - 3) * Math.cos(angle);
+                  const dy = cy + (SIZE - 3) * Math.sin(angle);
+                  return <circle key={vi} cx={dx} cy={dy} r={1.5} fill={cell.col} opacity={0.8} />;
+                })}
+
+                {/* Label */}
+                <text
+                  x={cx}
+                  y={cy + 1}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={8.5}
+                  fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                  letterSpacing="0.08em"
+                  fill={isHov ? cell.col : `${cell.col}BB`}
+                  style={{ transition: 'fill 0.2s', textTransform: 'uppercase', userSelect: 'none' }}
+                >
+                  {cell.label.length > 8 ? cell.label.substring(0, 8) : cell.label}
+                </text>
+
+                {/* Category dot at top */}
+                <circle
+                  cx={cx}
+                  cy={cy - SIZE + 8}
+                  r={1.8}
+                  fill={isHov ? cell.col : `${cell.col}55`}
+                  style={{ transition: 'fill 0.2s' }}
+                />
+              </motion.g>
+            );
+          })}
+        </svg>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ── Constellation Blueprint ──────────────────────────────────────── */
+
+function ConstellationBlueprint({ onSelectExperience }) {
+  const [revealed, setRevealed] = useState(new Set());
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const [edgeProgress, setEdgeProgress] = useState(0);
+  const containerRef = useRef(null);
+  const inView = useInView(containerRef, { once: true, margin: '-10%' });
+
+  useEffect(() => {
+    if (!inView) return;
+    // Reveal nodes with stagger
+    CONSTELLATION_NODES.forEach((node, i) => {
+      setTimeout(() => {
+        setRevealed(prev => new Set([...prev, node.id]));
+      }, 300 + i * 250);
+    });
+    // Animate edge progress
+    const start = performance.now();
+    const EDGE_DUR = 3500;
+    let raf;
+    const tick = (now) => {
+      const p = Math.min((now - start) / EDGE_DUR, 1);
+      setEdgeProgress(p);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    setTimeout(() => { raf = requestAnimationFrame(tick); }, 500);
+    return () => cancelAnimationFrame(raf);
+  }, [inView]);
+
+  const getNode = (id) => CONSTELLATION_NODES.find(n => n.id === id);
+
+  const VBW = 680;
+  const VBH = 430;
+
+  // Experience lookup for clickable nodes
+  const EXP_IDS = {
+    amphora: 'amphora',
+    pead: 'pead-research',
+    quant: 'quant-research',
+  };
+
+  return (
+    <section className="px-6 lg:px-16 py-12" aria-label="Education and Research">
+      <div className="max-w-5xl mx-auto">
+        <motion.p
+          {...fadeUp(0)}
+          className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-1 flex items-center gap-2"
+        >
+          <GraduationCap className="h-3.5 w-3.5 text-accent" />
+          Education &amp; Research Path
+        </motion.p>
+        <motion.p
+          {...fadeUp(0.05)}
+          className="font-mono text-[9px] uppercase tracking-[0.3em] mb-8"
+          style={{ color: 'rgba(0,212,255,0.35)' }}
+        >
+          CONSTELLATION.BLUEPRINT · {CONSTELLATION_NODES.length} STARS · {CONSTELLATION_EDGES.length} CONNECTIONS
+        </motion.p>
+
+        {/* Legend */}
+        <div className="flex flex-wrap gap-5 mb-8">
+          {[
+            { label: 'Education', col: '#8B5CF6' },
+            { label: 'Professional', col: '#00D4FF' },
+            { label: 'Research', col: '#00E5A0' },
+          ].map(({ label, col }) => (
+            <div key={label} className="flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 14 14">
+                <circle cx="7" cy="7" r="4" fill={col} opacity={0.8} />
+                <circle cx="7" cy="7" r="6" fill="none" stroke={col} strokeWidth="0.8" opacity={0.4} />
+              </svg>
+              <span className="font-mono text-[9px] uppercase tracking-[0.15em]" style={{ color: `${col}99` }}>{label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div ref={containerRef} className="relative">
+          {/* SVG constellation - desktop */}
+          <div className="hidden md:block">
+            <svg
+              viewBox={`0 0 ${VBW} ${VBH}`}
+              style={{ width: '100%', height: 'auto', overflow: 'visible' }}
+              fill="none"
+            >
+              <defs>
+                <filter id="starGlow" x="-150%" y="-150%" width="400%" height="400%">
+                  <feGaussianBlur stdDeviation="4" result="b" in="SourceGraphic" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="starGlowBig" x="-200%" y="-200%" width="500%" height="500%">
+                  <feGaussianBlur stdDeviation="7" result="b" in="SourceGraphic" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                {/* Background star field */}
+                <pattern id="starfield" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                  <circle cx="10" cy="15" r="0.5" fill="rgba(255,255,255,0.04)" />
+                  <circle cx="35" cy="8" r="0.4" fill="rgba(139,92,246,0.06)" />
+                  <circle cx="50" cy="40" r="0.5" fill="rgba(0,212,255,0.05)" />
+                  <circle cx="20" cy="50" r="0.3" fill="rgba(255,255,255,0.03)" />
+                  <circle cx="45" cy="25" r="0.4" fill="rgba(0,229,160,0.04)" />
+                </pattern>
+              </defs>
+
+              {/* Star field background */}
+              <rect width={VBW} height={VBH} fill="url(#starfield)" />
+
+              {/* Cluster labels */}
+              <text x="110" y="55" textAnchor="middle" fontSize={7}
+                fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                letterSpacing="0.25em" fill="rgba(139,92,246,0.25)">
+                {'[ EDUCATION ]'}
+              </text>
+              <text x="510" y="55" textAnchor="middle" fontSize={7}
+                fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                letterSpacing="0.25em" fill="rgba(0,229,160,0.25)">
+                {'[ RESEARCH ]'}
+              </text>
+              <text x="340" y="55" textAnchor="middle" fontSize={7}
+                fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                letterSpacing="0.25em" fill="rgba(0,212,255,0.25)">
+                {'[ WORK ]'}
+              </text>
+
+              {/* Edges */}
+              {CONSTELLATION_EDGES.map((edge, ei) => {
+                const from = getNode(edge.from);
+                const to = getNode(edge.to);
+                if (!from || !to) return null;
+                const edgeThreshold = ei / CONSTELLATION_EDGES.length;
+                const visible = edgeProgress > edgeThreshold;
+                if (!visible) return null;
+                const localP = Math.min((edgeProgress - edgeThreshold) / (1 / CONSTELLATION_EDGES.length), 1);
+                // Determine color based on node types
+                const isEduEdge = from.type === 'edu' && to.type === 'edu';
+                const isResEdge = to.type === 'research';
+                const strokeCol = isEduEdge ? 'rgba(139,92,246,0.25)' : isResEdge ? 'rgba(0,229,160,0.2)' : 'rgba(0,212,255,0.2)';
+
+                return (
+                  <line
+                    key={`${edge.from}-${edge.to}`}
+                    x1={from.x} y1={from.y}
+                    x2={from.x + (to.x - from.x) * localP}
+                    y2={from.y + (to.y - from.y) * localP}
+                    stroke={strokeCol}
+                    strokeWidth={0.8}
+                    strokeDasharray="4 3"
+                  />
+                );
+              })}
+
+              {/* Nodes */}
+              {CONSTELLATION_NODES.map((node, ni) => {
+                const isRevealed = revealed.has(node.id);
+                const isHov = hoveredNode === node.id;
+                const isClickable = !!EXP_IDS[node.id];
+
+                return (
+                  <g
+                    key={node.id}
+                    style={{ cursor: isClickable ? 'pointer' : 'default' }}
+                    onMouseEnter={() => setHoveredNode(node.id)}
+                    onMouseLeave={() => setHoveredNode(null)}
+                    onClick={() => {
+                      if (isClickable && onSelectExperience) {
+                        // find experience by id from experiences data - handled by parent
+                      }
+                    }}
+                  >
+                    {isRevealed && (
+                      <>
+                        {/* Outer ring */}
+                        <circle
+                          cx={node.x} cy={node.y}
+                          r={node.size + (isHov ? 6 : 4)}
+                          fill="none"
+                          stroke={node.col}
+                          strokeWidth={0.5}
+                          opacity={isHov ? 0.5 : 0.15}
+                          style={{ transition: 'r 0.2s, opacity 0.2s' }}
+                        />
+                        {/* Star core */}
+                        <circle
+                          cx={node.x} cy={node.y}
+                          r={isHov ? node.size + 1.5 : node.size}
+                          fill={isHov ? node.col : `${node.col}CC`}
+                          filter={node.highlight || isHov ? 'url(#starGlowBig)' : 'url(#starGlow)'}
+                          style={{ transition: 'r 0.2s, fill 0.2s' }}
+                        />
+                        {/* Cross hair on highlight nodes */}
+                        {node.highlight && (
+                          <>
+                            <line x1={node.x - 12} y1={node.y} x2={node.x + 12} y2={node.y}
+                              stroke={node.col} strokeWidth={0.5} opacity={0.3} />
+                            <line x1={node.x} y1={node.y - 12} x2={node.x} y2={node.y + 12}
+                              stroke={node.col} strokeWidth={0.5} opacity={0.3} />
+                          </>
+                        )}
+
+                        {/* Label */}
+                        <text
+                          x={node.x + node.size + 8}
+                          y={node.y - 4}
+                          fontSize={8.5}
+                          fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                          fill={isHov ? node.col : `${node.col}DD`}
+                          letterSpacing="0.06em"
+                          style={{ transition: 'fill 0.2s', userSelect: 'none' }}
+                        >
+                          {node.label}
+                        </text>
+                        <text
+                          x={node.x + node.size + 8}
+                          y={node.y + 8}
+                          fontSize={7}
+                          fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                          fill={`${node.col}77`}
+                          letterSpacing="0.04em"
+                          style={{ userSelect: 'none' }}
+                        >
+                          {node.sub}
+                        </text>
+                        <text
+                          x={node.x + node.size + 8}
+                          y={node.y + 19}
+                          fontSize={6.5}
+                          fontFamily="var(--font-jetbrains), 'Courier New', monospace"
+                          fill={`${node.col}55`}
+                          letterSpacing="0.06em"
+                          style={{ userSelect: 'none' }}
+                        >
+                          {node.date}
+                        </text>
+                      </>
+                    )}
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+
+          {/* Mobile fallback: simple vertical list */}
+          <div className="md:hidden">
+            <div className="mb-8">
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/60 mb-4">Education</p>
+              <div className="relative border-l border-border pl-6 flex flex-col gap-0">
+                {education.map((edu, i) => (
+                  <motion.article key={edu.school} {...stagger(i, 0.1)} className="py-5 relative">
+                    <div className="absolute left-[-26px] top-7 w-2 h-2">
+                      <div className="absolute inset-0 rounded-full bg-accent/50 border border-background" />
+                    </div>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent mb-1">{edu.years}</p>
+                    <h3 className="font-sans font-bold text-sm text-foreground mb-0.5">{edu.school}</h3>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{edu.degree}</p>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/60 mb-4">Research</p>
+              <div className="relative border-l border-border pl-6 flex flex-col gap-0">
+                {researchExps.map((exp, i) => (
+                  <motion.article key={exp.id} {...stagger(i, 0.1)}
+                    className="py-5 relative group cursor-pointer"
+                    onClick={() => onSelectExperience && onSelectExperience(exp)}
+                  >
+                    <div className="absolute left-[-26px] top-7 w-2 h-2">
+                      <div className="absolute inset-0 rounded-full bg-[#00E5A0]/50 border border-background" />
+                    </div>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#00E5A0] mb-1">{exp.date}</p>
+                    <h3 className="font-sans font-bold text-sm text-foreground mb-0.5 group-hover:text-[#00E5A0] transition-colors">{exp.title}</h3>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{exp.organization}</p>
+                  </motion.article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Research Signal Matrix ───────────────────────────────────────── */
+
+function ResearchMatrix() {
+  const [hovered, setHovered] = useState(null);
+
+  const ROW_COLORS = ['#8B5CF6', '#00D4FF', '#00E5A0'];
+
+  return (
+    <section className="px-6 lg:px-16 py-12" aria-label="Research Focus Areas">
+      <div className="max-w-5xl mx-auto">
+        <motion.p
+          {...fadeUp(0)}
+          className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-1 flex items-center gap-2"
+        >
+          <FlaskConical className="h-3.5 w-3.5 text-accent" />
+          Research Focus Areas
+        </motion.p>
+        <motion.p
+          {...fadeUp(0.05)}
+          className="font-mono text-[9px] uppercase tracking-[0.3em] mb-8"
+          style={{ color: 'rgba(0,212,255,0.35)' }}
+        >
+          SIGNAL.MATRIX · {researchFocusAreas.length} DOMAINS
+        </motion.p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {researchFocusAreas.map((area, i) => {
+            const rowColor = ROW_COLORS[Math.floor(i / 3)];
+            const isHov = hovered === i;
+
+            return (
+              <motion.div
+                key={area}
+                {...stagger(i, 0.05)}
+                className="relative overflow-hidden"
+                style={{
+                  background: isHov ? `${rowColor}0D` : 'rgba(8,14,28,0.6)',
+                  border: `1px solid ${isHov ? rowColor + '44' : rowColor + '18'}`,
+                  borderRadius: '4px',
+                  cursor: 'default',
+                  transition: 'background 0.25s, border-color 0.25s',
+                }}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+              >
+                {/* Top accent bar */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-px"
+                  style={{
+                    background: isHov
+                      ? `linear-gradient(90deg, transparent, ${rowColor}, transparent)`
+                      : `linear-gradient(90deg, transparent, ${rowColor}44, transparent)`,
+                    transition: 'background 0.25s',
+                  }}
+                />
+
+                {/* Scan line */}
+                {isHov && (
+                  <motion.div
+                    className="absolute left-0 right-0 h-px pointer-events-none"
+                    style={{ background: `${rowColor}22` }}
+                    animate={{ top: ['0%', '100%'] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
+                  />
+                )}
+
+                <div className="p-4 flex items-center gap-3">
+                  {/* Indicator */}
+                  <div
+                    className="flex-shrink-0 w-1.5 h-1.5 rounded-full"
+                    style={{
+                      background: rowColor,
+                      boxShadow: isHov ? `0 0 8px ${rowColor}` : 'none',
+                      transition: 'box-shadow 0.25s',
+                    }}
+                  />
+
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-[0.2em]"
+                    style={{
+                      color: isHov ? rowColor : `${rowColor}99`,
+                      transition: 'color 0.25s',
+                    }}
+                  >
+                    {area}
+                  </span>
+
+                  {/* Index */}
+                  <span
+                    className="ml-auto font-mono text-[8px] flex-shrink-0"
+                    style={{ color: `${rowColor}44` }}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }
 

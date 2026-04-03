@@ -171,26 +171,21 @@ export default function ContactPage() {
     }
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Failed to send message');
-      }
+      const subject = encodeURIComponent(`Portfolio Contact: ${formData.name}${formData.subject ? ` — ${formData.subject}` : ''}`);
+      const body = encodeURIComponent(`From: ${formData.name} <${formData.email}>\n\n${formData.message}`);
+      window.location.href = `mailto:d.defreitas@wustl.edu?subject=${subject}&body=${body}`;
+
       setSendSuccess(true);
       setTimeout(() => setSendSuccess(false), 3000);
       toast({
-        title: 'Transmission Sent',
-        description: "Message received. I'll respond shortly.",
+        title: 'Opening email client…',
+        description: "Your default mail app will open to send the message.",
       });
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
       toast({
         title: 'Transmission Failed',
-        description: err.message || 'Failed to send message. Please try again.',
+        description: err.message || 'Could not open email client. Please email d.defreitas@wustl.edu directly.',
       });
     } finally {
       setIsSubmitting(false);

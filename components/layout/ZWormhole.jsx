@@ -1,8 +1,10 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { createContext, useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { Observer } from 'gsap/Observer';
 import dynamic from 'next/dynamic';
+
+export const ActiveSceneContext = createContext(false);
 
 /* ── lazy-load all real section content ─────────────────────────────────── */
 const HeroToggler       = dynamic(() => import('@/components/hero/HeroToggler'),             { ssr: false });
@@ -15,11 +17,11 @@ const CTASection        = dynamic(() => import('@/components/sections/CTASection
 const SectionAtmosphere = dynamic(() => import('@/components/effects/SectionAtmosphere'),     { ssr: false });
 const AboutContent      = dynamic(() => import('@/components/sections/AboutContent'),         { ssr: false });
 const ProjectsContent   = dynamic(() => import('@/components/sections/ProjectsContent'),      { ssr: false });
-const ContactPage       = dynamic(() => import('@/app/contact/page'),                         { ssr: false });
+const ContactPage       = dynamic(() => import('@/components/sections/ContactContent'),       { ssr: false });
 
 /* ── wormhole constants ──────────────────────────────────────────────────── */
 const SCENE_DEPTH      = 2500;
-const SCENE_LABELS     = ['HOME', 'ABOUT', 'PROJECTS', 'CONTACT'];
+const SCENE_LABELS     = ['HOME', 'NETWORK', 'CAREER', 'CIRCUIT', 'ABOUT', 'PROJECTS', 'CONTACT'];
 const SCENE_COUNT      = SCENE_LABELS.length;
 const MAX_Z            = SCENE_DEPTH * (SCENE_COUNT - 1);
 const FRICTION         = 0.87;
@@ -34,25 +36,31 @@ function HomeScene() {
       <HeroToggler />
       <InfoBanner />
       <AcademicTicker />
-      <SectionAtmosphere atmosphere="skills"><SkillsNetwork /></SectionAtmosphere>
-      <SectionAtmosphere atmosphere="skills"><CompetenciesSticky /></SectionAtmosphere>
+    </>
+  );
+}
+function NetworkScene()  { return <SectionAtmosphere atmosphere="skills"><SkillsNetwork /></SectionAtmosphere>; }
+function CareerScene()   { return <SectionAtmosphere atmosphere="skills"><CompetenciesSticky /></SectionAtmosphere>; }
+function CircuitScene()  { 
+  return (
+    <>
       <SectionAtmosphere atmosphere="skills"><SkillsReveal /></SectionAtmosphere>
       <SectionAtmosphere atmosphere="cta"><CTASection /></SectionAtmosphere>
     </>
-  );
+  ); 
 }
 function AboutScene()    { return <AboutContent />; }
 function ProjectsScene() { return <ProjectsContent />; }
 function ContactScene()  { return <ContactPage />; }
 
-const SCENES = [HomeScene, AboutScene, ProjectsScene, ContactScene];
+const SCENES = [HomeScene, NetworkScene, CareerScene, CircuitScene, AboutScene, ProjectsScene, ContactScene];
 
 /* ── main component ──────────────────────────────────────────────────────── */
 export default function ZWormhole() {
   const worldRef      = useRef(null);
   const shellRefs     = useRef([]);
-  const scrollRefs    = useRef([]);   // inner scrollable containers
-  const vignetteRef   = useRef(null); // direct DOM ref — avoids setState on every frame
+  const scrollRefs    = useRef([]);
+  const vignetteRef   = useRef(null);
   const stateRef      = useRef({ cameraZ: 0, velocity: 0 });
   const tweenRef      = useRef(null);
   const activeSc      = useRef(0);
@@ -70,12 +78,19 @@ export default function ZWormhole() {
       worldRef.current.style.transform = `translateZ(${z}px)`;
     }
     const speed = Math.abs(stateRef.current.velocity);
+    const activeIdx = z / SCENE_DEPTH;
     for (let i = 0; i < SCENE_COUNT; i++) {
       const el = shellRefs.current[i];
       if (!el) continue;
-      const dist = Math.abs(z - i * SCENE_DEPTH);
-      el.style.opacity     = String(Math.max(0, 1 - (dist / SCENE_DEPTH) * 0.95));
-      el.style.visibility  = dist > SCENE_DEPTH * 0.6 ? 'hidden' : 'visible';
+      const dist = Math.abs(activeIdx - i);
+      if (dist > 1.5) {
+        // Far away — just hide, skip opacity calc
+        if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden';
+        continue;
+      }
+      const opacity = Math.max(0, 1 - (dist / 1) * 0.95);
+      el.style.opacity    = String(opacity);
+      el.style.visibility = dist > 0.6 ? 'hidden' : 'visible';
     }
     if (vignetteRef.current) {
       vignetteRef.current.style.opacity = speed > 4 ? '1' : '0';
@@ -131,7 +146,7 @@ export default function ZWormhole() {
         if (dy < 0 && !atTop) { inner.scrollTop += dy; return; }
 
         // At the boundary — Z-travel
-        stateRef.current.velocity -= dy * SCROLL_MUL;
+        stateRef.current.velocity += dy * SCROLL_MUL;
       },
     });
 
@@ -201,25 +216,25 @@ export default function ZWormhole() {
               position: 'absolute', top: 0, left: 0,
               width: '100vw', height: '100vh',
               transform: `translateZ(${-i * SCENE_DEPTH}px)`,
-              // No preserve-3d or will-change:opacity — those promote each shell
-              // into its own 3D compositing layer and cause GPU tear lines.
               backfaceVisibility: 'hidden',
               contain: 'layout paint style',
+              willChange: 'opacity',
             }}
           >
             {/* inner scroll container */}
             <div
-              ref={(el) => { scrollRefs.current[i] = el; }}
+              ref={(el) => { scrollRefs.current[i] = el; sceneRefs[i].current = el; }}
               style={{
                 width: '100%', height: '100%',
                 overflowY: 'auto', overflowX: 'hidden',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
-                // Own compositing layer so scroll repaints stay isolated
                 transform: 'translateZ(0)',
               }}
             >
-              <SceneComp />
+              <ActiveSceneContext.Provider value={activeScene === i}>
+                <SceneComp />
+              </ActiveSceneContext.Provider>
             </div>
           </div>
         ))}
