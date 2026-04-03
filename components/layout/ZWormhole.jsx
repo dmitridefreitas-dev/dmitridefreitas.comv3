@@ -128,7 +128,10 @@ export default function ZWormhole() {
           tweenRef.current = null;
         }
 
-        const dy    = self.deltaY;
+        // Touch swipe direction is opposite to wheel delta — negate for touch
+        const isTouch = self.event && self.event.type && self.event.type.startsWith('touch');
+        const dy = isTouch ? -self.deltaY : self.deltaY;
+
         const inner = scrollRefs.current[activeSc.current];
         const atTop = !inner || inner.scrollTop <= 0;
         const atBot = !inner || inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 4;
