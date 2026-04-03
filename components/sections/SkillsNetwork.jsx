@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect, useCallback, useContext } from 'react';
+import { useState, useRef, useEffect, useCallback, useContext, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SkillDetailModal from '@/components/modals/SkillDetailModal';
 import ProjectDetailModal from '@/components/modals/ProjectDetailModal';
@@ -523,34 +523,63 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
     { label: 'PROJECTS',  y: 1060, color: 'rgba(0,212,255,0.75)' },
   ];
 
-  const handleNodeTap = (node) => {
-    const skill = skillsData.find((s) => s.id === node.id);
-    if (skill) onSkillClick(skill);
-  };
+  // Tapped node id for mobile highlight animation
+  const [tapped, setTapped] = useState(null);
+  const touchOrigin = useRef({ y: 0, t: 0 });
+
+  const onTouchStart = useCallback((e) => {
+    touchOrigin.current = { y: e.touches[0].clientY, t: Date.now() };
+  }, []);
+
+  const makeTouchEnd = useCallback((node, isSkill) => (e) => {
+    const dy = Math.abs(e.changedTouches[0].clientY - touchOrigin.current.y);
+    const dt = Date.now() - touchOrigin.current.t;
+    if (dy > 12 || dt > 350) return; // swipe, not tap
+    e.stopPropagation();
+    e.preventDefault();
+    if (!isSkill) return;
+    if (tapped === node.id) {
+      // second tap → open modal
+      const skill = skillsData.find((s) => s.id === node.id);
+      if (skill) onSkillClick(skill);
+      setTapped(null);
+    } else {
+      setTapped(node.id);
+    }
+  }, [tapped, onSkillClick]);
+
+  const makeProjectTouchEnd = useCallback((nodeId) => (e) => {
+    const dy = Math.abs(e.changedTouches[0].clientY - touchOrigin.current.y);
+    const dt = Date.now() - touchOrigin.current.t;
+    if (dy > 12 || dt > 350) return;
+    e.stopPropagation();
+    e.preventDefault();
+    onProjectClick(nodeId);
+  }, [onProjectClick]);
+
+  // Compute connected ids for highlight
+  const tappedConnected = useMemo(() => tapped ? getConnectedIds(tapped) : new Set(), [tapped]);
 
   return (
     <div className="md:hidden">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      >
+      {/* Mobile tap hint */}
+      <p style={{ textAlign: 'center', fontFamily: 'var(--font-jetbrains), monospace', fontSize: '10px', letterSpacing: '0.25em', color: 'rgba(139,92,246,0.6)', marginBottom: '8px' }}>
+        TAP NODE · TAP AGAIN TO EXPLORE
+      </p>
+      <div style={{ width: '100%', overflowX: 'hidden' }}>
         <svg
           viewBox={`0 0 ${MOB_W} ${MOB_H}`}
           preserveAspectRatio="xMidYMid meet"
-          style={{ width: '100%', height: 'auto', overflow: 'visible' }}
+          style={{ width: '100%', height: 'auto', overflow: 'visible', touchAction: 'pan-y' }}
           aria-label="Skills network graph (mobile)"
+          onTouchStart={onTouchStart}
+          onClick={() => setTapped(null)}
         >
           <defs>
             <radialGradient id="mobNetBg" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="rgba(139,92,246,0.04)" />
               <stop offset="100%" stopColor="rgba(0,0,0,0)" />
             </radialGradient>
-            <linearGradient id="mobEdgeGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8B5CF6" />
-              <stop offset="100%" stopColor="#00D4FF" />
-            </linearGradient>
           </defs>
 
           <rect x="0" y="0" width={MOB_W} height={MOB_H} fill="url(#mobNetBg)" />
@@ -567,7 +596,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
             </text>
           ))}
 
-          {/* Edges */}
+          {/* Edges — highlight connected ones when a node is tapped */}
           <g>
             {MOB_EDGES.map(([a, b], i) => {
               const from = getMobNodePos(a);
@@ -577,14 +606,19 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
               const mx = (from.x + to.x) / 2;
               const my = (from.y + to.y) / 2 - 10;
               const d = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
+              const isActive = tapped && (a === tapped || b === tapped);
+              const isDimmed = tapped && !isActive;
+              const stroke = isProj ? (isActive ? '#00D4FF' : 'rgba(0,212,255,0.12)') : (isActive ? '#8B5CF6' : 'rgba(139,92,246,0.12)');
               return (
                 <path
                   key={i}
                   d={d}
                   fill="none"
-                  stroke={isProj ? 'rgba(0,212,255,0.12)' : 'rgba(139,92,246,0.12)'}
-                  strokeWidth={0.7}
+                  stroke={stroke}
+                  strokeWidth={isActive ? 1.4 : 0.7}
                   strokeLinecap="round"
+                  opacity={isDimmed ? 0.04 : 1}
+                  style={{ transition: 'stroke 0.2s, opacity 0.2s, stroke-width 0.2s' }}
                 />
               );
             })}
@@ -596,28 +630,62 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
               const isSkill = !!skillsData.find((s) => s.id === node.id);
               const r = isSkill ? 16 : 10;
               const lines = node.label.split('\n');
+              const isNodeTapped = tapped === node.id;
+              const isLinked = tapped && tappedConnected.has(node.id);
+              const isDimmedNode = tapped && !isNodeTapped && !isLinked;
+              const nodeFill = isNodeTapped ? 'rgba(139,92,246,0.35)' : isLinked ? 'rgba(139,92,246,0.18)' : 'rgba(139,92,246,0.12)';
+              const nodeStroke = isNodeTapped ? '#8B5CF6' : isLinked ? 'rgba(139,92,246,0.6)' : 'rgba(139,92,246,0.4)';
+              const textColor = isNodeTapped ? '#C4B5FD' : isDimmedNode ? 'rgba(156,163,175,0.2)' : isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)';
               return (
                 <g
                   key={node.id}
                   style={{ cursor: isSkill ? 'pointer' : 'default' }}
-                  onClick={() => handleNodeTap(node)}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchEnd={makeTouchEnd(node, isSkill)}
                 >
+                  {/* Larger invisible hit area for easier tapping */}
+                  <circle cx={node.x} cy={node.y} r={r + 14} fill="transparent" />
                   {/* Outer glow ring */}
-                  <circle cx={node.x} cy={node.y} r={r + 10} fill="transparent" stroke="rgba(139,92,246,0.12)" strokeWidth="0.8" />
+                  <circle
+                    cx={node.x} cy={node.y} r={r + 10}
+                    fill="transparent"
+                    stroke="rgba(139,92,246,0.12)"
+                    strokeWidth="0.8"
+                    opacity={isNodeTapped ? 1 : 0.5}
+                    style={{ transition: 'opacity 0.2s' }}
+                  />
                   {/* Main circle */}
                   <circle
-                    cx={node.x} cy={node.y} r={r}
-                    fill="rgba(139,92,246,0.12)"
-                    stroke="rgba(139,92,246,0.4)"
-                    strokeWidth={1}
+                    cx={node.x} cy={node.y} r={isNodeTapped ? r + 2 : r}
+                    fill={nodeFill}
+                    stroke={nodeStroke}
+                    strokeWidth={isNodeTapped ? 2 : 1}
+                    style={{
+                      filter: isNodeTapped ? 'drop-shadow(0 0 8px rgba(139,92,246,0.7))' : 'none',
+                      transition: 'fill 0.2s, stroke 0.2s, r 0.2s',
+                      opacity: isDimmedNode ? 0.25 : 1,
+                    }}
                   />
                   {/* Center dot for skills */}
                   {isSkill && (
-                    <circle cx={node.x} cy={node.y} r={3.5} fill="rgba(139,92,246,0.6)" />
+                    <circle cx={node.x} cy={node.y} r={3.5} fill={isNodeTapped ? '#C4B5FD' : 'rgba(139,92,246,0.6)'}
+                      style={{ transition: 'fill 0.2s' }} />
+                  )}
+                  {/* Tap-to-explore badge */}
+                  {isNodeTapped && (
+                    <text
+                      x={node.x} y={node.y - r - 8}
+                      textAnchor="middle" fontSize={8}
+                      fontFamily="var(--font-jetbrains), monospace"
+                      letterSpacing="0.1em"
+                      fill="rgba(196,181,253,0.8)"
+                    >
+                      TAP AGAIN →
+                    </text>
                   )}
                   {/* Label */}
                   {lines.map((line, li) => {
-                    const baseY = node.y + r + 12;
+                    const baseY = node.y + r + 14;
                     const lineY = lines.length === 1 ? baseY : baseY + (li - (lines.length - 1) / 2) * 12;
                     return (
                       <text
@@ -628,7 +696,9 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
                         fontSize={isSkill ? 10 : 9}
                         fontFamily="var(--font-jetbrains), monospace"
                         letterSpacing="0.05em"
-                        fill={isSkill ? '#F9FAFB' : 'rgba(196,181,253,0.9)'}
+                        fill={textColor}
+                        fontWeight={isNodeTapped ? '700' : '400'}
+                        style={{ transition: 'fill 0.2s' }}
                       >
                         {line}
                       </text>
@@ -645,14 +715,21 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
               const pw = 140;
               const ph = 52;
               const color = node.category === 'Quant Finance' ? '#00D4FF' : '#8B5CF6';
+              const isLinkedProj = tapped && tappedConnected.has(node.id);
               return (
-                <g key={node.id} style={{ cursor: 'pointer' }} onClick={() => onProjectClick(node.id)}>
+                <g
+                  key={node.id}
+                  style={{ cursor: 'pointer' }}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchEnd={makeProjectTouchEnd(node.id)}
+                >
                   <rect
                     x={node.x - pw / 2} y={node.y - ph / 2}
                     width={pw} height={ph} rx={8}
                     fill="rgba(8,14,28,0.88)"
-                    stroke="rgba(0,212,255,0.18)"
-                    strokeWidth={1}
+                    stroke={isLinkedProj ? color : 'rgba(0,212,255,0.18)'}
+                    strokeWidth={isLinkedProj ? 1.5 : 1}
+                    style={{ transition: 'stroke 0.2s' }}
                   />
                   <text
                     x={node.x} y={node.y - 7}
@@ -677,7 +754,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick }) {
             })}
           </g>
         </svg>
-      </motion.div>
+      </div>
     </div>
   );
 }
