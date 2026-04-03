@@ -246,25 +246,27 @@ export default function TimelineScroll() {
         </div>
       </div>
 
-      {/* MOBILE LAYOUT: Single Column, Career then Education */}
-      <div className="md:hidden mt-8 flex flex-col gap-16 max-w-sm mx-auto">
+      {/* MOBILE LAYOUT: Single Column, Centered Over Path */}
+      <div className="md:hidden mt-8 flex flex-col gap-16 max-w-[320px] mx-auto relative overflow-visible">
         
+        {/* Absolute Centered Track Line */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-[60px] bottom-0 w-px" style={{ background: 'linear-gradient(to bottom, #00D4FF 0%, #8B5CF6 100%)', opacity: 0.35 }} />
+
         {/* Career Path Section */}
         <div className="relative">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-8 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#00D4FF] mb-12 text-center bg-[#00D4FF]/10 py-3 rounded-lg border border-[#00D4FF]/20 relative z-20">
             Career Experience
           </h3>
-          <div className="absolute left-[14px] top-[60px] bottom-0 w-px bg-gradient-to-b from-[#00D4FF] to-transparent opacity-30" />
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-14 items-center">
             {right.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#00D4FF';
               return (
-                <div key={`exp-${idx}`} className="flex gap-6 items-start relative">
-                  <div className="flex-shrink-0 mt-4 relative z-10 w-[28px] flex justify-center">
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 10px ${dotColor}aa` }} />
+                <div key={`exp-${idx}`} className="flex flex-col items-center relative w-full">
+                  <div className="absolute -top-6 z-20">
+                    <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
                   </div>
-                  <div className="flex-grow">
-                    <Entry entry={entry} align="left" rowIdx={idx} />
+                  <div className="flex-grow w-full relative z-10 mx-auto transform translate-x-[4px]">
+                    <Entry entry={entry} align="right" rowIdx={idx} />
                   </div>
                 </div>
               );
@@ -274,20 +276,19 @@ export default function TimelineScroll() {
 
         {/* Education Path Section */}
         <div className="relative mt-8">
-          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-8 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20">
+          <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#8B5CF6] mb-12 text-center bg-[#8B5CF6]/10 py-3 rounded-lg border border-[#8B5CF6]/20 relative z-20 shadow-[0_0_10px_rgba(139,92,246,0.15)]">
             Education
           </h3>
-          <div className="absolute left-[14px] top-[60px] bottom-0 w-px bg-gradient-to-b from-[#8B5CF6] to-transparent opacity-30" />
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-14 items-center">
             {left.map((entry, idx) => {
               const dotColor = TYPE_COLORS[entry.type] || '#8B5CF6';
               return (
-                <div key={`edu-${idx}`} className="flex gap-6 items-start relative">
-                  <div className="flex-shrink-0 mt-4 relative z-10 w-[28px] flex justify-center">
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 10px ${dotColor}aa` }} />
+                <div key={`edu-${idx}`} className="flex flex-col items-center relative w-full">
+                  <div className="absolute -top-6 z-20">
+                    <div className="w-4 h-4 rounded-full border-2 border-[#02030A]" style={{ background: dotColor, boxShadow: `0 0 12px ${dotColor}aa` }} />
                   </div>
-                  <div className="flex-grow">
-                    <Entry entry={entry} align="left" rowIdx={idx} />
+                  <div className="flex-grow w-full relative z-10 mx-auto transform translate-x-[4px]">
+                    <Entry entry={entry} align="right" rowIdx={idx} />
                   </div>
                 </div>
               );

@@ -109,12 +109,32 @@ function getConnectedIds(nodeId) {
   return connected;
 }
 
+const MOBILE_POS_MAP = {
+  "priceData": { "x": 88, "y": 190 }, "fundamentals": { "x": 263, "y": 190 },
+  "mlFeatures": { "x": 88, "y": 260 }, "altData": { "x": 263, "y": 260 },
+  "python": { "x": 58, "y": 390 }, "r": { "x": 175, "y": 390 }, "sql": { "x": 292, "y": 390 },
+  "matlab": { "x": 58, "y": 460 }, "vba": { "x": 175, "y": 460 }, "git": { "x": 292, "y": 460 },
+  "matplotlib": { "x": 58, "y": 590 }, "powerbi": { "x": 175, "y": 590 }, "tableau": { "x": 292, "y": 590 },
+  "quantlib": { "x": 58, "y": 660 }, "bloomberg": { "x": 175, "y": 660 }, "fred": { "x": 292, "y": 660 },
+  "alphaSignals": { "x": 88, "y": 790 }, "riskMetrics": { "x": 263, "y": 790 },
+  "execLogic": { "x": 88, "y": 860 }, "dashboards": { "x": 263, "y": 860 },
+  "marketMaking": { "x": 175, "y": 990 }, "statArb": { "x": 175, "y": 1060 },
+  "orderBook": { "x": 175, "y": 1130 }, "yieldAggr": { "x": 175, "y": 1200 }
+};
+
+function getPos(n, isMobile) {
+  if (!n) return n;
+  if (isMobile && MOBILE_POS_MAP[n.id]) {
+    return { ...n, x: MOBILE_POS_MAP[n.id].x, y: MOBILE_POS_MAP[n.id].y };
+  }
+  return n;
+}
+
 function Edge({ fromId, toId, active, dimmed, isMobile }) {
   const rawFrom = getNode(fromId);
   const rawTo   = getNode(toId);
-  const transpose = (n) => isMobile && n ? { ...n, x: n.y * 0.65 + 30, y: n.x * 0.8 + 40 } : n;
-  const from = transpose(rawFrom);
-  const to   = transpose(rawTo);
+  const from = getPos(rawFrom, isMobile);
+  const to   = getPos(rawTo, isMobile);
   if (!from || !to) return null;
 
   const isProjectEdge = !!(PROJECT_NODES_DATA[fromId] || PROJECT_NODES_DATA[toId]);
@@ -144,7 +164,7 @@ function Edge({ fromId, toId, active, dimmed, isMobile }) {
 
 function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
   const rawNode   = getNode(nodeId);
-  const node      = isMobile && rawNode ? { ...rawNode, x: rawNode.y * 0.65 + 30, y: rawNode.x * 0.8 + 40 } : rawNode;
+  const node      = getPos(rawNode, isMobile);
   const connected = getConnectedIds(nodeId);
   const isHovered = hovered === nodeId;
   const isLinked  = hovered && connected.has(hovered);
@@ -449,9 +469,9 @@ function DemoLabel({ visible }) {
 function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tutorialNode, onUserTap }) {
   const [tapped, setTapped] = useState(null);
   
-  const handleNodeClick = useCallback((nodeId, isSkill, skill) => {
+  const handleNodeClick = useCallback((nodeId, isSkill) => {
     if (tapped === nodeId) {
-      if (isSkill && skill) onSkillClick(skill);
+      if (isSkill) onSkillClick(nodeId);
       setTapped(null);
     } else {
       setTapped(nodeId);
@@ -498,15 +518,15 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
               <stop offset="100%" stopColor="rgba(0,0,0,0)" />
             </radialGradient>
           </defs>
-          <ellipse cx={200} cy={550} rx={240} ry={550} fill="url(#mobNetBg)" />
+          <ellipse cx={200} cy={600} rx={240} ry={600} fill="url(#mobNetBg)" />
           <ellipse cx={200} cy={1100} rx={180} ry={140} fill="url(#mobProjBg)" />
 
           {[
-            { label: "INPUT",     y: 124, color: "rgba(196,181,253,0.75)" },
-            { label: "LANGUAGES", y: 312, color: "rgba(196,181,253,0.75)" },
-            { label: "TOOLS",     y: 568, color: "rgba(196,181,253,0.75)" },
-            { label: "OUTPUT",    y: 836, color: "rgba(196,181,253,0.75)" },
-            { label: "PROJECTS",  y: 1152, color: "rgba(0,212,255,0.75)"   },
+            { label: "INPUT",     y: 225, color: "rgba(196,181,253,0.75)" },
+            { label: "LANGUAGES", y: 425, color: "rgba(196,181,253,0.75)" },
+            { label: "TOOLS",     y: 625, color: "rgba(196,181,253,0.75)" },
+            { label: "OUTPUT",    y: 825, color: "rgba(196,181,253,0.75)" },
+            { label: "PROJECTS",  y: 1095, color: "rgba(0,212,255,0.75)"   },
           ].map(({ label, y, color }) => (
              <text key={label} x={18} y={y + 10} transform={`rotate(-90 18 ${y+10})`} textAnchor="middle" fontSize="10" fontFamily="var(--font-jetbrains), monospace" letterSpacing="0.2em" fill={color}>
                {label}
@@ -527,7 +547,7 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
                 hovered={effectiveMobActive}
                 onHover={() => {}}
                 onLeave={() => {}}
-                onClick={(skill, tappedId) => handleNodeClick(tappedId, !!skill, skill)}
+                onClick={(skill, tappedId) => handleNodeClick(tappedId, !!skill)}
                 isMobile={true}
               />
             ))}

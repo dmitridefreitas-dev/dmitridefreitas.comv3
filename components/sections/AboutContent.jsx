@@ -1302,61 +1302,7 @@ export default function AboutContent() {
         </blockquote>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          PERSONAL INTERESTS
-      ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 px-6 lg:px-12" aria-label="Personal Interests">
-        <div className="max-w-5xl mx-auto">
-          <motion.p
-            {...fadeUp(0)}
-            className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-8 text-center"
-          >
-            Outside the Office
-          </motion.p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {personalInterests.map((interest, i) => (
-              <InterestCard key={interest.title} interest={interest} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          CTA — Connect
-      ══════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="py-20 px-6 flex flex-col items-center text-center"
-        aria-label="Connect"
-      >
-        <h2 className="font-serif font-bold text-headline text-foreground text-balance mb-7 will-change-transform">
-          <TextReveal splitBy="word" staggerDelay={0.08}>
-            Let&apos;s Connect
-          </TextReveal>
-        </h2>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="flex flex-col sm:flex-row items-center gap-4"
-        >
-          <MagneticButton href="/contact" size="lg" data-cursor="expand">
-            Get in Touch
-            <ArrowUpRight className="h-4 w-4" />
-          </MagneticButton>
-          <MagneticButton
-            href={socialLinks.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outline"
-            size="lg"
-            data-cursor="expand"
-          >
-            <Linkedin className="h-4 w-4" />
-            LinkedIn
-          </MagneticButton>
-        </motion.div>
-      </section>
 
       {/* ── Experience Modal ───────────────────────────────────────────────── */}
       {selectedExperience && (
