@@ -4,8 +4,7 @@ import { gsap } from 'gsap';
 import { Observer } from 'gsap/Observer';
 import dynamic from 'next/dynamic';
 
-export const ActiveSceneContext = createContext(false);
-export const NavigateContext    = createContext(() => {});
+import { ActiveSceneContext, NavigateContext } from './WormholeContext';
 
 /* ── lazy-load all real section content ─────────────────────────────────── */
 const HeroToggler       = dynamic(() => import('@/components/hero/HeroToggler'),             { ssr: false });

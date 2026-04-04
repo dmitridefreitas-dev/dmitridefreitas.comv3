@@ -7,7 +7,7 @@ import {
   animate
 } from 'framer-motion';
 import { useRef, useState, useEffect, useContext } from 'react';
-import { ActiveSceneContext } from '@/components/layout/ZWormhole';
+import { NavigateContext, ActiveSceneContext } from '@/components/layout/WormholeContext';
 
 /* ── Data ─────────────────────────────────────────────────────────── */
 

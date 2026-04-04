@@ -5,7 +5,7 @@ import SkillDetailModal from '@/components/modals/SkillDetailModal';
 import ProjectDetailModal from '@/components/modals/ProjectDetailModal';
 import { skillsData } from '@/data/skills';
 import { allProjects } from '@/data/projects';
-import { ActiveSceneContext } from '@/components/layout/ZWormhole';
+import { NavigateContext, ActiveSceneContext } from '@/components/layout/WormholeContext';
 
 /* ─── Network topology ─────────────────────────────────────────────── */
 const INPUT_NODES = [

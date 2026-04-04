@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { useState, useEffect, useContext, useRef } from 'react';
-import { NavigateContext, ActiveSceneContext } from '@/components/layout/ZWormhole';
+import { NavigateContext, ActiveSceneContext } from '@/components/layout/WormholeContext';
 
 const CrystallineMath = dynamic(() => import('./CrystallineMath'), {
   ssr: false,

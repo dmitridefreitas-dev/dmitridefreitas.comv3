@@ -1,7 +1,7 @@
 'use client';
 import { useContext } from 'react';
 import { motion } from 'framer-motion';
-import { NavigateContext } from '@/components/layout/ZWormhole';
+import { NavigateContext } from '@/components/layout/WormholeContext';
 
 /* ── Stagger variants ───────────────────────────────────────────── */
 
