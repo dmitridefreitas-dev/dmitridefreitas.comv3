@@ -142,9 +142,10 @@ export default function TimelineScroll() {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className="font-mono text-xs uppercase tracking-[0.4em] text-center mb-2"
-        style={{ color: '#AD8BFF', textShadow: '0 0 12px rgba(173, 139, 255, 0.8)' }}
       >
-        Career Path
+        <span className="relative inline-block" style={{ textShadow: '0 0 25px rgba(173, 139, 255, 0.9), 0 0 10px rgba(173, 139, 255, 0.6)' }}>
+          Career Path
+        </span>
       </motion.p>
       <motion.p
         initial={{ opacity: 0 }}
@@ -179,7 +180,7 @@ export default function TimelineScroll() {
               width: '2px',
               background: 'linear-gradient(to bottom, #AD8BFF 0%, #00D4FF 55%, #00FFB2 100%)',
               scaleY: lineScaleY,
-              boxShadow: '0 0 15px rgba(173,139,255,0.8), 0 0 30px rgba(0,212,255,0.4)',
+              boxShadow: '0 0 25px rgba(173,139,255,0.8), 0 0 30px rgba(0,212,255,0.4)',
             }}
           />
 
@@ -252,7 +253,7 @@ export default function TimelineScroll() {
         
         <div className="mb-20 text-center">
           <h2 className="text-3xl font-bold text-white tracking-tight mb-3">Career History</h2>
-          <div className="h-1 w-12 mx-auto rounded-full" style={{ background: '#AD8BFF', boxShadow: '0 0 10px #AD8BFF' }} />
+          <div className="h-1 w-12 mx-auto rounded-full" style={{ background: '#AD8BFF', boxShadow: '0 0 20px #AD8BFF, 0 0 10px rgba(173, 139, 255, 0.5)' }} />
         </div>
 
         <div className="flex flex-col items-center w-full gap-0">

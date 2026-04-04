@@ -624,7 +624,7 @@ function ConstellationBlueprint({ onSelectExperience }) {
                     <div className="absolute left-[-26px] top-7 w-2 h-2">
                       <div className="absolute inset-0 rounded-full bg-[#AD8BFF]/50 border border-background" />
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#AD8BFF', textShadow: '0 0 10px rgba(173, 139, 255, 0.5)' }}>{edu.years}</p>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{edu.years}</p>
                     <h3 className="font-sans font-bold text-sm text-foreground mb-0.5">{edu.school}</h3>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{edu.degree}</p>
                   </motion.article>
@@ -642,7 +642,7 @@ function ConstellationBlueprint({ onSelectExperience }) {
                     <div className="absolute left-[-26px] top-7 w-2 h-2">
                       <div className="absolute inset-0 rounded-full bg-[#AD8BFF]/50 border border-background" />
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#AD8BFF', textShadow: '0 0 10px rgba(173, 139, 255, 0.5)' }}>{exp.date}</p>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{exp.date}</p>
                     <h3 className="font-sans font-bold text-sm text-foreground mb-0.5 group-hover:text-[#00FFB2] transition-colors">{exp.title}</h3>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{exp.organization}</p>
                   </motion.article>
@@ -944,7 +944,7 @@ export default function AboutContent() {
             {...fadeUp(0)}
             className="font-mono text-xs uppercase tracking-[0.4em] text-muted mb-6 flex items-center gap-2"
           >
-            <Terminal className="h-3.5 w-3.5" style={{ color: '#AD8BFF', filter: 'drop-shadow(0 0 8px #AD8BFF)' }} />
+            <Terminal className="h-3.5 w-3.5" style={{ color: '#AD8BFF', filter: 'drop-shadow(0 0 12px #AD8BFF) drop-shadow(0 0 4px #AD8BFF)' }} />
             Background
           </motion.p>
 
@@ -964,14 +964,14 @@ export default function AboutContent() {
 
             {/* Bio content */}
             <div className="border border-border border-t-0 rounded-b-xl bg-[#080E1C]/40 p-6 md:p-8">
-              <div className="border-l-2 pl-6 flex flex-col gap-5" style={{ borderColor: 'rgba(173, 139, 255, 0.5)' }}>
+              <div className="border-l-2 pl-6 flex flex-col gap-5" style={{ borderColor: 'rgba(173, 139, 255, 0.8)', boxShadow: '-10px 0 20px -10px rgba(173, 139, 255, 0.3)' }}>
                 {storyParagraphs.map((para, i) => (
                   <motion.div
                     key={i}
                     {...stagger(i, 0.2)}
                     className="flex gap-3"
                   >
-                    <span className="font-mono text-xs mt-1 flex-shrink-0 select-none" style={{ color: 'rgba(173, 139, 255, 0.7)' }}>
+                    <span className="font-mono text-xs mt-1 flex-shrink-0 select-none" style={{ color: 'rgba(173, 139, 255, 0.9)', textShadow: '0 0 10px rgba(173, 139, 255, 0.4)' }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <p className="text-sm md:text-base text-muted leading-relaxed font-sans">
@@ -1039,7 +1039,7 @@ export default function AboutContent() {
               <div className="flex flex-col gap-6">
                 {skillBadgeCategories.map((group, gi) => (
                   <motion.div key={group.label} {...stagger(gi)}>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: '#AD8BFF', textShadow: '0 0 10px rgba(173, 139, 255, 0.4)' }}>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: '#AD8BFF', textShadow: '0 0 15px rgba(173, 139, 255, 0.7), 0 0 5px rgba(173, 139, 255, 0.4)' }}>
                       {group.label}
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -1093,7 +1093,7 @@ export default function AboutContent() {
                     </div>
                     <motion.p
                       className="font-mono text-xs uppercase tracking-[0.25em] mb-1.5"
-                      style={{ color: '#AD8BFF', textShadow: '0 0 12px rgba(173, 139, 255, 0.6)' }}
+                      style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}
                       animate={{ opacity: [1, 0.8, 1] }}
                       transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: i * 2 }}
                     >
@@ -1157,7 +1157,7 @@ export default function AboutContent() {
                     </div>
                     <motion.p
                       className="font-mono text-xs uppercase tracking-[0.25em] mb-2"
-                      style={{ color: '#AD8BFF', textShadow: '0 0 12px rgba(173, 139, 255, 0.6)' }}
+                      style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}
                       animate={{ opacity: [1, 0.8, 1] }}
                       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.5 }}
                     >
@@ -1219,7 +1219,7 @@ export default function AboutContent() {
                   </div>
                   <motion.p
                     className="font-mono text-xs uppercase tracking-[0.25em] mb-2"
-                    style={{ color: '#AD8BFF', textShadow: '0 0 12px rgba(173, 139, 255, 0.6)' }}
+                    style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}
                     animate={{ opacity: [1, 0.8, 1] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 1.8 }}
                   >
