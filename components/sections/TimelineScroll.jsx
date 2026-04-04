@@ -259,13 +259,7 @@ export default function TimelineScroll() {
             const color = TYPE_COLORS[exp.type] || '#00D4FF';
             const desc = Array.isArray(exp.description) ? exp.description[0] : exp.shortDescription;
             
-            // Calculate scroll ranges for this specific milestone
-            const step = 1 / experiences.length;
-            const start = i * step;
-            const end = (i + 1) * step;
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const itemScale = useTransform(scrollYProgress, [start, end], [0.85, 1]);
-            const itemOpacity = useTransform(scrollYProgress, [start, start + step * 0.2], [0.4, 1]);
+            // Using whileInView for localized triggering on mobile cards
 
             return (
               <div key={`stepping-mob-${i}`} className="flex flex-col items-center w-full">
@@ -288,7 +282,10 @@ export default function TimelineScroll() {
                 
                 {/* Content Card: Diamond "Stepping Stone" */}
                 <motion.div 
-                  style={{ scale: itemScale, opacity: itemOpacity }}
+                  initial={{ scale: 0.85, opacity: 0.15 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ amount: 0.35, once: false }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
                   className="w-full mt-7 mb-7 flex justify-center relative min-h-[160px]"
                 >
                   {/* SVG Stone Background */}
@@ -304,7 +301,7 @@ export default function TimelineScroll() {
                       fillOpacity="0.96"
                       stroke={color}
                       strokeWidth="2.5"
-                      style={{ filter: `drop-shadow(0 0 18px ${color}80)` }}
+                      style={{ filter: `drop-shadow(0 0 25px ${color})` }}
                     />
                   </svg>
 
