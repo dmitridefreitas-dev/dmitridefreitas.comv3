@@ -51,11 +51,15 @@ export default function HeroToggler() {
         {!isMobile ? (
           <CrystallineMath />
         ) : (
-          <div className="relative w-full h-full bg-[#000000] overflow-hidden flex items-center justify-center">
-            {/* Subtle mask to blend edge bars into the page deeper background */}
+          <div className="relative w-full h-full bg-[#02030A] overflow-hidden flex items-center justify-center">
+            {/* Top/Bottom blending masks */}
+            <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[#02030A] via-transparent to-[#02030A] opacity-80" />
+            
+            {/* Center radial glow to pull the video and background together */}
             <div className="absolute inset-0 z-10 pointer-events-none" 
-              style={{ background: 'radial-gradient(circle, transparent 40%, rgba(2,3,10,0.4) 100%)' }} 
+              style={{ background: 'radial-gradient(circle at center, transparent 30%, rgba(2,3,10,1) 100%)' }} 
             />
+
             <video
               ref={videoRef}
               src="/intro.mp4"
@@ -64,9 +68,11 @@ export default function HeroToggler() {
               playsInline
               loop={false}
               onEnded={handleVideoEnd}
-              className="relative w-[112%] h-auto max-w-none opacity-90 shadow-[0_0_80px_rgba(0,0,0,1)]"
+              className="relative w-[118%] h-auto max-w-none opacity-90 shadow-[0_0_100px_rgba(0,0,0,1)]"
               style={{ 
-                filter: 'contrast(1.04) brightness(0.98)',
+                filter: 'contrast(1.06) brightness(1.02)',
+                // Tiny extra shift to ensure bottom-right watermark is out of frame
+                transform: 'translate(1.5%, 1.5%)',
               }}
             />
           </div>
