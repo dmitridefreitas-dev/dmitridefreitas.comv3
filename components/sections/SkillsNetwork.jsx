@@ -222,17 +222,20 @@ function Edge({ fromId, toId, active, dimmed, isMobile }) {
   const d  = `M${from.x},${from.y} Q${mx},${my} ${to.x},${to.y}`;
 
   return (
-    <motion.path
-      d={d}
-      fill="none"
-      stroke={color}
-      strokeWidth={strokeW}
-      strokeLinecap="round"
-      opacity={0.15}
-      animate={{ opacity, strokeWidth: strokeW }}
-      transition={{ duration: 0.25 }}
-      style={{ filter: active ? `drop-shadow(0 0 8px ${color}60)` : 'none' }}
-    />
+      <motion.path
+        d={d}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeW}
+        strokeLinecap="round"
+        opacity={0.15}
+        animate={{ opacity, strokeWidth: strokeW }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        style={{ 
+          filter: active ? `drop-shadow(0 0 8px ${color}60)` : 'none',
+          willChange: 'opacity, stroke-width'
+        }}
+      />
   );
 }
 
@@ -627,7 +630,8 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
                   style={{ 
                     opacity: isDimmed ? 0.3 : 1, 
                     transition: 'stroke 0.3s, opacity 0.3s',
-                    filter: isActive ? 'drop-shadow(0 0 15px rgba(173,139,255,0.9))' : 'none'
+                    filter: isActive ? 'drop-shadow(0 0 15px rgba(173,139,255,0.7))' : 'none',
+                    willChange: 'stroke, opacity'
                   }}
                 />
               );

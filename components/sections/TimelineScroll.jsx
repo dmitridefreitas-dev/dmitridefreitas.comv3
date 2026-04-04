@@ -177,7 +177,9 @@ export default function TimelineScroll() {
                 scaleY: pathLength,
                 originY: 0,
                 background: 'linear-gradient(to bottom, #00D4FF 0%, #00FFB2 50%, #AD8BFF 100%)',
-                boxShadow: '0 0 35px #00D4FF'
+                boxShadow: '0 0 35px #00D4FF',
+                willChange: 'transform',
+                transform: 'translateZ(0)'
               }}
               className="absolute inset-0 rounded-full"
             />

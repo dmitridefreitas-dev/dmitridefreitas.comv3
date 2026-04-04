@@ -57,8 +57,9 @@ export default function HeroToggler() {
               transition={{ 
                 duration: 3.7, 
                 times: [0, 0.15, 0.35, 0.5, 0.7, 0.85, 1],
-                ease: "easeInOut"
+                ease: [0.22, 1, 0.36, 1]
               }}
+              style={{ willChange: 'opacity, transform', transform: 'translateZ(0)' }}
               className="flex flex-col items-center"
             >
               <h1 
@@ -100,6 +101,8 @@ export default function HeroToggler() {
           gap: '8px',
           zIndex: 10,
           pointerEvents: 'none',
+          willChange: 'transform, opacity',
+          transform: 'translateX(-50%) translateZ(0)'
         }}
       >
         <motion.span
