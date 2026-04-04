@@ -445,205 +445,47 @@ function ConstellationBlueprint({ onSelectExperience }) {
           ))}
         </div>
 
-        <div ref={containerRef} className="relative">
-          {/* SVG constellation - desktop */}
-          <div className="hidden md:block">
-            <svg
-              viewBox={`0 0 ${VBW} ${VBH}`}
-              style={{ width: '100%', height: 'auto', overflow: 'visible' }}
-              fill="none"
-            >
-              <defs>
-                <filter id="starGlow" x="-150%" y="-150%" width="400%" height="400%">
-                  <feGaussianBlur stdDeviation="5" result="b" in="SourceGraphic" />
-                  <feMerge>
-                    <feMergeNode in="b" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                <filter id="starGlowBig" x="-200%" y="-200%" width="500%" height="500%">
-                  <feGaussianBlur stdDeviation="9" result="b" in="SourceGraphic" />
-                  <feMerge>
-                    <feMergeNode in="b" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                {/* Background star field */}
-                <pattern id="starfield" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <circle cx="10" cy="15" r="0.6" fill="rgba(255,255,255,0.08)" />
-                  <circle cx="35" cy="8" r="0.5" fill="rgba(139,92,246,0.1)" />
-                  <circle cx="50" cy="40" r="0.6" fill="rgba(0,212,255,0.09)" />
-                  <circle cx="20" cy="50" r="0.4" fill="rgba(255,255,255,0.06)" />
-                  <circle cx="45" cy="25" r="0.5" fill="rgba(0,229,160,0.07)" />
-                </pattern>
-              </defs>
-
-              {/* Star field background */}
-              <rect width={VBW} height={VBH} fill="url(#starfield)" />
-
-              {/* Cluster labels */}
-              <text x="110" y="55" textAnchor="middle" fontSize={7}
-                fontFamily="var(--font-jetbrains), 'Courier New', monospace"
-                letterSpacing="0.25em" fill="rgba(139,92,246,0.25)">
-                {'[ EDUCATION ]'}
-              </text>
-              <text x="510" y="55" textAnchor="middle" fontSize={7}
-                fontFamily="var(--font-jetbrains), 'Courier New', monospace"
-                letterSpacing="0.25em" fill="rgba(0,229,160,0.25)">
-                {'[ RESEARCH ]'}
-              </text>
-              <text x="340" y="55" textAnchor="middle" fontSize={7}
-                fontFamily="var(--font-jetbrains), 'Courier New', monospace"
-                letterSpacing="0.25em" fill="rgba(0,212,255,0.25)">
-                {'[ WORK ]'}
-              </text>
-
-              {/* Edges */}
-              {CONSTELLATION_EDGES.map((edge, ei) => {
-                const from = getNode(edge.from);
-                const to = getNode(edge.to);
-                if (!from || !to) return null;
-                const edgeThreshold = ei / CONSTELLATION_EDGES.length;
-                const visible = edgeProgress > edgeThreshold;
-                if (!visible) return null;
-                const localP = Math.min((edgeProgress - edgeThreshold) / (1 / CONSTELLATION_EDGES.length), 1);
-                // Determine color based on node types
-                const isEduEdge = from.type === 'edu' && to.type === 'edu';
-                const isResEdge = to.type === 'research';
-                const strokeCol = isEduEdge ? 'rgba(173,139,255,0.3)' : isResEdge ? 'rgba(0,255,178,0.25)' : 'rgba(0,212,255,0.25)';
-
-                return (
-                  <line
-                    key={`${edge.from}-${edge.to}`}
-                    x1={from.x} y1={from.y}
-                    x2={from.x + (to.x - from.x) * localP}
-                    y2={from.y + (to.y - from.y) * localP}
-                    stroke={strokeCol}
-                    strokeWidth={0.8}
-                    strokeDasharray="4 3"
-                  />
-                );
-              })}
-
-              {/* Nodes */}
-              {CONSTELLATION_NODES.map((node, ni) => {
-                const isRevealed = revealed.has(node.id);
-                const isHov = hoveredNode === node.id;
-                const isClickable = !!EXP_IDS[node.id];
-
-                return (
-                  <g
-                    key={node.id}
-                    style={{ cursor: isClickable ? 'pointer' : 'default' }}
-                    onMouseEnter={() => setHoveredNode(node.id)}
-                    onMouseLeave={() => setHoveredNode(null)}
-                    onClick={() => {
-                      if (isClickable && onSelectExperience) {
-                        // find experience by id from experiences data - handled by parent
-                      }
-                    }}
-                  >
-                    {isRevealed && (
-                      <>
-                        {/* Outer ring */}
-                        <circle
-                          cx={node.x} cy={node.y}
-                          r={node.size + (isHov ? 6 : 4)}
-                          fill="none"
-                          stroke={node.col}
-                          strokeWidth={0.5}
-                          opacity={isHov ? 0.5 : 0.15}
-                          style={{ transition: 'r 0.2s, opacity 0.2s' }}
-                        />
-                        {/* Star core */}
-                        <circle
-                          cx={node.x} cy={node.y}
-                          r={isHov ? node.size + 1.5 : node.size}
-                          fill={isHov ? node.col : `${node.col}CC`}
-                          filter={node.highlight || isHov ? 'url(#starGlowBig)' : 'url(#starGlow)'}
-                          style={{ transition: 'r 0.2s, fill 0.2s' }}
-                        />
-                        {/* Cross hair on highlight nodes */}
-                        {node.highlight && (
-                          <>
-                            <line x1={node.x - 12} y1={node.y} x2={node.x + 12} y2={node.y}
-                              stroke={node.col} strokeWidth={0.5} opacity={0.3} />
-                            <line x1={node.x} y1={node.y - 12} x2={node.x} y2={node.y + 12}
-                              stroke={node.col} strokeWidth={0.5} opacity={0.3} />
-                          </>
-                        )}
-
-                        {/* Label */}
-                        <text
-                          x={node.x + node.size + 8}
-                          y={node.y - 4}
-                          fontSize={8.5}
-                          fontFamily="var(--font-jetbrains), 'Courier New', monospace"
-                          fill={isHov ? node.col : `${node.col}DD`}
-                          letterSpacing="0.06em"
-                          style={{ transition: 'fill 0.2s', userSelect: 'none' }}
-                        >
-                          {node.label}
-                        </text>
-                        <text
-                          x={node.x + node.size + 8}
-                          y={node.y + 8}
-                          fontSize={7}
-                          fontFamily="var(--font-jetbrains), 'Courier New', monospace"
-                          fill={`${node.col}77`}
-                          letterSpacing="0.04em"
-                          style={{ userSelect: 'none' }}
-                        >
-                          {node.sub}
-                        </text>
-                        <text
-                          x={node.x + node.size + 8}
-                          y={node.y + 19}
-                          fontSize={6.5}
-                          fontFamily="var(--font-jetbrains), 'Courier New', monospace"
-                          fill={`${node.col}55`}
-                          letterSpacing="0.06em"
-                          style={{ userSelect: 'none' }}
-                        >
-                          {node.date}
-                        </text>
-                      </>
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-
-          <div className="md:hidden">
-            <div className="mb-8">
-              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#AD8BFF] mb-4">Education</p>
-              <div className="relative border-l border-border pl-6 flex flex-col gap-0">
+        <div className="max-w-5xl mx-auto">
+          {/* 1:1 Unified Vertical Path — Matching Mobile exactly */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#AD8BFF] mb-8 bg-[#AD8BFF]/5 px-4 py-2 border-l-2 border-[#AD8BFF] inline-block">Education</p>
+              <div className="relative border-l border-border pl-8 flex flex-col gap-0">
                 {education.map((edu, i) => (
-                  <motion.article key={edu.school} {...stagger(i, 0.1)} className="py-5 relative">
-                    <div className="absolute left-[-26px] top-7 w-2 h-2">
-                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF]/50 border border-background" />
+                  <motion.article key={edu.school} {...stagger(i, 0.1)} className="py-7 relative group">
+                    <div className="absolute left-[-36px] top-9 w-3 h-3">
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-[#AD8BFF]/40"
+                        animate={{ scale: [1, 2.5, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: i * 1.2 }}
+                      />
+                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF] border-2 border-background" />
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{edu.years}</p>
-                    <h3 className="font-sans font-bold text-sm text-foreground mb-0.5">{edu.school}</h3>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1.5" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{edu.years}</p>
+                    <h3 className="font-sans font-bold text-lg text-foreground mb-1 group-hover:text-white transition-colors">{edu.school}</h3>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{edu.degree}</p>
                   </motion.article>
                 ))}
               </div>
             </div>
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#AD8BFF] mb-4">Research</p>
-              <div className="relative border-l border-border pl-6 flex flex-col gap-0">
+            <div className="mt-16 md:mt-0">
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#AD8BFF] mb-8 bg-[#AD8BFF]/5 px-4 py-2 border-l-2 border-[#AD8BFF] inline-block">Research</p>
+              <div className="relative border-l border-border pl-8 flex flex-col gap-0">
                 {researchExps.map((exp, i) => (
                   <motion.article key={exp.id} {...stagger(i, 0.1)}
-                    className="py-5 relative group cursor-pointer"
+                    className="py-7 relative group cursor-pointer"
                     onClick={() => onSelectExperience && onSelectExperience(exp)}
                   >
-                    <div className="absolute left-[-26px] top-7 w-2 h-2">
-                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF]/50 border border-background" />
+                    <div className="absolute left-[-36px] top-9 w-3 h-3">
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-[#AD8BFF]/40"
+                        animate={{ scale: [1, 2.5, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: i * 1.5 }}
+                      />
+                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF] border-2 border-background" />
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{exp.date}</p>
-                    <h3 className="font-sans font-bold text-sm text-foreground mb-0.5 group-hover:text-[#00FFB2] transition-colors">{exp.title}</h3>
+                    <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1.5" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{exp.date}</p>
+                    <h3 className="font-sans font-bold text-lg text-foreground mb-1 group-hover:text-white transition-colors">{exp.title}</h3>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{exp.organization}</p>
                   </motion.article>
                 ))}

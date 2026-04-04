@@ -128,172 +128,78 @@ export default function TimelineScroll() {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.85', 'end 0.25'],
+    offset: ['start 0.85', 'end 0.15'],
   });
-  const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
-
-  const rows = Math.max(left.length, right.length);
 
   return (
-    <section ref={sectionRef} className="py-20 px-6 lg:px-12" aria-label="Timeline">
+    <section ref={sectionRef} className="py-24 px-6 relative overflow-hidden" aria-label="Timeline History">
+      
+      {/* Background ambient glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[800px] pointer-events-none opacity-20"
+        style={{ background: 'radial-gradient(50% 50% at 50% 50%, rgba(173, 139, 255, 0.15) 0%, transparent 100%)' }}
+      />
 
-      <motion.p
-        initial={{ opacity: 0, y: 8 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="font-mono text-xs uppercase tracking-[0.4em] text-center mb-2"
-      >
-        <span className="relative inline-block" style={{ textShadow: '0 0 25px rgba(173, 139, 255, 0.9), 0 0 10px rgba(173, 139, 255, 0.6)' }}>
-          Career Path
-        </span>
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted/35 text-center mb-14"
-      >
-        Education &nbsp;·&nbsp; Experience &nbsp;·&nbsp; Research
-      </motion.p>
-
-      <div className="hidden md:block">
-        {/* Column labels */}
-        <div className="max-w-3xl mx-auto mb-4">
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-x-8">
-            <p className="text-right font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Education</p>
-            <div className="w-3.5" />
-            <p className="text-left font-mono text-[10px] uppercase tracking-[0.25em] text-muted/28">Experience</p>
-          </div>
-        </div>
-
-        <div className="relative max-w-3xl mx-auto">
-          {/* Ghost center line */}
-          <div
-            className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
-            style={{ width: '1px', background: 'rgba(139,92,246,0.07)' }}
-          />
-          {/* Animated gradient fill line */}
-          <motion.div
-            className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 origin-top"
-            style={{
-              width: '2px',
-              background: 'linear-gradient(to bottom, #AD8BFF 0%, #00D4FF 55%, #00FFB2 100%)',
-              scaleY: lineScaleY,
-              boxShadow: `0 0 25px rgba(173,139,255,0.9), 0 0 40px rgba(0,212,255,0.5)`,
-            }}
-          />
-
-          <div className="flex flex-col">
-            {Array.from({ length: rows }).map((_, rowIdx) => {
-              const leftEntry  = left[rowIdx];
-              const rightEntry = right[rowIdx];
-              const activeType = (leftEntry || rightEntry)?.type;
-              const dotColor   = TYPE_COLORS[activeType] || '#8B5CF6';
-
-              return (
-                <div key={rowIdx} className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-8 py-8">
-
-                  <div className="flex justify-end">
-                    {leftEntry && <Entry entry={leftEntry} align="right" rowIdx={rowIdx} />}
-                  </div>
-
-                  {/* Multi-layer glowing dot */}
-                  <div className="flex items-center justify-center z-10 flex-shrink-0" style={{ width: '14px' }}>
-                    <motion.div
-                      className="relative flex items-center justify-center"
-                      initial={{ scale: 0, opacity: 0 }}
-                      whileInView={{ scale: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: rowIdx * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      {/* Outer pulse ring */}
-                      <motion.div
-                        className="absolute rounded-full"
-                        style={{ width: '38px', height: '38px', border: `1px solid ${dotColor}` }}
-                        animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
-                        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 }}
-                      />
-                      {/* Mid pulse ring */}
-                      <motion.div
-                        className="absolute rounded-full"
-                        style={{ width: '24px', height: '24px', border: `1px solid ${dotColor}70` }}
-                        animate={{ scale: [1, 1.5], opacity: [0.45, 0] }}
-                        transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut', delay: rowIdx * 0.3 + 0.5 }}
-                      />
-                      {/* Solid core */}
-                      <div
-                        style={{
-                          width: '14px',
-                          height: '14px',
-                          borderRadius: '50%',
-                          background: dotColor,
-                          border: '2px solid rgba(2,3,10,0.95)',
-                          boxShadow: `0 0 14px ${dotColor}dd, 0 0 32px ${dotColor}55`,
-                          position: 'relative',
-                          zIndex: 1,
-                          flexShrink: 0,
-                        }}
-                      />
-                    </motion.div>
-                  </div>
-
-                  <div className="flex justify-start">
-                    {rightEntry && <Entry entry={rightEntry} align="left" rowIdx={rowIdx} />}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* MOBILE CONTENT: Total Scratch Rebuild */}
-      <div className="md:hidden mt-12 mb-32 flex flex-col items-center w-full px-6">
+      <div className="max-w-4xl mx-auto flex flex-col items-center">
         
-        <div className="mb-20 text-center">
-          <h2 className="text-3xl font-bold text-white tracking-tight mb-3">Career History</h2>
-          <div className="h-1 w-12 mx-auto rounded-full" style={{ background: '#AD8BFF', boxShadow: '0 0 20px #AD8BFF, 0 0 10px rgba(173, 139, 255, 0.5)' }} />
+        {/* Unified Header */}
+        <div className="mb-24 text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="font-mono text-xs uppercase tracking-[0.5em] mb-4"
+            style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 10px rgba(173, 139, 255, 0.6)' }}
+          >
+            Career Path
+          </motion.p>
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, delay: 0.2 }}
+            className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-6"
+          >
+            Professional History
+          </motion.h2>
+          <div className="h-1 w-16 mx-auto rounded-full" style={{ background: '#AD8BFF', boxShadow: '0 0 25px #AD8BFF' }} />
         </div>
 
-        <div className="flex flex-col items-center w-full gap-0">
+        {/* 1:1 Unified Stepping Stones Path */}
+        <div className="flex flex-col items-center w-full max-w-2xl gap-0 relative">
+          
           {experiences.map((exp, i) => {
             const color = TYPE_COLORS[exp.type] || '#00D4FF';
             const desc = Array.isArray(exp.description) ? exp.description[0] : exp.shortDescription;
             
-            // Using whileInView for localized triggering on mobile cards
-
             return (
-              <div key={`stepping-mob-${i}`} className="flex flex-col items-center w-full">
+              <div key={`stepping-stone-${i}`} className="flex flex-col items-center w-full">
                 
-                {/* Visual Connector Dot (Stepping Stone) */}
+                {/* Visual Connector Dot */}
                 <div className="relative flex items-center justify-center">
-                  {/* Pulse Ring */}
                   <motion.div 
                     initial={{ scale: 0.5, opacity: 0 }}
                     whileInView={{ scale: [1, 2.2], opacity: [0.6, 0] }}
                     transition={{ duration: 2.2, repeat: Infinity }}
-                    className="absolute w-8 h-8 rounded-full border border-current"
+                    className="absolute w-10 h-10 rounded-full border border-current"
                     style={{ color: color }}
                   />
                   <div 
-                    className="w-4 h-4 rounded-full z-10 border-2 border-[#02030A]" 
-                    style={{ background: color, boxShadow: `0 0 20px ${color}` }} 
+                    className="w-5 h-5 rounded-full z-10 border-2 border-[#02030A]" 
+                    style={{ background: color, boxShadow: `0 0 25px ${color}` }} 
                   />
                 </div>
                 
-                {/* Content Card: Diamond "Stepping Stone" */}
+                {/* Content Card: Diamond "Stepping Stone" (Shared Mobile/Desktop Layout) */}
                 <motion.div 
-                  initial={{ scale: 0.85, opacity: 0.15 }}
+                  initial={{ scale: 0.85, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ amount: 0.35, once: false }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="w-full mt-7 mb-7 flex justify-center relative min-h-[160px]"
+                  viewport={{ amount: 0.4, once: false }}
+                  transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  className="w-full mt-10 mb-10 flex justify-center relative min-h-[200px] md:min-h-[220px]"
                 >
-                  {/* SVG Stone Background */}
                   <svg 
-                    className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]" 
+                    className="absolute inset-0 w-full h-full drop-shadow-[0_0_40px_rgba(0,0,0,0.6)]" 
                     viewBox="0 0 400 200" 
                     preserveAspectRatio="none"
                     fill="none"
@@ -301,46 +207,45 @@ export default function TimelineScroll() {
                     <path 
                       d="M 65,10 L 335,10 L 390,100 L 335,190 L 65,190 L 10,100 Z" 
                       fill="#0A1229" 
-                      fillOpacity="0.96"
+                      fillOpacity="0.97"
                       stroke={color}
                       strokeWidth="2.5"
                       style={{ filter: `drop-shadow(0 0 25px ${color})` }}
                     />
                   </svg>
 
-                  {/* Content Overlay */}
-                  <div className="relative z-10 w-full max-w-[280px] py-10 px-4 flex flex-col items-center justify-center text-center">
-                    <div className="flex flex-col items-center gap-1.5 mb-4">
-                      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/50">{exp.date}</span>
+                  <div className="relative z-10 w-full px-8 md:px-12 py-12 flex flex-col items-center justify-center text-center">
+                    <div className="flex flex-col items-center gap-2 mb-5">
+                      <span className="text-[12px] font-mono uppercase tracking-[0.3em] text-white/40">{exp.date}</span>
                       <span 
-                        style={{ color: '#FFFFFF', background: color, boxShadow: `0 0 15px ${color}60` }} 
-                        className="text-[8px] font-mono uppercase tracking-widest px-3 py-0.5 rounded-full"
+                        style={{ color: '#FFFFFF', background: color, boxShadow: `0 0 20px ${color}80` }} 
+                        className="text-[10px] font-mono uppercase tracking-[0.25em] px-4 py-1 rounded-full"
                       >
                         {TYPE_LABELS[exp.type]}
                       </span>
                     </div>
 
-                    <h3 className="text-[17px] font-bold text-white mb-1.5 leading-tight tracking-tight px-2">{exp.title}</h3>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-accent mb-5 opacity-90">{exp.organization}</p>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2 leading-tight tracking-tight">{exp.title}</h3>
+                    <p className="text-[11px] md:text-xs font-mono uppercase tracking-[0.2em] text-accent mb-6 opacity-90">{exp.organization}</p>
                     
-                    <p className="text-[11px] text-white/60 leading-relaxed line-clamp-2 max-w-[230px]">
+                    <p className="text-xs md:text-sm text-white/50 leading-relaxed max-w-[420px] line-clamp-3">
                       {desc}
                     </p>
                   </div>
                 </motion.div>
 
-                {/* Robust Growing Line (whileInView) */}
+                {/* Robust Growing Line */}
                 {i < experiences.length - 1 && (
-                  <div className="relative w-[4px] h-20 bg-white/[0.04] mb-7 rounded-full overflow-hidden">
+                  <div className="relative w-[5px] h-24 bg-white/[0.04] mb-10 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ scaleY: 0 }}
                       whileInView={{ scaleY: 1 }}
                       viewport={{ amount: 0.5, once: false }}
-                      transition={{ duration: 1.0, ease: "easeOut" }}
+                      transition={{ duration: 1.2, ease: "easeOut" }}
                       style={{ 
                         originY: 0,
                         background: `linear-gradient(to bottom, ${color}, ${TYPE_COLORS[experiences[i+1].type] || color})`,
-                        boxShadow: `0 0 25px ${color}` 
+                        boxShadow: `0 0 30px ${color}` 
                       }}
                       className="absolute inset-0 rounded-full"
                     />
@@ -352,9 +257,9 @@ export default function TimelineScroll() {
         </div>
 
         {/* Closing Mark */}
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-          <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-white/10">End of Path</span>
+        <div className="mt-16 flex flex-col items-center gap-4">
+          <div className="w-2 h-2 rounded-full bg-white/20" />
+          <span className="text-[10px] font-mono uppercase tracking-[0.5em] text-white/20">End of Path</span>
         </div>
 
       </div>
