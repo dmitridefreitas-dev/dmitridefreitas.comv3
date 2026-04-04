@@ -2,26 +2,65 @@
 
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
+import { useState, useEffect, useContext, useRef } from 'react';
+import { NavigateContext, ActiveSceneContext } from '@/components/layout/ZWormhole';
 
 const CrystallineMath = dynamic(() => import('./CrystallineMath'), {
   ssr: false,
-  loading: () => (
-    <div style={{
-      width: '100%', height: '100%', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      background: '#000', color: '#333',
-      fontFamily: 'monospace', fontSize: '13px', letterSpacing: '0.2em',
-    }}>
-      LOADING...
-    </div>
-  ),
+  loading: () => <div className="w-full h-full bg-black flex items-center justify-center font-mono text-[10px] tracking-widest text-[#333]">LOADING...</div>,
 });
 
 export default function HeroToggler() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const navigateTo = useContext(NavigateContext);
+  const isActive   = useContext(ActiveSceneContext);
+  const videoRef   = useRef(null);
+
+  useEffect(() => {
+    const checkMob = () => setIsMobile(window.innerWidth < 768);
+    checkMob();
+    window.addEventListener('resize', checkMob);
+
+    // Track user interaction to cancel auto-scroll
+    const onInteract = () => setHasInteracted(true);
+    window.addEventListener('touchstart', onInteract, { passive: true });
+    window.addEventListener('wheel', onInteract, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', checkMob);
+      window.removeEventListener('touchstart', onInteract);
+      window.removeEventListener('wheel', onInteract);
+    };
+  }, []);
+
+  const handleVideoEnd = () => {
+    // Only auto-scroll if still on home and user hasn't manually moved
+    if (isMobile && isActive && !hasInteracted && navigateTo) {
+      navigateTo(1);
+    }
+  };
   return (
     <section style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
-      <div style={{ width: '100%', height: '100%' }}>
-        <CrystallineMath />
+      <div className="absolute inset-0 z-0">
+        {!isMobile ? (
+          <CrystallineMath />
+        ) : (
+          <div className="relative w-full h-full bg-[#02030A] overflow-hidden flex items-center justify-center">
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 z-10 bg-black/20" />
+            <video
+              ref={videoRef}
+              src="/IMG_1461.mp4"
+              autoPlay
+              muted
+              playsInline
+              onEnded={handleVideoEnd}
+              className="w-full h-full object-cover opacity-90"
+              style={{ filter: 'contrast(1.1) brightness(0.95)' }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Scroll indicator */}
