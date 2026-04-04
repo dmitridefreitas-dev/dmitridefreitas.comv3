@@ -468,7 +468,7 @@ function ConstellationBlueprint({ onSelectExperience }) {
                 ))}
               </div>
             </div>
-            <div className="mt-16 md:mt-0">
+            <div className="mt-16 md:mt-2.5">
               <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#AD8BFF] mb-8 bg-[#AD8BFF]/5 px-4 py-2 border-l-2 border-[#AD8BFF] inline-block">Research</p>
               <div className="relative border-l border-border pl-8 flex flex-col gap-0">
                 {researchExps.map((exp, i) => (
@@ -506,7 +506,7 @@ function ResearchMatrix() {
   const ROW_COLORS = ['#AD8BFF', '#00D4FF', '#00FFB2'];
 
   return (
-    <section className="px-6 lg:px-16 py-12" aria-label="Research Focus Areas">
+    <section className="px-6 lg:px-16 pb-12 pt-0 md:-mt-12" aria-label="Research Focus Areas">
       <div className="max-w-5xl mx-auto">
         <motion.p
           {...fadeUp(0)}

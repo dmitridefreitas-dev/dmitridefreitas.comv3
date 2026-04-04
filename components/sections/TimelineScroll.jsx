@@ -244,7 +244,6 @@ export default function TimelineScroll() {
             <motion.div 
               style={{ 
                 height: useTransform(scrollYProgress, [0, 0.7], ['0%', '100%']),
-                opacity: useTransform(scrollYProgress, [0, 0.05], [0, 1]), // Fade in 
                 background: 'linear-gradient(to bottom, #AD8BFF, #00D4FF, #00FFB2)',
                 boxShadow: '0 0 50px 8px #AD8BFF, 0 0 25px #00D4FF',
               }}
