@@ -51,13 +51,13 @@ export default function HeroToggler() {
         {!isMobile ? (
           <CrystallineMath />
         ) : (
-          <div className="relative w-full h-full bg-[#02030A] overflow-hidden flex items-center justify-center">
-            {/* Top/Bottom blending masks */}
-            <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[#02030A] via-transparent to-[#02030A] opacity-80" />
+          <div className="relative w-full h-full bg-[#000000] overflow-hidden flex items-center justify-center">
+            {/* Top/Bottom blending masks - Switched to pure black to eliminate visible bars */}
+            <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[#000000] via-transparent to-[#000000] opacity-90" />
             
             {/* Center radial glow to pull the video and background together */}
             <div className="absolute inset-0 z-10 pointer-events-none" 
-              style={{ background: 'radial-gradient(circle at center, transparent 30%, rgba(2,3,10,1) 100%)' }} 
+              style={{ background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,1) 100%)' }} 
             />
 
             <video
@@ -71,8 +71,8 @@ export default function HeroToggler() {
               className="relative w-[118%] h-auto max-w-none opacity-90 shadow-[0_0_100px_rgba(0,0,0,1)]"
               style={{ 
                 filter: 'contrast(1.06) brightness(1.02)',
-                // Tiny extra shift to ensure bottom-right watermark is out of frame
-                transform: 'translate(1.5%, 1.5%)',
+                // Move slightly left (0.5%) but keep vertical shift (1.5%) for watermark hiding
+                transform: 'translate(0.5%, 1.5%)',
               }}
             />
           </div>
