@@ -128,13 +128,13 @@ export default function TimelineScroll() {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.8', 'end 0.2'],
+    offset: ['start 0.9', 'end 0.1'],
   });
 
   const pathLength = useTransform(scrollYProgress, [0, 0.95], [0, 1]);
 
   return (
-    <section ref={sectionRef} className="pt-24 pb-[40vh] px-6 relative overflow-hidden" aria-label="Timeline History">
+    <section ref={sectionRef} className="pt-24 pb-[60vh] px-6 relative overflow-hidden" aria-label="Timeline History">
       
       {/* Background ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[800px] pointer-events-none opacity-20"
@@ -170,14 +170,14 @@ export default function TimelineScroll() {
         {/* 1:1 Unified Stepping Stones Path */}
         <div className="flex flex-col items-center w-full max-w-2xl gap-0 relative">
           
-          {/* Robust Continuous Background Line (Fixed 1:1 Parity) */}
-          <div className="absolute top-[30px] bottom-[260px] left-1/2 -translate-x-1/2 w-[3px] bg-white/[0.04] rounded-full overflow-hidden z-0">
+          {/* Robust Continuous Background Line (Final 1:1 Audit) */}
+          <div className="absolute top-[30px] bottom-[100px] left-1/2 -translate-x-1/2 w-[3px] bg-white/[0.04] rounded-full overflow-hidden z-0">
             <motion.div 
               style={{ 
                 scaleY: pathLength,
                 originY: 0,
                 background: 'linear-gradient(to bottom, #00D4FF 0%, #00FFB2 50%, #AD8BFF 100%)',
-                boxShadow: '0 0 35px #00D4FF',
+                boxShadow: '0 0 40px #00D4FF',
                 willChange: 'transform',
                 transform: 'translateZ(0)'
               }}
