@@ -50,7 +50,7 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
           padding: '14px 16px',
           maxWidth: rowIdx === -1 ? '260px' : '270px',
           backdropFilter: 'blur(12px)',
-          boxShadow: `0 4px 28px rgba(0,0,0,0.45), 0 0 18px ${color}0c`,
+          boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${color}15`,
         }}
       >
         {/* Badge row */}
@@ -62,8 +62,9 @@ function Entry({ entry, align = 'left', rowIdx = 0 }) {
               letterSpacing: '0.22em',
               textTransform: 'uppercase',
               color: color,
-              background: `${color}18`,
-              border: `1px solid ${color}38`,
+              textShadow: `0 0 10px ${color}80`,
+              background: `${color}25`,
+              border: `1px solid ${color}50`,
               borderRadius: '4px',
               padding: '2px 7px',
               flexShrink: 0,
@@ -180,7 +181,7 @@ export default function TimelineScroll() {
               width: '2px',
               background: 'linear-gradient(to bottom, #AD8BFF 0%, #00D4FF 55%, #00FFB2 100%)',
               scaleY: lineScaleY,
-              boxShadow: '0 0 25px rgba(173,139,255,0.8), 0 0 30px rgba(0,212,255,0.4)',
+              boxShadow: `0 0 25px rgba(173,139,255,0.9), 0 0 40px rgba(0,212,255,0.5)`,
             }}
           />
 
