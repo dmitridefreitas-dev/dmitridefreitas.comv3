@@ -27,12 +27,17 @@ export default function HeroToggler() {
     window.addEventListener('touchstart', onInteract, { passive: true });
     window.addEventListener('wheel', onInteract, { passive: true });
 
+    // Explicitly play video to bypass some mobile restrictions
+    if (videoRef.current) {
+      videoRef.current.play().catch(err => console.log("Autoplay blocked:", err));
+    }
+
     return () => {
       window.removeEventListener('resize', checkMob);
       window.removeEventListener('touchstart', onInteract);
       window.removeEventListener('wheel', onInteract);
     };
-  }, []);
+  }, [isMobile]); // Re-run when switching to mobile to grab ref
 
   const handleVideoEnd = () => {
     // Only auto-scroll if still on home and user hasn't manually moved
@@ -55,9 +60,15 @@ export default function HeroToggler() {
               autoPlay
               muted
               playsInline
+              loop={false}
               onEnded={handleVideoEnd}
-              className="w-full h-full object-cover opacity-90"
-              style={{ filter: 'contrast(1.1) brightness(0.95)' }}
+              className="absolute min-w-full min-h-full object-cover opacity-90"
+              style={{ 
+                filter: 'contrast(1.05) brightness(0.95)',
+                // Zoom in and shift up/right to center user and hide VEED watermark
+                transform: 'scale(1.8) translate(12%, -30%)',
+                transformOrigin: 'center center'
+              }}
             />
           </div>
         )}
