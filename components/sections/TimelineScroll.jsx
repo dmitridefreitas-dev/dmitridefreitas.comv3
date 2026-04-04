@@ -128,8 +128,10 @@ export default function TimelineScroll() {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start 0.85', 'end 0.15'],
+    offset: ['start 0.8', 'end 0.2'],
   });
+
+  const pathLength = useTransform(scrollYProgress, [0, 0.95], [0, 1]);
 
   return (
     <section ref={sectionRef} className="pt-24 pb-[40vh] px-6 relative overflow-hidden" aria-label="Timeline History">
@@ -167,6 +169,19 @@ export default function TimelineScroll() {
 
         {/* 1:1 Unified Stepping Stones Path */}
         <div className="flex flex-col items-center w-full max-w-2xl gap-0 relative">
+          
+          {/* Robust Continuous Background Line (Fixed 1:1 Parity) */}
+          <div className="absolute top-[30px] bottom-[260px] left-1/2 -translate-x-1/2 w-[3px] bg-white/[0.04] rounded-full overflow-hidden z-0">
+            <motion.div 
+              style={{ 
+                scaleY: pathLength,
+                originY: 0,
+                background: 'linear-gradient(to bottom, #00D4FF 0%, #00FFB2 50%, #AD8BFF 100%)',
+                boxShadow: '0 0 35px #00D4FF'
+              }}
+              className="absolute inset-0 rounded-full"
+            />
+          </div>
           
           {experiences.map((exp, i) => {
             const color = TYPE_COLORS[exp.type] || '#00D4FF';
@@ -234,20 +249,8 @@ export default function TimelineScroll() {
                   </div>
                 </motion.div>
 
-                  <div className="relative w-[5px] h-24 bg-white/[0.04] mb-10 rounded-full overflow-hidden will-change-transform">
-                    <motion.div 
-                      initial={{ scaleY: 0 }}
-                      whileInView={{ scaleY: 1 }}
-                      viewport={{ amount: 0.1, once: false }}
-                      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                      style={{ 
-                        originY: 0,
-                        background: `linear-gradient(to bottom, ${color}, ${TYPE_COLORS[experiences[i+1].type] || color})`,
-                        boxShadow: `0 0 30px ${color}` 
-                      }}
-                      className="absolute inset-0 rounded-full"
-                    />
-                  </div>
+                  {/* Spacer for continuous line flow */}
+                  <div className="relative w-[3px] h-24 mb-10" />
               </div>
             );
           })}
