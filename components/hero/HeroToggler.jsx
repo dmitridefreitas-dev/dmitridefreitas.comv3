@@ -56,7 +56,7 @@ export default function HeroToggler() {
             <div className="absolute inset-0 z-10 bg-black/20" />
             <video
               ref={videoRef}
-              src="/IMG_1461.mp4"
+              src="/intro.mp4"
               autoPlay
               muted
               playsInline
@@ -65,8 +65,8 @@ export default function HeroToggler() {
               className="absolute min-w-full min-h-full object-cover opacity-90"
               style={{ 
                 filter: 'contrast(1.05) brightness(0.95)',
-                // Zoom in and shift up/right to center user and hide VEED watermark
-                transform: 'scale(1.8) translate(12%, -30%)',
+                // Resetting transform for the new video; using center-cover by default
+                transform: 'scale(1.1)', 
                 transformOrigin: 'center center'
               }}
             />
