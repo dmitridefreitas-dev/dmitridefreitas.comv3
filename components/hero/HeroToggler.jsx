@@ -15,7 +15,6 @@ export default function HeroToggler() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const navigateTo = useContext(NavigateContext);
   const isActive   = useContext(ActiveSceneContext);
-  const videoRef   = useRef(null);
 
   useEffect(() => {
     const checkMob = () => setIsMobile(window.innerWidth < 768);
@@ -27,54 +26,60 @@ export default function HeroToggler() {
     window.addEventListener('touchstart', onInteract, { passive: true });
     window.addEventListener('wheel', onInteract, { passive: true });
 
-    // Explicitly play video to bypass some mobile restrictions
-    if (videoRef.current) {
-      videoRef.current.play().catch(err => console.log("Autoplay blocked:", err));
-    }
-
     return () => {
       window.removeEventListener('resize', checkMob);
       window.removeEventListener('touchstart', onInteract);
       window.removeEventListener('wheel', onInteract);
     };
-  }, [isMobile]); // Re-run when switching to mobile to grab ref
+  }, []);
 
-  const handleVideoEnd = () => {
-    // Only auto-scroll if still on home and user hasn't manually moved
+  // 3-flash auto-navigation for the premium brand intro
+  useEffect(() => {
     if (isMobile && isActive && !hasInteracted && navigateTo) {
-      navigateTo(1);
+      const timer = setTimeout(() => {
+        navigateTo(1);
+      }, 3800); // Re-adjusted for the slower 0.7x flash speed
+      return () => clearTimeout(timer);
     }
-  };
+  }, [isMobile, isActive, hasInteracted, navigateTo]);
+
   return (
     <section style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
       <div className="absolute inset-0 z-0">
-        {!isMobile ? (
-          <CrystallineMath />
-        ) : (
-          <div className="relative w-full h-full bg-[#000000] overflow-hidden flex items-center justify-center">
-            {/* Top/Bottom blending masks - Switched to pure black to eliminate visible bars */}
-            <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[#000000] via-transparent to-[#000000] opacity-90" />
-            
-            {/* Center radial glow to pull the video and background together */}
-            <div className="absolute inset-0 z-10 pointer-events-none" 
-              style={{ background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,1) 100%)' }} 
-            />
-
-            <video
-              ref={videoRef}
-              src="/intro.mp4"
-              autoPlay
-              muted
-              playsInline
-              loop={false}
-              onEnded={handleVideoEnd}
-              className="relative w-[118%] h-auto max-w-none opacity-90 shadow-[0_0_100px_rgba(0,0,0,1)]"
-              style={{ 
-                filter: 'contrast(1.06) brightness(1.02)',
-                // Move slightly left (0.5%) but keep vertical shift (1.5%) for watermark hiding
-                transform: 'translate(0.5%, 1.5%)',
+        <CrystallineMath />
+        
+        {/* Mobile-only flashing brand intro */}
+        {isMobile && isActive && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none px-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0, 1, 0, 1, 0] }}
+              transition={{ 
+                duration: 3.7, // Target 0.7x of previous speed (~3.7s total)
+                times: [0, 0.15, 0.35, 0.5, 0.7, 0.85, 1],
+                ease: "easeInOut"
               }}
-            />
+              className="flex flex-col items-center"
+            >
+              <h1 
+                style={{ 
+                  fontFamily: 'var(--font-space-grotesk)',
+                  textShadow: '0 0 40px rgba(255,255,255,0.3)',
+                  letterSpacing: '0.35em'
+                }}
+                className="text-white text-[30px] font-bold text-center leading-tight mb-4"
+              >
+                DMITRI DE FREITAS
+              </h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.7, 0, 0.7, 0, 0.7, 0] }}
+                transition={{ duration: 3.7, delay: 0.1 }}
+                className="font-mono text-[9px] uppercase tracking-[0.5em] text-cyan-400/80"
+              >
+                Quantitative Researcher
+              </motion.p>
+            </motion.div>
           </div>
         )}
       </div>
