@@ -132,7 +132,7 @@ export default function TimelineScroll() {
   });
 
   return (
-    <section ref={sectionRef} className="py-24 px-6 relative overflow-hidden" aria-label="Timeline History">
+    <section ref={sectionRef} className="pt-24 pb-[40vh] px-6 relative overflow-hidden" aria-label="Timeline History">
       
       {/* Background ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[800px] pointer-events-none opacity-20"
@@ -194,9 +194,9 @@ export default function TimelineScroll() {
                 <motion.div 
                   initial={{ scale: 0.85, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ amount: 0.4, once: false }}
+                  viewport={{ amount: 0.2, once: false }}
                   transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full mt-10 mb-10 flex justify-center relative min-h-[200px] md:min-h-[220px]"
+                  className="w-full mt-10 mb-10 flex justify-center relative min-h-[200px] md:min-h-[220px] will-change-transform"
                 >
                   <svg 
                     className="absolute inset-0 w-full h-full drop-shadow-[0_0_40px_rgba(0,0,0,0.6)]" 
@@ -234,14 +234,12 @@ export default function TimelineScroll() {
                   </div>
                 </motion.div>
 
-                {/* Robust Growing Line */}
-                {i < experiences.length - 1 && (
-                  <div className="relative w-[5px] h-24 bg-white/[0.04] mb-10 rounded-full overflow-hidden">
+                  <div className="relative w-[5px] h-24 bg-white/[0.04] mb-10 rounded-full overflow-hidden will-change-transform">
                     <motion.div 
                       initial={{ scaleY: 0 }}
                       whileInView={{ scaleY: 1 }}
-                      viewport={{ amount: 0.5, once: false }}
-                      transition={{ duration: 1.2, ease: "easeOut" }}
+                      viewport={{ amount: 0.1, once: false }}
+                      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                       style={{ 
                         originY: 0,
                         background: `linear-gradient(to bottom, ${color}, ${TYPE_COLORS[experiences[i+1].type] || color})`,
@@ -250,16 +248,15 @@ export default function TimelineScroll() {
                       className="absolute inset-0 rounded-full"
                     />
                   </div>
-                )}
               </div>
             );
           })}
         </div>
 
         {/* Closing Mark */}
-        <div className="mt-16 flex flex-col items-center gap-4">
-          <div className="w-2 h-2 rounded-full bg-white/20" />
-          <span className="text-[10px] font-mono uppercase tracking-[0.5em] text-white/20">End of Path</span>
+        <div className="mt-32 flex flex-col items-center gap-4 opacity-40">
+          <div className="w-2 h-2 rounded-full bg-[#AD8BFF] shadow-[0_0_15px_#AD8BFF]" />
+          <span className="text-[10px] font-mono uppercase tracking-[0.6em] text-[#AD8BFF]">End of Path</span>
         </div>
 
       </div>

@@ -172,13 +172,13 @@ function InterestCard({ interest, index }) {
           aria-hidden="true"
         />
         <div className="flex-shrink-0 relative">
-          <motion.div
-            className="absolute inset-0 rounded-lg"
-            style={{ background: 'rgba(0,212,255,0.3)', willChange: 'transform, opacity' }}
-            animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.8 }}
-            aria-hidden="true"
-          />
+            <motion.div
+              className="absolute inset-0 rounded-lg will-change-transform"
+              style={{ background: 'rgba(0,212,255,0.3)' }}
+              animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut', delay: index * 0.8 }}
+              aria-hidden="true"
+            />
           <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center relative z-10 group-hover:bg-accent/30 transition-colors border border-white/10">
             <Icon className="h-5 w-5 text-accent" strokeWidth={2} style={{ filter: 'drop-shadow(0 0 8px #00D4FF)' }} />
           </div>
@@ -455,11 +455,11 @@ function ConstellationBlueprint({ onSelectExperience }) {
                   <motion.article key={edu.school} {...stagger(i, 0.1)} className="py-7 relative group">
                     <div className="absolute left-[-36px] top-9 w-3 h-3">
                       <motion.div
-                        className="absolute inset-0 rounded-full bg-[#AD8BFF]/40"
+                        className="absolute inset-0 rounded-full bg-[#AD8BFF]/40 will-change-transform"
                         animate={{ scale: [1, 2.5, 1], opacity: [0.5, 0, 0.5] }}
                         transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: i * 1.2 }}
                       />
-                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF] border-2 border-background" />
+                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF] border-2 border-background shadow-[0_0_15px_#AD8BFF]" />
                     </div>
                     <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1.5" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{edu.years}</p>
                     <h3 className="font-sans font-bold text-lg text-foreground mb-1 group-hover:text-white transition-colors">{edu.school}</h3>
@@ -478,11 +478,11 @@ function ConstellationBlueprint({ onSelectExperience }) {
                   >
                     <div className="absolute left-[-36px] top-9 w-3 h-3">
                       <motion.div
-                        className="absolute inset-0 rounded-full bg-[#AD8BFF]/40"
+                        className="absolute inset-0 rounded-full bg-[#AD8BFF]/40 will-change-transform"
                         animate={{ scale: [1, 2.5, 1], opacity: [0.5, 0, 0.5] }}
                         transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: i * 1.5 }}
                       />
-                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF] border-2 border-background" />
+                      <div className="absolute inset-0 rounded-full bg-[#AD8BFF] border-2 border-background shadow-[0_0_15px_#AD8BFF]" />
                     </div>
                     <p className="font-mono text-xs uppercase tracking-[0.25em] mb-1.5" style={{ color: '#AD8BFF', textShadow: '0 0 20px rgba(173, 139, 255, 0.9), 0 0 8px rgba(173, 139, 255, 0.5)' }}>{exp.date}</p>
                     <h3 className="font-sans font-bold text-lg text-foreground mb-1 group-hover:text-white transition-colors">{exp.title}</h3>
