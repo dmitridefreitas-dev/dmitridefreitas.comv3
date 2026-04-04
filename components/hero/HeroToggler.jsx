@@ -33,29 +33,29 @@ export default function HeroToggler() {
     };
   }, []);
 
-  // 3-flash auto-navigation for the premium brand intro
+  // 3-flash auto-navigation for the premium brand intro (Unified 1:1)
   useEffect(() => {
-    if (isMobile && isActive && !hasInteracted && navigateTo) {
+    if (isActive && !hasInteracted && navigateTo) {
       const timer = setTimeout(() => {
         navigateTo(1);
-      }, 3800); // Re-adjusted for the slower 0.7x flash speed
+      }, 3800); 
       return () => clearTimeout(timer);
     }
-  }, [isMobile, isActive, hasInteracted, navigateTo]);
+  }, [isActive, hasInteracted, navigateTo]);
 
   return (
     <section style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
       <div className="absolute inset-0 z-0">
         <CrystallineMath />
         
-        {/* Mobile-only flashing brand intro */}
-        {isMobile && isActive && (
+        {/* Unified 1:1 flashing brand intro */}
+        {isActive && (
           <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none px-6">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 1, 0, 1, 0, 1, 0] }}
               transition={{ 
-                duration: 3.7, // Target 0.7x of previous speed (~3.7s total)
+                duration: 3.7, 
                 times: [0, 0.15, 0.35, 0.5, 0.7, 0.85, 1],
                 ease: "easeInOut"
               }}
@@ -64,10 +64,10 @@ export default function HeroToggler() {
               <h1 
                 style={{ 
                   fontFamily: 'var(--font-space-grotesk)',
-                  textShadow: '0 0 40px rgba(255,255,255,0.3)',
-                  letterSpacing: '0.35em'
+                  textShadow: '0 0 50px rgba(173,139,255,0.4)',
+                  letterSpacing: '0.4em'
                 }}
-                className="text-white text-[30px] font-bold text-center leading-tight mb-4"
+                className="text-white text-[32px] md:text-[48px] font-bold text-center leading-tight mb-4"
               >
                 DMITRI DE FREITAS
               </h1>
@@ -75,7 +75,7 @@ export default function HeroToggler() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 0.7, 0, 0.7, 0, 0.7, 0] }}
                 transition={{ duration: 3.7, delay: 0.1 }}
-                className="font-mono text-[9px] uppercase tracking-[0.5em] text-cyan-400/80"
+                className="font-mono text-[9px] md:text-[11px] uppercase tracking-[0.5em] text-[#AD8BFF]"
               >
                 Quantitative Researcher
               </motion.p>

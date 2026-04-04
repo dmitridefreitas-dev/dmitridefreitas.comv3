@@ -17,11 +17,11 @@
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   BASE RESET & ROOT STYLES — Bloomberg Terminal Dark Theme
-────────────────────────────────────────────    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,212,255,0.12) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,0.15) 0%, transparent 50%),
-                #02030A;
-    background-color: #02030A;
+   BASE RESET & ROOT STYLES — Deep Black Fidelity
+───────────────────────────────────────────────────────────────────────────── */
+html, body {
+    background-color: #02030A !important;
+    background: #02030A !important;
     color: #FFFFFF;
     font-family: var(--font-space-grotesk), system-ui, sans-serif;
     overflow-x: hidden;

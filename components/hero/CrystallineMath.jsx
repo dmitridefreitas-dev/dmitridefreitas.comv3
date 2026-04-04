@@ -227,7 +227,7 @@ export default function CrystallineMath() {
   return (
     <Canvas
       camera={{ position: [0, 0.5, 5], fov: 55 }}
-      style={{ background: '#050008' }}
+      style={{ background: '#02030A' }}
       gl={{
         antialias: false,
         powerPreference: 'high-performance',
