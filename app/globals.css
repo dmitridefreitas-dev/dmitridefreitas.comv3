@@ -18,8 +18,8 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    BASE RESET & ROOT STYLES — Deep Black Fidelity
-───────────────────────────────────────────────────────────────────────────── */
-html, body {
+@layer base {
+  html, body {
     background-color: #02030A !important;
     background: #02030A !important;
     color: #FFFFFF;
