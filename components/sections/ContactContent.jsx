@@ -263,9 +263,9 @@ export default function ContactPage() {
           <motion.span
             animate={{
               textShadow: [
-                '0 0 10px rgba(173, 139, 255, 0.4)',
-                '0 0 25px rgba(173, 139, 255, 0.9)',
-                '0 0 10px rgba(173, 139, 255, 0.4)',
+                '0 0 12px rgba(173, 139, 255, 0.5)',
+                '0 0 30px rgba(173, 139, 255, 1)',
+                '0 0 12px rgba(173, 139, 255, 0.5)',
               ],
               opacity: [1, 0.8, 1],
             }}

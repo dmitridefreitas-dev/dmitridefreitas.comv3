@@ -1009,7 +1009,7 @@ export default function AboutContent() {
                       <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
                         {cat.name}
                       </p>
-                      <span className="font-mono text-xs text-accent/70">
+                      <span className="font-mono text-xs" style={{ color: '#AD8BFF', textShadow: '0 0 12px rgba(173, 139, 255, 0.7)' }}>
                         {cat.proficiency}%
                       </span>
                     </div>
