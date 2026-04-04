@@ -264,9 +264,9 @@ export default function ProjectsContent() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="font-mono text-xs uppercase tracking-[0.4em] mb-6 relative z-10"
-          style={{ color: '#D022FF' }}
+          style={{ color: '#AD8BFF' }}
         >
-          <span className="relative inline-block" style={{ textShadow: '0 0 20px rgba(208, 34, 255, 0.8)' }}>
+          <span className="relative inline-block" style={{ textShadow: '0 0 20px rgba(173, 139, 255, 0.4)' }}>
             <motion.span
               animate={{ opacity: [1, 0.8, 1] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}

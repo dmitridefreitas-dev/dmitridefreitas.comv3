@@ -258,14 +258,14 @@ export default function ContactPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="font-mono text-xs uppercase tracking-[0.4em] mb-5 relative z-10"
-          style={{ color: '#D022FF' }}
+          style={{ color: '#AD8BFF' }}
         >
           <motion.span
             animate={{
               textShadow: [
-                '0 0 10px rgba(208, 34, 255, 0.4)',
-                '0 0 25px rgba(208, 34, 255, 0.9)',
-                '0 0 10px rgba(208, 34, 255, 0.4)',
+                '0 0 10px rgba(173, 139, 255, 0.4)',
+                '0 0 25px rgba(173, 139, 255, 0.9)',
+                '0 0 10px rgba(173, 139, 255, 0.4)',
               ],
               opacity: [1, 0.8, 1],
             }}

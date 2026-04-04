@@ -7,7 +7,7 @@ import { experiences } from '@/data/experiences';
 const TYPE_COLORS = {
   finance:   '#00D4FF',
   research:  '#00FFB2',
-  education: '#D022FF',
+  education: '#AD8BFF',
   activity:  'rgba(173,139,255,0.7)',
 };
 
@@ -142,7 +142,7 @@ export default function TimelineScroll() {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className="font-mono text-xs uppercase tracking-[0.4em] text-center mb-2"
-        style={{ color: '#D022FF', textShadow: '0 0 12px rgba(208, 34, 255, 0.5)' }}
+        style={{ color: '#AD8BFF', textShadow: '0 0 12px rgba(173, 139, 255, 0.8)' }}
       >
         Career Path
       </motion.p>
@@ -252,7 +252,7 @@ export default function TimelineScroll() {
         
         <div className="mb-20 text-center">
           <h2 className="text-3xl font-bold text-white tracking-tight mb-3">Career History</h2>
-          <div className="h-1 w-12 mx-auto rounded-full" style={{ background: '#D022FF', boxShadow: '0 0 10px #D022FF' }} />
+          <div className="h-1 w-12 mx-auto rounded-full" style={{ background: '#AD8BFF', boxShadow: '0 0 10px #AD8BFF' }} />
         </div>
 
         <div className="flex flex-col items-center w-full gap-0">

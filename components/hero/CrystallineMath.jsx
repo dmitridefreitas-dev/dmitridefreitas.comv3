@@ -108,7 +108,7 @@ function CornerParticles() {
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
-        <pointsMaterial size={0.035} color="#D022FF" transparent opacity={0.9} sizeAttenuation />
+        <pointsMaterial size={0.035} color="#AD8BFF" transparent opacity={0.9} sizeAttenuation />
       </points>
       <lineSegments ref={linesRef}>
         <bufferGeometry>
@@ -167,7 +167,7 @@ function IcosahedronWireframe() {
   return (
     <mesh ref={ref}>
       <icosahedronGeometry args={[1.42, 0]} />
-      <meshBasicMaterial color="#D022FF" wireframe transparent opacity={0.8} />
+      <meshBasicMaterial color="#AD8BFF" wireframe transparent opacity={0.8} />
     </mesh>
   );
 }
@@ -189,9 +189,9 @@ function OrbitingOrb({ radius, speed, offset, yOffset, color }) {
 }
 
 const ORBS = [
-  { radius: 2.2, speed: 0.4,  offset: 0,   yOffset: 0,    color: '#D022FF' },
+  { radius: 2.2, speed: 0.4,  offset: 0,   yOffset: 0,    color: '#AD8BFF' },
   { radius: 2.5, speed: 0.3,  offset: 1.0, yOffset: 0.5,  color: '#00ffff' },
-  { radius: 2.0, speed: 0.5,  offset: 2.1, yOffset: -0.4, color: '#D022FF' },
+  { radius: 2.0, speed: 0.5,  offset: 2.1, yOffset: -0.4, color: '#AD8BFF' },
 ];
 
 function RimLight() {
@@ -201,7 +201,7 @@ function RimLight() {
     ref.current.position.x = Math.cos(t) * 4;
     ref.current.position.z = Math.sin(t) * 4;
   });
-  return <pointLight ref={ref} color="#D022FF" intensity={12} distance={10} />;
+  return <pointLight ref={ref} color="#AD8BFF" intensity={12} distance={10} />;
 }
 
 /* ── Mouse tracker (invisible plane) ────────────────── */
