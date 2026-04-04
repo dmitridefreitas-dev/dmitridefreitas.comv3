@@ -258,15 +258,17 @@ export default function ProjectsContent() {
           </motion.span>
         ))}
 
+        {/* Label */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-6 relative z-10"
+          className="font-mono text-xs uppercase tracking-[0.4em] mb-6 relative z-10"
+          style={{ color: '#D022FF' }}
         >
-          <span className="relative inline-block" style={{ textShadow: '0 0 16px rgba(139,92,246,0.65)' }}>
+          <span className="relative inline-block" style={{ textShadow: '0 0 20px rgba(208, 34, 255, 0.8)' }}>
             <motion.span
-              animate={{ opacity: [1, 0.7, 1] }}
+              animate={{ opacity: [1, 0.8, 1] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
               style={{ display: 'inline' }}
             >

@@ -257,16 +257,17 @@ export default function ContactPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="font-mono text-xs uppercase tracking-[0.4em] text-accent mb-5 relative z-10"
+          className="font-mono text-xs uppercase tracking-[0.4em] mb-5 relative z-10"
+          style={{ color: '#D022FF' }}
         >
           <motion.span
             animate={{
               textShadow: [
-                '0 0 0px rgba(139,92,246,0)',
-                '0 0 16px rgba(139,92,246,0.65)',
-                '0 0 0px rgba(139,92,246,0)',
+                '0 0 10px rgba(208, 34, 255, 0.4)',
+                '0 0 25px rgba(208, 34, 255, 0.9)',
+                '0 0 10px rgba(208, 34, 255, 0.4)',
               ],
-              opacity: [1, 0.7, 1],
+              opacity: [1, 0.8, 1],
             }}
             transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
             style={{ display: 'inline' }}
