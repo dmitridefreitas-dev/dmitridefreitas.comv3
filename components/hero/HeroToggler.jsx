@@ -51,9 +51,11 @@ export default function HeroToggler() {
         {!isMobile ? (
           <CrystallineMath />
         ) : (
-          <div className="relative w-full h-full bg-[#02030A] overflow-hidden flex items-center justify-center">
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 z-10 bg-black/20" />
+          <div className="relative w-full h-full bg-[#000000] overflow-hidden flex items-center justify-center">
+            {/* Subtle mask to blend edge bars into the page deeper background */}
+            <div className="absolute inset-0 z-10 pointer-events-none" 
+              style={{ background: 'radial-gradient(circle, transparent 40%, rgba(2,3,10,0.4) 100%)' }} 
+            />
             <video
               ref={videoRef}
               src="/intro.mp4"
@@ -62,12 +64,9 @@ export default function HeroToggler() {
               playsInline
               loop={false}
               onEnded={handleVideoEnd}
-              className="absolute min-w-full min-h-full object-cover opacity-90"
+              className="relative w-[112%] h-auto max-w-none opacity-90 shadow-[0_0_80px_rgba(0,0,0,1)]"
               style={{ 
-                filter: 'contrast(1.05) brightness(0.95)',
-                // Resetting transform for the new video; using center-cover by default
-                transform: 'scale(1.1)', 
-                transformOrigin: 'center center'
+                filter: 'contrast(1.04) brightness(0.98)',
               }}
             />
           </div>
