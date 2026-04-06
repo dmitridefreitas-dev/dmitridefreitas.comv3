@@ -8,8 +8,6 @@ import { ActiveSceneContext, NavigateContext } from './WormholeContext';
 
 /* ── lazy-load all real section content ─────────────────────────────────── */
 const HeroToggler       = dynamic(() => import('@/components/hero/HeroToggler'),             { ssr: false });
-const InfoBanner        = dynamic(() => import('@/components/sections/InfoBanner'),           { ssr: false });
-const AcademicTicker    = dynamic(() => import('@/components/sections/FinanceTicker'),        { ssr: false });
 const SkillsNetwork     = dynamic(() => import('@/components/sections/SkillsNetwork'),        { ssr: false });
 const TimelineScroll    = dynamic(() => import('@/components/sections/TimelineScroll'),      { ssr: false });
 const AboutContent      = dynamic(() => import('@/components/sections/AboutContent'),         { ssr: false });
@@ -23,18 +21,13 @@ const SCENE_COUNT      = SCENE_LABELS.length;
 const MAX_Z            = SCENE_DEPTH * (SCENE_COUNT - 1);
 const FRICTION         = 0.87;
 const SNAP_THRESHOLD   = 0.3;
-const SNAP_LERP        = 0.07;
+const SNAP_LERP        = 0.12;
 const SCROLL_MUL       = 2.0;
+const MIN_ZTRIGGER_DELTA = 8;    // min |dy| to prevent sub-pixel Z-trigger on mobile
 
 /* ── scene content ───────────────────────────────────────────────────────── */
 function HomeScene() {
-  return (
-    <>
-      <HeroToggler />
-      <InfoBanner />
-      <AcademicTicker />
-    </>
-  );
+  return <HeroToggler />;
 }
 function NetworkScene()  { return <SkillsNetwork />; }
 function CareerScene()   { return <TimelineScroll />; }
@@ -54,13 +47,7 @@ export default function ZWormhole() {
   const tweenRef      = useRef(null);
   const activeSc      = useRef(0);
   const [activeScene, setActiveScene] = useState(0);
-  const [showHint,    setShowHint]    = useState(true);
   const [hoveredDot,  setHoveredDot]  = useState(-1);
-
-  useEffect(() => {
-    const t = setTimeout(() => setShowHint(false), 4000);
-    return () => clearTimeout(t);
-  }, []);
 
   function applyCamera(z) {
     if (worldRef.current) {
@@ -79,7 +66,7 @@ export default function ZWormhole() {
       }
       const opacity = Math.max(0, 1 - (dist / 1) * 0.95);
       el.style.opacity    = String(opacity);
-      el.style.visibility = dist > 0.6 ? 'hidden' : 'visible';
+      el.style.visibility = dist > 0.75 ? 'hidden' : 'visible';
     }
     if (vignetteRef.current) {
       vignetteRef.current.style.opacity = speed > 4 ? '1' : '0';
@@ -117,7 +104,8 @@ export default function ZWormhole() {
 
     const obs = Observer.create({
       type: 'wheel,touch',
-      preventDefault: true,
+      // Don't intercept form elements — prevents native select/input pickers from being blocked on mobile
+      preventDefault: (e) => !e.target?.closest?.('input, select, textarea, button, a'),
       onChangeY(self) {
         // Cancel any dot-nav tween
         if (tweenRef.current) {
@@ -131,13 +119,14 @@ export default function ZWormhole() {
 
         const inner = scrollRefs.current[activeSc.current];
         const atTop = !inner || inner.scrollTop <= 0;
-        const atBot = !inner || inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 4;
+        const atBot = !inner || inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 10;
 
         // Scroll within scene content when there's room
         if (dy > 0 && !atBot) { inner.scrollTop += dy; return; }
         if (dy < 0 && !atTop) { inner.scrollTop += dy; return; }
 
-        // At the boundary — Z-travel
+        // At the boundary — require minimum delta to avoid sub-pixel accidents on mobile
+        if (Math.abs(dy) < MIN_ZTRIGGER_DELTA) return;
         stateRef.current.velocity += dy * SCROLL_MUL;
       },
     });
@@ -152,6 +141,7 @@ export default function ZWormhole() {
         const nearest = Math.round(s.cameraZ / SCENE_DEPTH);
         const snapZ   = Math.max(0, Math.min(MAX_Z, nearest * SCENE_DEPTH));
         s.cameraZ    += (snapZ - s.cameraZ) * SNAP_LERP;
+        if (Math.abs(snapZ - s.cameraZ) < 0.5) s.cameraZ = snapZ;
         s.velocity    = 0;
         const newScene = Math.round(snapZ / SCENE_DEPTH);
         if (newScene !== activeSc.current) {
@@ -177,7 +167,6 @@ export default function ZWormhole() {
     };
 
     gsap.ticker.add(tick);
-    gsap.ticker.fps(60);
 
     return () => {
       obs.kill();
@@ -311,33 +300,7 @@ export default function ZWormhole() {
         </span>
       </div>
 
-      {/* Scroll hint */}
-      {activeScene === 0 && showHint && (
-        <div style={{
-          position: 'fixed', bottom: 48, left: '50%',
-          transform: 'translateX(-50%)', zIndex: 200,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-          animation: 'zhintfade 4s ease forwards',
-          pointerEvents: 'none',
-        }}>
-          <span style={{
-            fontFamily: 'var(--font-jetbrains)', fontSize: 9,
-            letterSpacing: '0.38em', textTransform: 'uppercase',
-            color: 'rgba(0,212,255,0.5)',
-          }}>Scroll to explore</span>
-          <svg width="14" height="20" viewBox="0 0 14 20" fill="none"
-            stroke="rgba(0,212,255,0.4)" strokeWidth="1.5"
-            strokeLinecap="round" strokeLinejoin="round"
-            style={{ animation: 'zbounce 1.6s ease infinite' }}>
-            <line x1="7" y1="1" x2="7" y2="14" />
-            <path d="M2 10l5 6 5-6" />
-          </svg>
-        </div>
-      )}
-
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes zbounce  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
-        @keyframes zhintfade{ 0%{opacity:1} 75%{opacity:1} 100%{opacity:0} }
         div[style*="overflowY: auto"]::-webkit-scrollbar { display: none; }
       ` }} />
     </div>

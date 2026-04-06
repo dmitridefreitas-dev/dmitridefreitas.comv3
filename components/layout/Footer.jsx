@@ -1,18 +1,20 @@
 'use client';
-import Link from 'next/link';
+import { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Linkedin, Mail } from 'lucide-react';
 import { socialLinks, contactInfo } from '@/data/constants';
+import { NavigateContext } from '@/components/layout/WormholeContext';
 
 const NAV_LINKS = [
-  { href: '/',         label: 'Home' },
-  { href: '/about',    label: 'About' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/contact',  label: 'Contact' },
+  { scene: 0, label: 'Home' },
+  { scene: 3, label: 'About' },
+  { scene: 4, label: 'Projects' },
+  { scene: 5, label: 'Contact' },
 ];
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const navigateTo = useContext(NavigateContext);
 
   return (
     <footer
@@ -48,13 +50,13 @@ export default function Footer() {
             <span className="text-muted/25 hidden sm:inline">·</span>
             <nav className="flex items-center gap-4" aria-label="Footer navigation">
               {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
+                <button
+                  key={link.scene}
+                  onClick={() => navigateTo?.(link.scene)}
                   className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted/60 hover:text-accent transition-colors"
                 >
                   {link.label}
-                </Link>
+                </button>
               ))}
             </nav>
             <span className="text-muted/25 hidden sm:inline">·</span>

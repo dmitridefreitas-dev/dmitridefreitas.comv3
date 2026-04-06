@@ -188,7 +188,7 @@ export default function TimelineScroll() {
                 
                 {/* Background track for the segment */}
                 {i < experiences.length - 1 && (
-                  <div className="absolute top-[10px] left-1/2 -translate-x-1/2 w-[2px] h-full bg-white/[0.06] z-0 rounded-full" />
+                  <div className="absolute top-[24px] left-1/2 -translate-x-1/2 w-[2px] h-full bg-white/[0.06] z-0 rounded-full" />
                 )}
 
                 {/* Animated Segment Line down to next node */}
@@ -197,8 +197,8 @@ export default function TimelineScroll() {
                     initial={{ height: 0 }}
                     whileInView={{ height: '100%' }}
                     viewport={{ once: true, margin: "-10% 0px" }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute top-[10px] left-1/2 -translate-x-1/2 w-[4px] z-10 rounded-full"
+                    transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-[24px] left-1/2 -translate-x-1/2 w-[4px] z-0 rounded-full"
                     style={{
                       background: `linear-gradient(to bottom, ${color}, ${TYPE_COLORS[experiences[i+1]?.type] || '#00D4FF'})`,
                       boxShadow: `0 0 20px 2px ${color}60`,
@@ -213,7 +213,7 @@ export default function TimelineScroll() {
                     whileInView={{ height: '80px' }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute top-[10px] left-1/2 -translate-x-1/2 w-[4px] z-10 rounded-b-full"
+                    className="absolute top-[24px] left-1/2 -translate-x-1/2 w-[4px] z-0 rounded-b-full"
                     style={{
                       background: `linear-gradient(to bottom, ${color}, transparent)`,
                     }}
@@ -240,16 +240,18 @@ export default function TimelineScroll() {
                   className="w-full mt-10 mb-10 flex justify-center relative min-h-[200px] z-20"
                 >
                   <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none" fill="none">
-                    <path d="M 65,10 L 335,10 L 390,100 L 335,190 L 65,190 L 10,100 Z" fill="#0A1229" fillOpacity="0.97" stroke={color} strokeWidth="2.5" />
+                    <path d="M 65,10 L 335,10 L 390,100 L 335,190 L 65,190 L 10,100 Z" fill="#0A1229" fillOpacity="1" stroke={color} strokeWidth="2.5" />
                   </svg>
-                  <div className="relative z-10 w-full px-8 py-12 flex flex-col items-center justify-center text-center">
-                    <div className="flex flex-col items-center gap-2 mb-5">
-                      <span className="text-[12px] font-mono uppercase tracking-[0.3em] text-white/40">{exp.date}</span>
-                      <span style={{ color: '#FFFFFF', background: color }} className="text-[10px] font-mono uppercase tracking-[0.25em] px-4 py-1 rounded-full">{TYPE_LABELS[exp.type]}</span>
+                  <div className="relative z-10 w-full px-2 py-8 flex flex-col items-center justify-center text-center">
+                    <div style={{ width: '66%', maxWidth: '240px' }} className="flex flex-col items-center">
+                      <div className="flex flex-col items-center gap-1.5 mb-3">
+                        <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/40">{exp.date}</span>
+                        <span style={{ color: '#FFFFFF', background: color }} className="text-[9px] font-mono uppercase tracking-[0.2em] px-3 py-0.5 rounded-full">{TYPE_LABELS[exp.type]}</span>
+                      </div>
+                      <h3 className="text-sm font-bold text-white mb-1.5 leading-tight">{exp.title}</h3>
+                      <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-accent mb-2">{exp.organization}</p>
+                      <p className="text-[10px] text-white/50 leading-relaxed line-clamp-2">{desc}</p>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">{exp.title}</h3>
-                    <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-accent mb-6">{exp.organization}</p>
-                    <p className="text-xs text-white/50 leading-relaxed max-w-[420px] line-clamp-3">{desc}</p>
                   </div>
                 </motion.div>
 
@@ -305,7 +307,7 @@ export default function TimelineScroll() {
 
                 {/* Background track for the segment */}
                 {i < desktopRows.length - 1 && (
-                  <div className="absolute top-[48px] left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+120px)] bg-white/[0.06] z-0 rounded-full" />
+                  <div className="absolute top-[62px] left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+120px)] bg-white/[0.06] z-0 rounded-full" />
                 )}
 
                 {/* Animated Segment Line down to next node */}
@@ -314,8 +316,8 @@ export default function TimelineScroll() {
                     initial={{ height: 0 }}
                     whileInView={{ height: 'calc(100% + 120px)' }}
                     viewport={{ once: true, margin: "-10% 0px" }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute top-[48px] left-1/2 -translate-x-1/2 w-[4px] z-10 rounded-b-full"
+                    transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-[62px] left-1/2 -translate-x-1/2 w-[4px] z-0 rounded-b-full"
                     style={{
                       background: 'linear-gradient(to bottom, #AD8BFF, #00D4FF)',
                       boxShadow: '0 0 20px 2px rgba(173, 139, 255, 0.4)',
@@ -329,8 +331,8 @@ export default function TimelineScroll() {
                     initial={{ height: 0 }}
                     whileInView={{ height: '80px' }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute top-[48px] left-1/2 -translate-x-1/2 w-[4px] z-10 rounded-b-full"
+                    transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-[62px] left-1/2 -translate-x-1/2 w-[4px] z-0 rounded-b-full"
                     style={{
                       background: 'linear-gradient(to bottom, #00D4FF, transparent)',
                     }}

@@ -81,33 +81,32 @@ const PROJECT_EDGE_LIST = [
 
 const ALL_EDGES = [...EDGES, ...PROJECT_EDGE_LIST];
 
+/* ── Pre-computed O(1) lookups — replaces per-render linear searches ── */
+const NODE_MAP = new Map([
+  ...INPUT_NODES.map(n => [n.id, { ...n, isSkill: false }]),
+  ...OUTPUT_NODES.map(n => [n.id, { ...n, isSkill: false }]),
+  ...skillsData.map(s => [s.id, {
+    id: s.id, label: s.name,
+    ...(SKILL_POSITIONS[s.id] || { x: 500, y: 300 }),
+    isSkill: true, skill: s,
+  }]),
+  ...Object.entries(PROJECT_NODES_DATA).map(([id, d]) => [id, { id, ...d, isSkill: false, isProject: true }]),
+]);
+
+const ADJACENCY = new Map();
+ALL_EDGES.forEach(([a, b]) => {
+  if (!ADJACENCY.has(a)) ADJACENCY.set(a, new Set());
+  if (!ADJACENCY.has(b)) ADJACENCY.set(b, new Set());
+  ADJACENCY.get(a).add(b);
+  ADJACENCY.get(b).add(a);
+});
+
 const VB_W = 1500;
 const VB_H = 610;
 
-function getNode(id) {
-  const projData = PROJECT_NODES_DATA[id];
-  if (projData) return { id, ...projData, isSkill: false, isProject: true };
+function getNode(id) { return NODE_MAP.get(id) ?? null; }
 
-  const skill = skillsData.find((s) => s.id === id);
-  if (skill) {
-    const pos = SKILL_POSITIONS[id] || { x: 500, y: 300 };
-    return { id, label: skill.name, ...pos, isSkill: true, skill };
-  }
-  const inp = INPUT_NODES.find((n) => n.id === id);
-  if (inp) return { ...inp, isSkill: false };
-  const out = OUTPUT_NODES.find((n) => n.id === id);
-  if (out) return { ...out, isSkill: false };
-  return null;
-}
-
-function getConnectedIds(nodeId) {
-  const connected = new Set();
-  ALL_EDGES.forEach(([a, b]) => {
-    if (a === nodeId) connected.add(b);
-    if (b === nodeId) connected.add(a);
-  });
-  return connected;
-}
+function getConnectedIds(nodeId) { return ADJACENCY.get(nodeId) ?? new Set(); }
 
 const MOBILE_Y_LEVELS = {
   input: 80,
@@ -174,10 +173,11 @@ const MOB_EDGES = [
   ['out-da', 'trading-terminal'], ['out-da', 'housing-price'],
 ];
 
-function getMobNodePos(id) {
-  const all = [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT, ...MOB_PROJECTS];
-  return all.find((n) => n.id === id);
-}
+const MOB_NODE_MAP = new Map(
+  [...MOB_INPUT, ...MOB_LANGS, ...MOB_TOOLS, ...MOB_OUTPUT, ...MOB_PROJECTS].map(n => [n.id, n])
+);
+
+function getMobNodePos(id) { return MOB_NODE_MAP.get(id); }
 
 function getPos(n, isMobile) {
   if (!n) return n;
@@ -231,9 +231,8 @@ function Edge({ fromId, toId, active, dimmed, isMobile }) {
         opacity={0.15}
         animate={{ opacity, strokeWidth: strokeW }}
         transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        style={{ 
+        style={{
           filter: active ? `drop-shadow(0 0 8px ${color}60)` : 'none',
-          willChange: 'opacity, stroke-width'
         }}
       />
   );
@@ -292,11 +291,11 @@ function Node({ nodeId, hovered, onHover, onLeave, onClick, isMobile }) {
         stroke={nodeStroke}
         strokeWidth={isHovered ? 2.5 : 1}
         style={{
-          filter: isHovered 
-            ? 'drop-shadow(0 0 20px rgba(173,139,255,0.9)) drop-shadow(0 0 8px #AD8BFF)' 
-            : isLinked 
-              ? 'drop-shadow(0 0 12px rgba(173,139,255,0.5))' 
-              : 'drop-shadow(0 0 8px rgba(173,139,255,0.2))',
+          filter: isHovered
+            ? 'drop-shadow(0 0 20px rgba(173,139,255,0.9)) drop-shadow(0 0 8px #AD8BFF)'
+            : isLinked
+              ? 'drop-shadow(0 0 12px rgba(173,139,255,0.5))'
+              : 'none',
           transition: trans,
         }}
       />
@@ -627,11 +626,10 @@ function MobileSkillsNetwork({ onSkillClick, onProjectClick, isSceneActive, tuto
                   key={i} x1={nodeA.x} y1={nodeA.y} x2={nodeB.x} y2={nodeB.y}
                   stroke={isActive ? '#AD8BFF' : 'rgba(255,255,255,0.1)'}
                   strokeWidth={isActive ? 2.5 : 1}
-                  style={{ 
-                    opacity: isDimmed ? 0.3 : 1, 
+                  style={{
+                    opacity: isDimmed ? 0.3 : 1,
                     transition: 'stroke 0.3s, opacity 0.3s',
                     filter: isActive ? 'drop-shadow(0 0 15px rgba(173,139,255,0.7))' : 'none',
-                    willChange: 'stroke, opacity'
                   }}
                 />
               );

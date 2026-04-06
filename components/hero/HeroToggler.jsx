@@ -46,7 +46,7 @@ export default function HeroToggler() {
   return (
     <section style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
       <div className="absolute inset-0 z-0">
-        <CrystallineMath />
+        <CrystallineMath active={isActive} />
         
         {/* Unified 1:1 flashing brand intro */}
         {isActive && (

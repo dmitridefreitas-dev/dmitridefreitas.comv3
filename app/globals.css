@@ -18,6 +18,7 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    BASE RESET & ROOT STYLES — Deep Black Fidelity
+───────────────────────────────────────────────────────────────────────────── */
 @layer base {
   html, body {
     background-color: #02030A !important;
@@ -199,26 +200,7 @@
   .text-balance { text-wrap: balance; }
 
   .skill-glow-border {
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-  }
-  .skill-glow-border:hover {
-    border-color: rgba(0,212,255, 0.6);
-    box-shadow: 0 0 25px rgba(0,212,255, 0.2);
-    animation: skill-border-pulse 2s ease-in-out infinite;
-  }
-
-  .card-cosmic {
-    background: rgba(10,18,41,0.95);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px;
-    transition: all 0.3s ease;
-  }
-  .card-cosmic:hover {
-    border-color: rgba(0,212,255,0.5);
-    box-shadow: 0 10px 40px rgba(0,212,255,0.15), 0 0 60px rgba(139,92,246,0.08);
-  } .skill-glow-border { border: 1px solid rgba(0,212,255,0.12);
+    border: 1px solid rgba(0,212,255,0.12);
     border-radius: 12px;
     transition: border-color 0.3s, box-shadow 0.3s;
   }
